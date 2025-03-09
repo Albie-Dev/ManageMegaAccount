@@ -53,24 +53,40 @@ if %migration_choice%==4 goto update_database
 if %migration_choice%==5 goto menu
 
 :list_migrations
-wt -w 0 nt --title "List Migrations" cmd /k "cd /d %~dp0src\Microservices\MMA.API && dotnet ef migrations list"
+wt -w 0 nt --title "List Migrations" cmd /k "cd /d %~dp0 && dotnet ef migrations list --project .\src\MicroServices\MMA.Service\MMA.Service.csproj --startup-project .\src\Microservices\MMA.API\MMA.API.csproj"
 pause
 goto migrations
 
 :add_migration
 set /p migration_name=Enter the migration name: 
-wt -w 0 nt --title "Add Migration" cmd /k "cd /d %~dp0src\Microservices\MMA.API && dotnet ef migrations add %migration_name%"
+if not defined migration_name (
+    echo Migration name cannot be empty. Please try again.
+    pause
+    goto migrations
+)
+wt -w 0 nt --title "Add Migration" cmd /k "cd /d %~dp0 && dotnet ef migrations add %migration_name% --project .\src\MicroServices\MMA.Service\MMA.Service.csproj --startup-project .\src\Microservices\MMA.API\MMA.API.csproj"
 pause
 goto migrations
 
 :remove_migration
-wt -w 0 nt --title "Remove Migration" cmd /k "cd /d %~dp0src\Microservices\MMA.API && dotnet ef migrations remove"
+set /p migration_name=Enter the migration name to remove: 
+if not defined migration_name (
+    echo Migration name cannot be empty. Please try again.
+    pause
+    goto migrations
+)
+wt -w 0 nt --title "Remove Migration" cmd /k "cd /d %~dp0 && dotnet ef migrations remove --project .\src\MicroServices\MMA.Service\MMA.Service.csproj --startup-project .\src\Microservices\MMA.API\MMA.API.csproj"
 pause
 goto migrations
 
 :update_database
 set /p migration_name=Enter the migration name to update: 
-wt -w 0 nt --title "Update Database" cmd /k "cd /d %~dp0src\Microservices\MMA.API && dotnet ef database update %migration_name%"
+if not defined migration_name (
+    echo Migration name cannot be empty. Please try again.
+    pause
+    goto migrations
+)
+wt -w 0 nt --title "Update Database" cmd /k "cd /d %~dp0 && dotnet ef database update %migration_name% --project .\src\MicroServices\MMA.Service\MMA.Service.csproj --startup-project .\src\Microservices\MMA.API\MMA.API.csproj"
 pause
 goto migrations
 

@@ -8,6 +8,10 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMMAService();
 
+builder.Services.AddCoreService();
+
+builder.Services.AddCoreAuthentication<Program>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -25,5 +29,8 @@ app.UseCors(corsPolicyBuilder =>
 
 app.UseHttpsRedirection();
 app.MapControllers();
+app.MapCoreMiddleware();
+app.MapAccesTokenFromQuery();
+
 
 app.Run();
