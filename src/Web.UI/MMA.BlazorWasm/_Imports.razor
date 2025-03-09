@@ -1,10 +1,35 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
+@using Blazored.LocalStorage
+@using Blazored.Toast;
+@using Blazored.Toast.Configuration;
+@using Blazored.Toast.Services
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.AspNetCore.Components.WebAssembly.Http
 @using Microsoft.JSInterop
+@using MMA.BlazorWasm.Components.Common.Loading;
+@using MMA.BlazorWasm.Components.Common.Button;
+@using MMA.BlazorWasm.Components.Common.Error;
+@using MMA.BlazorWasm.Components.Common.DateTime;
+@using MMA.BlazorWasm.Components.Common.Notification;
+@using MMA.BlazorWasm.Components.Common.Page;
+@using MMA.BlazorWasm.Components.Common.Profile;
 @using MMA.BlazorWasm
-@using MMA.BlazorWasm.Layout
+@using MMA.BlazorWasm.Pages;
+@using MMA.BlazorWasm.Layout;
+@using MMA.BlazorWasm.Layout.Auth;
+@using MMA.BlazorWasm.Layout.Main;
+
+
+@using MMA.Domain;
+
+
+
+@inject ILocalStorageService _localStorageService;
+@inject IToastService _toastService;
+@inject NavigationManager _navigationManager;
+@inject IHttpClientHelper _httpClientHelper;
+@inject ILocalStorageService _localStorageService;

@@ -1,0 +1,37 @@
+
+
+
+@switch(Type)
+{
+    case CDateTimePickerType.DateTime:
+    {
+
+        break;
+    }
+    case CDateTimePickerType.DateOnly:
+    {
+
+        break;
+    }
+    case CDateTimePickerType.TimeOnly:
+    {
+
+        break;
+    }
+    default: break;
+}
+
+
+
+@code
+{
+    [Parameter]
+    public string LabelName { get; set; } = string.Empty;
+
+    [Parameter]
+    public DateTimePickerModelData DataModel { get; set; } = null!;
+
+    [Parameter]
+    public CDateTimePickerType Type { get; set; }
+
+}

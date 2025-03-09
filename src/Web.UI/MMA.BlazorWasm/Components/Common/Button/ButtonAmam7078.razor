@@ -1,0 +1,49 @@
+<button 
+    id="@Id"
+    class="@Class"
+    @onclick="OnClick" 
+    @onmouseover="OnMouseOver" 
+    @onmouseout="OnMouseOut" 
+    @ondblclick="OnDoubleClick" 
+    @onkeypress="OnKeyPress">
+    
+    @if (IconPosition == CIconPositionType.Right)
+    {
+        <i class="@Icon"></i>
+    }
+    <span class="@(IconPosition == CIconPositionType.Right ? "ms-2" : "me-2")">@Text</span>
+    @if (IconPosition == CIconPositionType.Left)
+    {
+        <i class="@Icon"></i>
+    }
+</button>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Icon { get; set; } = string.Empty;
+
+    [Parameter]
+    public CIconPositionType IconPosition { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public EventCallback OnMouseOver { get; set; }
+
+    [Parameter]
+    public EventCallback OnMouseOut { get; set; }
+
+    [Parameter]
+    public EventCallback OnDoubleClick { get; set; }
+
+    [Parameter]
+    public EventCallback OnKeyPress { get; set; }
+}

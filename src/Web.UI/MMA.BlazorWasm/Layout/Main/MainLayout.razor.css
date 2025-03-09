@@ -1,0 +1,18 @@
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+#contentMain {
+    margin-left: 250px;
+    transition: margin-left 0.3s ease;
+}
+
+#sidebarDiv.sidebar-collapsed + #contentMain {
+    margin-left: 60px;
+}

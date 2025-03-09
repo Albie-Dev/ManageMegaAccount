@@ -1,0 +1,54 @@
+<div class="d-inline-block" @onclick="NavigateToUserDetail">
+    <div class="position-relative d-inline-block" @onmouseover="ShowTooltip" @onmouseout="HideTooltip">
+        @if (string.IsNullOrEmpty(UserInfo.Avatar))
+        {
+            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-size: 1.25rem; font-weight: bold;">
+                @GetInitial(UserInfo.FullName)
+            </div>
+        }
+        else
+        {
+            <img src="@UserInfo.Avatar" alt="Avatar" class="rounded-circle" style="width: 50px; height: 50px;" />
+        }
+        <div class="position-absolute bg-dark text-white p-2 rounded" style="top: 100%; left: 50%; transform: translateX(-50%); display: @_tooltipDisplay;">
+            <div>@UserInfo.FullName</div>
+            <div>@UserInfo.Email</div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public UserBaseInfoDto UserInfo { get; set; } = new();
+
+    private string _tooltipDisplay = "none";
+
+    private void ShowTooltip()
+    {
+        _tooltipDisplay = "block";
+    }
+
+    private void HideTooltip()
+    {
+        _tooltipDisplay = "none";
+    }
+
+    private void NavigateToUserDetail()
+    {
+        _navigationManager.NavigateTo($"/userdetail/{UserInfo.UserId}");
+    }
+
+    private string GetInitial(string fullName)
+    {
+        if (string.IsNullOrEmpty(fullName))
+            return string.Empty;
+
+        var names = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var initial = names[0][0].ToString();
+        if (names.Length > 1)
+        {
+            initial += names[^1][0];
+        }
+        return initial.ToUpper();
+    }
+}

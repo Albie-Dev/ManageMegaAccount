@@ -1,0 +1,73 @@
+﻿@inject IJSRuntime JSRuntime
+
+<div id="sidebarDiv">
+    <button id="sidebarToggleBtn" class="rounded" aria-label="Toggle Sidebar" @onclick="ToggleSidebar">
+        <i id="sidebarToggleIcon" class="bi @(isSidebarCollapsed ? "bi-chevron-right" : "bi-chevron-left")"></i>
+    </button>
+
+    <div id="sidebar" class="border border-1">
+        <div class="sidebar-header border-bottom">
+            Sidebar
+        </div>
+        <a href="#" class="sidebar-item">
+            <i class="bi bi-house-door sidebar-item-icon"></i>
+            <span class="sidebar-item-text">Home</span>
+        </a>
+        <a href="#" class="sidebar-item">
+            <i class="bi bi-file-earmark sidebar-item-icon"></i>
+            <span class="sidebar-item-text">Documents</span>
+        </a>
+        <a href="" class="sidebar-item d-flex justify-content-between" @onclick="ToggleSettings">
+            <div class="info">
+                <i class="bi bi-caret-down-fill sidebar-item-icon"></i>
+                <span class="sidebar-item-text">Settings</span>
+            </div>
+            <div class="enabledrop">
+                <i class="bi bi-caret-down-fill"></i>
+            </div>
+        </a>
+        <div class="collapse sidebar-item-children" id="submenu1">
+            <a href="#" class="sidebar-item">
+                <i class="bi bi-gear sidebar-item-icon"></i>
+                <span class="sidebar-item-text">General</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <i class="bi bi-shield-lock sidebar-item-icon"></i>
+                <span class="sidebar-item-text">Security</span>
+            </a>
+        </div>
+        <a href="#" class="sidebar-item">
+            <i class="bi bi-person sidebar-item-icon"></i>
+            <span class="sidebar-item-text">Profile</span>
+        </a>
+    </div>
+</div>
+
+@code {
+    private bool isSettingsVisible = false;
+    private bool isSidebarCollapsed { get; set; } = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await SetActiveItem();
+        }
+    }
+
+    private async Task ToggleSidebar()
+    {
+        await JSRuntime.InvokeVoidAsync("toggleSidebar");
+    }
+
+    private async Task ToggleSettings()
+    {
+        isSettingsVisible = !isSettingsVisible;
+        await JSRuntime.InvokeVoidAsync("toggleSubMenu", "submenu1");
+    }
+
+    private async Task SetActiveItem()
+    {
+        await JSRuntime.InvokeVoidAsync("setActiveSidebarItem");
+    }
+}

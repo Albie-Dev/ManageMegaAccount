@@ -1,0 +1,238 @@
+@page "/login"
+@layout AuthLayout
+@inject NavigationManager Navigation
+@inject ApiAuthenticationStateProvider _authProvider;
+<PageTitle>Đăng nhập</PageTitle>
+
+<section class="">
+    <div class="container">
+        <div class="card border-light-subtle shadow-sm" style="border-radius: 25px; background-color: rgba(255, 255, 255, 0.49);">
+            <div class="row g-0">
+                <div class="col-12 col-md-6">
+                    <img class="img-fluid rounded-start w-100 h-100 object-fit-cover" src="images/auth/Login.png"
+                        alt="BootstrapBrain Logo">
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="card-body p-3 p-md-4 p-xl-5">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-5">
+                                    <h3>Đăng nhập</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <EditForm FormName="LoginForm" Model="LoginRequestDto" OnValidSubmit="HandleLogin">
+                            <ErrorElement Errors="Errors" FormSummaryId="IdLoginFormError"/>
+                            <div class="row gy-3 gy-md-4 overflow-hidden">
+                                <div class="col-12">
+                                    <label for="email" class="form-label">Email <span
+                                            class="text-danger">*</span></label>
+                                    <InputText @bind-Value="LoginRequestDto.Email" class="form-control" name="email"
+                                        id="email" placeholder="name@example.com" />
+                                    <ErrorElement Errors="Errors" FieldName="@nameof(LoginRequestDto.Email)" />
+                                </div>
+                                <div class="col-12">
+                                    <label for="password" class="form-label">Password <span
+                                            class="text-danger">*</span></label>
+                                    <InputText @bind-Value="LoginRequestDto.Password" placeholder="Enter your password" type="password" class="form-control"
+                                        name="password" id="password" />
+                                    <ErrorElement Errors="Errors" FieldName="@nameof(LoginRequestDto.Password)" />
+
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" name="remember_me"
+                                            id="remember_me">
+                                        <label class="form-check-label text-secondary" for="remember_me">
+                                            Keep me logged in
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-grid">
+                                        <button class="btn bsb-btn-xl btn-primary" type="submit">Log in now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </EditForm>
+                        <div class="row">
+                            <div class="col-12">
+                                <hr class="mt-5 mb-4 border-secondary-subtle">
+                                <div class="d-flex gap-2 gap-md-4 flex-column flex-md-row justify-content-md-end">
+                                    <a href="/register" class="link-secondary text-decoration-none">Create new account</a>
+                                    <a href="/reset-password" class="link-secondary text-decoration-none">Forgot password</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="mt-5 mb-4">Or sign in with</p>
+                                <div class="d-flex gap-3 flex-column flex-xl-row">
+                                    <ButtonAmam7078 
+                                        Class="btn bsb-btn-xl btn-outline-primary"
+                                        Text="Microsoft"
+                                        Icon="bi bi-microsoft"
+                                        IconPosition="CIconPositionType.Right"
+                                        Id="btnGoogleLogin"
+                                        OnClick="MicrosoftGenerateLoginUrlAsyc"
+                                    />
+                                    <ButtonAmam7078 
+                                        Class="btn bsb-btn-xl btn-outline-primary"
+                                        Text="Google"
+                                        Icon="bi bi-google"
+                                        IconPosition="CIconPositionType.Right"
+                                        Id="btnGoogleLogin"
+                                        OnClick="GoogleGenerateLoginUrlAsyc"
+                                    />
+                                    <a href="#!" class="btn bsb-btn-xl btn-outline-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                            fill="currentColor" class="bi bi-twitter" viewBox="0 0 16 16">
+                                            <path
+                                                d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z" />
+                                        </svg>
+                                        <span class="ms-2 fs-6">Twitter</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<link rel="stylesheet" href="css/components/auth/login.css">
+
+
+
+@* 
+<div class="form-container">
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger">@ErrorMessage</div>
+    }
+
+    <EditForm Model="LoginRequestDto" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <InputText id="email" class="form-control" @bind-Value="LoginRequestDto.Email" />
+            <ValidationMessage For="() => LoginRequestDto.Email" />
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <InputText id="password" type="password" class="form-control" @bind-Value="LoginRequestDto.Password" />
+            <ValidationMessage For="() => LoginRequestDto.Password" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Login</button>
+    </EditForm>
+
+    <ButtonAmam7078 Text="Đăng nhập với Microsoft" Class="btn btn-outline-info" Icon="bi bi-microsoft"
+        Id="btnMicrosoftLogin" IconPosition="CIconPositionType.Left" OnClick="MicrosoftGenerateLoginUrlAsyc" />
+    <ButtonAmam7078 Text="Đăng nhập với Google" Class="btn btn-outline-info" Icon="bi bi-google" Id="btnGoogleLogin"
+        IconPosition="CIconPositionType.Left" OnClick="GoogleGenerateLoginUrlAsyc" />
+</div> *@
+
+@if (IsLoading)
+{
+    <LoadingElement />
+}
+
+@code {
+    private List<ErrorDetailDto> Errors { get; set; } = new();
+    private LoginRequestDto LoginRequestDto = new();
+    private string ErrorMessage = string.Empty;
+    private bool IsLoading { get; set; } = false;
+    private async Task MicrosoftGenerateLoginUrlAsyc()
+    {
+        IsLoading = true;
+        string state = Guid.NewGuid().ToString();
+        var urlResponse = await _httpClientHelper.PostAsync<GenerateMicrosoftLoginUrlRequestDto, RedirectResponseDto>(
+        endpoint: Path.Combine(path1: EndpointConstant.CET_Base_Url, path2:
+        EndpointConstant.CET_Auth_Microsoft_Generate_Login_Url),
+        data: new GenerateMicrosoftLoginUrlRequestDto()
+            {
+                State = state
+            },
+        requestType: CHttpClientType.Public,
+        portalType: CPortalType.CET);
+        if (urlResponse != null && urlResponse.Data != null)
+        {
+            if (urlResponse.Success)
+            {
+                await _localStorageService.SetItemAsStringAsync(key: ApiClientConstant.LocalStorage_Key_Microsoft_State,
+                data: state);
+                IsLoading = false;
+                _navigationManager.NavigateTo(uri: urlResponse.Data.Url);
+            }
+            IsLoading = false;
+        }
+        else
+        {
+            IsLoading = false;
+            _toastService.ShowError("Đã có lỗi xảy ra.");
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        ErrorMessage = string.Empty;
+        IsLoading = true;
+        var response = await _httpClientHelper.PostAsync<LoginRequestDto, LoginResponseDto>(
+        endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Auth_SystemLogin),
+        data: LoginRequestDto, requestType: CHttpClientType.Public, portalType: CPortalType.CET);
+        IsLoading = false;
+        if (response != null)
+        {
+            if (response.Success && response.Data != null)
+            {
+            await _localStorageService.SetItemAsStringAsync(key: ApiClientConstant.LocalStorage_Key, data: response.Data.ToJson());
+            _authProvider.MarkUserAsAuthenticated(tokenData: response.Data);
+            StateHasChanged();
+            _navigationManager.NavigateTo(uri: "/", forceLoad: true);
+            }
+            else if (!response.Success && !response.Errors.IsNullOrEmpty())
+            {
+                Errors = response.Errors;
+            }
+            else
+            {
+                _toastService.ShowError(message: "Đã có lôi xảy ra.");
+            }
+        }
+        else
+        {
+            _toastService.ShowError(message: "Đã có lỗi xảy ra");
+        }
+        
+    }
+
+    private async Task GoogleGenerateLoginUrlAsyc()
+    {
+        IsLoading = true;
+        string state = Guid.NewGuid().ToString();
+
+        var urlResponse = await _httpClientHelper.PostAsync<GenerateGoogleLoginUrlRequestDto, RedirectResponseDto>(
+        endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Auth_Google_Generate_Login_Url),
+        data: new GenerateGoogleLoginUrlRequestDto { State = state },
+        requestType: CHttpClientType.Public,
+        portalType: CPortalType.CET);
+
+        if (urlResponse?.Data?.Url != null)
+        {
+            await _localStorageService.SetItemAsStringAsync(ApiClientConstant.LocalStorage_Key_Google_State, state);
+            IsLoading = false;
+            _navigationManager.NavigateTo(urlResponse.Data.Url);
+        }
+        else
+        {
+            IsLoading = false;
+            _toastService.ShowError("Đã có lỗi xảy ra.");
+        }
+    }
+
+}
