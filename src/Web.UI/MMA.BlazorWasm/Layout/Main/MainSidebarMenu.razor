@@ -1,6 +1,4 @@
-﻿@inject IJSRuntime JSRuntime
-
-<div id="sidebarDiv">
+﻿<div id="sidebarDiv">
     <button id="sidebarToggleBtn" class="rounded" aria-label="Toggle Sidebar" @onclick="ToggleSidebar">
         <i id="sidebarToggleIcon" class="bi @(isSidebarCollapsed ? "bi-chevron-right" : "bi-chevron-left")"></i>
     </button>
@@ -57,17 +55,17 @@
 
     private async Task ToggleSidebar()
     {
-        await JSRuntime.InvokeVoidAsync("toggleSidebar");
+        await _jsRuntime.InvokeVoidAsync("toggleSidebar");
     }
 
     private async Task ToggleSettings()
     {
         isSettingsVisible = !isSettingsVisible;
-        await JSRuntime.InvokeVoidAsync("toggleSubMenu", "submenu1");
+        await _jsRuntime.InvokeVoidAsync("toggleSubMenu", "submenu1");
     }
 
     private async Task SetActiveItem()
     {
-        await JSRuntime.InvokeVoidAsync("setActiveSidebarItem");
+        await _jsRuntime.InvokeVoidAsync("setActiveSidebarItem");
     }
 }

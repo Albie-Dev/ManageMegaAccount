@@ -16,7 +16,26 @@
   OnClick="TestAuthAsync"/>
 
 
+<DateTimePicker
+  LabelName="Chọn ngày giờ : "
+  Type="CDateTimePickerType.DateTime"
+  ModelData="ModelData"/>
+
+
+@if (ModelData != null)
+{
+  if (ModelData.StartDateTime.HasValue)
+  {
+    <p class="badge">Test: @ModelData.StartDateTime.Value</p>
+  }
+}
+
+
   @code{
+
+    private DateTimePickerModelData ModelData { get; set; } = new DateTimePickerModelData();
+
+
     private async Task TestAuthAsync()
     {
       _toastService.ShowError("OK");
