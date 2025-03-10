@@ -22,15 +22,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors(corsPolicyBuilder =>
 {
-    corsPolicyBuilder.WithOrigins("https://localhost:2002")
+    corsPolicyBuilder.AllowAnyOrigin()
         .AllowAnyHeader()
         .AllowAnyMethod();
 });
 
 app.UseHttpsRedirection();
-app.MapControllers();
-app.MapCoreMiddleware();
 app.MapAccesTokenFromQuery();
+app.MapControllers();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapRuntimeContext();
+app.MapCoreMiddleware();
 
 
 app.Run();
