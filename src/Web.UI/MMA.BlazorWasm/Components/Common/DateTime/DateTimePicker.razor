@@ -57,6 +57,7 @@
         if (firstRender)
         {
             await _jsRuntime.InvokeVoidAsync("initDateTimePicker", Type.ToString(), DotNetObjectReference.Create(this));
+            StateHasChanged();
         }
     }
 
@@ -66,6 +67,7 @@
         ModelData.StartDate = DateOnly.Parse(start);
         ModelData.EndDate = DateOnly.Parse(end);
         await OnChange.InvokeAsync(ModelData);
+        StateHasChanged();
     }
 
     [JSInvokable]
@@ -74,6 +76,7 @@
         ModelData.StartTime = TimeOnly.ParseExact(start, "HH:mm");
         ModelData.EndTime = TimeOnly.ParseExact(end, "HH:mm");
         await OnChange.InvokeAsync(ModelData);
+        StateHasChanged();
     }
 
     [JSInvokable]
@@ -82,6 +85,7 @@
         ModelData.StartDateTime = DateTimeOffset.Parse(start);
         ModelData.EndDateTime = DateTimeOffset.Parse(end);
         await OnChange.InvokeAsync(ModelData);
+        StateHasChanged();
     }
 
     private async Task ClearDate()
@@ -90,6 +94,7 @@
         ModelData.EndDate = null;
         await OnChange.InvokeAsync(ModelData);
         await _jsRuntime.InvokeVoidAsync("clearDatePicker");
+        StateHasChanged();
     }
 
     private async Task ClearTime()
@@ -98,6 +103,7 @@
         ModelData.EndTime = null;
         await OnChange.InvokeAsync(ModelData);
         await _jsRuntime.InvokeVoidAsync("clearTimePicker");
+        StateHasChanged();
     }
 
     private async Task ClearDateTime()
@@ -106,5 +112,6 @@
         ModelData.EndDateTime = null;
         await OnChange.InvokeAsync(ModelData);
         await _jsRuntime.InvokeVoidAsync("clearDateTimePicker");
+        StateHasChanged();
     }
 }
