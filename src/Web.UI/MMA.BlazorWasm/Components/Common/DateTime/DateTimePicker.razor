@@ -2,7 +2,7 @@
 {
     case CDateTimePickerType.DateTime:
     {
-        <div class="form-group date-time-range">
+        <div class="form-group date-time-range col-@((int)Width)">
             <label class="form-label">@LabelName</label>
             <div class="input-group">
                 <input type="text" class="form-control" id="dateTimeRange">
@@ -16,7 +16,7 @@
 
     case CDateTimePickerType.DateOnly:
     {
-        <div class="form-group date-time-range">
+        <div class="form-group date-time-range col-@((int)Width)">
             <label class="form-label">@LabelName</label>
             <div class="input-group">
                 <input type="text" class="form-control" id="dateRange">
@@ -30,7 +30,7 @@
 
     case CDateTimePickerType.TimeOnly:
     {
-        <div class="form-group date-time-range">
+        <div class="form-group date-time-range col-@((int)Width)">
             <label class="form-label">@LabelName</label>
             <div class="input-group">
                 <input type="text" class="form-control" id="timeRange">
@@ -49,6 +49,7 @@
 {
     [Parameter] public string LabelName { get; set; } = string.Empty;
     [Parameter] public CDateTimePickerType Type { get; set; }
+    [Parameter] public CWidthType Width { get; set; } = CWidthType.Col12;
     [Parameter] public DateTimePickerModelData ModelData { get; set; } = new();
     [Parameter] public EventCallback<DateTimePickerModelData> OnChange { get; set; }
 

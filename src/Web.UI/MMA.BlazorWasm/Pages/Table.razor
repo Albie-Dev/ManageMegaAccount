@@ -1,0 +1,184 @@
+@page "/custom-table"
+
+@using System.Linq
+@inject IJSRuntime JS
+
+<div class="container my-4">
+    <div class="d-flex flex-row-reverse mb-3">
+        <!-- Filter Icon -->
+        <button class="btn btn-outline-primary" @onclick="ToggleFilterPanel">
+            <i class="bi bi-filter"></i> Filter
+        </button>
+        <!-- Choose Column Icon -->
+        <button class="btn btn-outline-secondary" @onclick="ToggleColumnSelector">
+            <i class="bi bi-columns"></i> Choose Columns
+        </button>
+        <!-- Search Input -->
+        <input class="form-control w-auto" type="text" placeholder="Search..." @bind="searchQuery" @oninput="Search" />
+    </div>
+
+    @if (showFilterPanel)
+    {
+        <div class="position-fixed top-0 end-0 border bg-light shadow-lg rounded"
+            style="width: 250px; height: 100vh; overflow-y: auto;">
+            <h5>Filter</h5>
+            <input class="form-control mb-2" type="text" @bind="filterValue" placeholder="Filter by something" />
+            <button class="btn btn-primary w-100" @onclick="ApplyFilter">Apply Filter</button>
+        </div>
+    }
+
+    <!-- Choose Columns Panel -->
+    @if (showColumnSelector)
+    {
+        <div class="position-fixed top-0 end-0 mt-5 me-3 p-3 border bg-light shadow-lg rounded" style="width: 250px;">
+            <h5>Choose Columns</h5>
+            @foreach (var column in columns)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" @bind="column.IsVisible" />
+                    <label class="form-check-label">
+                        @column.Name
+                    </label>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Table -->
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                @foreach (var column in columns.Where(c => c.IsVisible))
+                {
+                    <th>@column.Name</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in filteredData)
+            {
+                <tr>
+                    @foreach (var column in columns.Where(c => c.IsVisible))
+                    {
+                        <td>@row[column.FieldName]</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Paging Controls -->
+    <div class="d-flex justify-content-center mt-3">
+        <button class="btn btn-outline-secondary me-3" @onclick="PreviousPage" disabled="@(!CanNavigatePrevious)">
+            <i class="bi bi-chevron-left"></i> Previous
+        </button>
+        <span class="align-self-center">Page @currentPage of @totalPages</span>
+        <button class="btn btn-outline-secondary ms-3" @onclick="NextPage" disabled="@(!CanNavigateNext)">
+            <i class="bi bi-chevron-right"></i> Next
+        </button>
+    </div>
+</div>
+
+@code {
+    // Sample data structure
+    private List<Dictionary<string, object>> data = new List<Dictionary<string, object>>
+{
+new Dictionary<string, object> { { "Name", "John" }, { "Age", 30 }, { "Country", "USA" } },
+new Dictionary<string, object> { { "Name", "Anna" }, { "Age", 25 }, { "Country", "Canada" } },
+new Dictionary<string, object> { { "Name", "Mike" }, { "Age", 35 }, { "Country", "UK" } },
+};
+
+    // Columns configuration
+    private List<Column> columns = new List<Column>
+{
+new Column { Name = "Name", FieldName = "Name", IsVisible = true },
+new Column { Name = "Age", FieldName = "Age", IsVisible = true },
+new Column { Name = "Country", FieldName = "Country", IsVisible = true },
+};
+
+    // Filter and Search state
+    private string searchQuery;
+    private string filterValue;
+    private List<Dictionary<string, object>> filteredData;
+    private bool showFilterPanel = false;
+    private bool showColumnSelector = false;
+    private int currentPage = 1;
+    private int itemsPerPage = 2;
+    private int totalPages => (int)Math.Ceiling((double)filteredData.Count / itemsPerPage);
+
+    // When the component is initialized, filter data initially
+    protected override void OnInitialized()
+    {
+        filteredData = data;
+        base.OnInitialized();
+    }
+
+    // Method for toggling filter panel visibility
+    private void ToggleFilterPanel()
+    {
+        showFilterPanel = !showFilterPanel;
+    }
+
+    // Method for toggling column selector panel visibility
+    private void ToggleColumnSelector()
+    {
+        showColumnSelector = !showColumnSelector;
+    }
+
+    // Apply filter to the data
+    private void ApplyFilter()
+    {
+        filteredData = data.Where(d => d.Values.Any(v => v.ToString().Contains(filterValue,
+        StringComparison.OrdinalIgnoreCase))).ToList();
+        ApplyPaging();
+    }
+
+    // Method to handle search query and filter data
+    private void Search()
+    {
+        filteredData = data.Where(d => d.Values.Any(v => v.ToString().Contains(searchQuery,
+        StringComparison.OrdinalIgnoreCase))).ToList();
+        ApplyPaging();
+    }
+
+    // Apply paging after search/filter
+    private void ApplyPaging()
+    {
+        var pagedData = filteredData.Skip((currentPage - 1) * itemsPerPage).Take(itemsPerPage).ToList();
+        filteredData = pagedData;
+    }
+
+    // Method for next page
+    private void NextPage()
+    {
+        if (CanNavigateNext)
+        {
+            currentPage++;
+            ApplyPaging();
+        }
+    }
+
+    // Method for previous page
+    private void PreviousPage()
+    {
+        if (CanNavigatePrevious)
+        {
+            currentPage--;
+            ApplyPaging();
+        }
+    }
+
+    // Check if there is a previous page
+    private bool CanNavigatePrevious => currentPage > 1;
+
+    // Check if there is a next page
+    private bool CanNavigateNext => currentPage < totalPages;
+
+    // Column Model
+    private class Column
+    {
+        public string Name { get; set; } = string.Empty;
+        public string FieldName { get; set; } = string.Empty;
+        public bool IsVisible { get; set; }
+    }
+}
