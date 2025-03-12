@@ -19,13 +19,26 @@
 
     @if (showFilterPanel)
     {
-        <div class="position-fixed top-0 end-0 border bg-light shadow-lg rounded"
-            style="width: 250px; height: 100vh; overflow-y: auto;">
-            <h5>Filter</h5>
-            <input class="form-control mb-2" type="text" @bind="filterValue" placeholder="Filter by something" />
-            <button class="btn btn-primary w-100" @onclick="ApplyFilter">Apply Filter</button>
-        </div>
+        <div class="position-fixed top-0 p-2 end-0 border bg-light shadow-lg rounded"
+     style="width: 450px; height: 100vh; overflow-y: auto; display: flex; flex-direction: column;">
+    <div class="d-flex justify-content-between align-items-center">
+        <h3 class="panel-title">Panel title</h3>
+        <button class="btn-close" @onclick="CloseFilterPanel"></button>
+    </div>
+    <hr class="my-2">
+    <div class="Filter-Content flex-grow-1">
+        <!-- Nội dung của Filter-Content sẽ tự động chiếm không gian còn lại -->
+    </div>
+    <hr>
+    <div class="d-flex justify-content-end mt-auto">
+        <button class="btn btn-sm btn-outline-secondary me-2 bi bi-x" @onclick="CloseFilterPanel">Hủy bỏ</button>
+        <button class="btn btn-sm btn-outline-primary" @onclick="ApplyFilter">Apply Filter</button>
+    </div>
+</div>
+
+
     }
+
 
     <!-- Choose Columns Panel -->
     @if (showColumnSelector)
@@ -55,7 +68,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var row in filteredData)
+            @foreach (var row in filteredData ?? new List<Dictionary<string, object>>())
             {
                 <tr>
                     @foreach (var column in columns.Where(c => c.IsVisible))
@@ -97,14 +110,14 @@ new Column { Name = "Country", FieldName = "Country", IsVisible = true },
 };
 
     // Filter and Search state
-    private string searchQuery;
-    private string filterValue;
-    private List<Dictionary<string, object>> filteredData;
+    private string? searchQuery;
+    private string? filterValue;
+    private List<Dictionary<string, object>>? filteredData;
     private bool showFilterPanel = false;
     private bool showColumnSelector = false;
     private int currentPage = 1;
     private int itemsPerPage = 2;
-    private int totalPages => (int)Math.Ceiling((double)filteredData.Count / itemsPerPage);
+    private int totalPages => (int)Math.Ceiling((double)(filteredData?.Count ?? 0) / itemsPerPage);
 
     // When the component is initialized, filter data initially
     protected override void OnInitialized()
@@ -128,15 +141,20 @@ new Column { Name = "Country", FieldName = "Country", IsVisible = true },
     // Apply filter to the data
     private void ApplyFilter()
     {
-        filteredData = data.Where(d => d.Values.Any(v => v.ToString().Contains(filterValue,
+        filteredData = data.Where(d => d.Values.Any(v => v.ToString().Contains(filterValue ?? string.Empty,
         StringComparison.OrdinalIgnoreCase))).ToList();
         ApplyPaging();
+    }
+
+    private void CloseFilterPanel()
+    {
+        showFilterPanel = false;
     }
 
     // Method to handle search query and filter data
     private void Search()
     {
-        filteredData = data.Where(d => d.Values.Any(v => v.ToString().Contains(searchQuery,
+        filteredData = data.Where(d => d.Values.Any(v => v.ToString().Contains(searchQuery ?? string.Empty,
         StringComparison.OrdinalIgnoreCase))).ToList();
         ApplyPaging();
     }
@@ -144,7 +162,7 @@ new Column { Name = "Country", FieldName = "Country", IsVisible = true },
     // Apply paging after search/filter
     private void ApplyPaging()
     {
-        var pagedData = filteredData.Skip((currentPage - 1) * itemsPerPage).Take(itemsPerPage).ToList();
+        var pagedData = filteredData?.Skip((currentPage - 1) * itemsPerPage).Take(itemsPerPage).ToList();
         filteredData = pagedData;
     }
 
