@@ -1,6 +1,4 @@
-using MMA.Domain;
-
-namespace MMA.Service
+namespace MMA.Domain
 {
     public class RoleFilterProperty
     {

@@ -1,4 +1,4 @@
-<div class="dropdown-center">
+<div class="dropdown-center @(Class)">
     <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"  type="button" id="dropdownMenuButton"
         <i class="bi bi-columns"></i> @Title
     </button>
@@ -53,6 +53,7 @@
 </div>
 
 @code {
+    [Parameter] public string Class { get; set; } = string.Empty;
     [Parameter] public string Title { get; set; } = "Choose Options";
     [Parameter] public List<DropdownItemModel> Items { get; set; } = new List<DropdownItemModel>();
     [Parameter] public EventCallback<List<DropdownItemModel>> OnApply { get; set; }

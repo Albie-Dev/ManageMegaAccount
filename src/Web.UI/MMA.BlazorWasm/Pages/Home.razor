@@ -22,6 +22,11 @@
   ModelData="ModelData"/>
 
 
+<Table TData="RoleDetailResponseDto" TFilter="RoleFilterProperty"
+  ApiEndpoint="@Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Role_Paging)"
+  HttpClientType="CHttpClientType.Public"
+  PortalType="CPortalType.CET" />
+
 @if (ModelData != null)
 {
   if (ModelData.StartDateTime.HasValue)

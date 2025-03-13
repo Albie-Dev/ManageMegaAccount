@@ -5,7 +5,8 @@
     @onmouseover="OnMouseOver" 
     @onmouseout="OnMouseOut" 
     @ondblclick="OnDoubleClick" 
-    @onkeypress="OnKeyPress">
+    @onkeypress="OnKeyPress"
+    disabled="@IsDisabled">
     
     @if (IconPosition == CIconPositionType.Right)
     {
@@ -46,4 +47,7 @@
 
     [Parameter]
     public EventCallback OnKeyPress { get; set; }
+
+    [Parameter]
+    public bool IsDisabled { get; set; }
 }

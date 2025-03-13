@@ -1,19 +1,24 @@
-@page "/custom-table"
-
-@using System.Linq
-@inject IJSRuntime JS
+@typeparam TData
+@typeparam TFilter
 
 <div class="container my-4">
-    <div class="d-flex flex-row-reverse mb-3">
-        <!-- Filter Icon -->
-        <button class="btn btn-outline-primary" @onclick="ToggleFilterPanel">
-            <i class="bi bi-funnel"></i>
-        </button>
-        <!-- Choose Column Icon -->
-        <DropdownCheckboxList Title="" Items="columns" OnApply="ApplyColumnSelection"
-            OnCancel="CancelColumnSelection" />
-        <!-- Search Input -->
-        <input class="form-control w-auto" type="text" placeholder="Search..." @bind="searchQuery" @oninput="Search" />
+    <div class="d-flex justify-content-between mb-3">
+        <div class="d-flex justify-content-start">
+            <ButtonAmam7078 Class="btn btn-sm btn-outline-primary me-2" Icon="bi bi-cloud-plus"
+                IconPosition="@CIconPositionType.Left" IsDisabled="true" Text="Create" />
+            <ButtonAmam7078 Class="btn btn-sm btn-outline-success" Icon="bi bi-pencil-square"
+                IconPosition="@CIconPositionType.Left" Text="Edit" />
+        </div>
+
+        <div class="d-flex flex-row-reverse">
+            <button class="btn btn-outline-primary" @onclick="ToggleFilterPanel">
+                <i class="bi bi-funnel"></i>
+            </button>
+            <DropdownCheckboxList Title="Columns" Items="columns" OnApply="ApplyColumnSelection"
+                OnCancel="CancelColumnSelection" Class="mx-2" />
+            <input class="form-control w-auto" type="text" placeholder="Search..." @bind="searchQuery"
+                @oninput="Search" />
+        </div>
     </div>
 
     @if (showFilterPanel)
@@ -21,22 +26,22 @@
         <div class="position-fixed top-0 p-2 end-0 border bg-light shadow-lg rounded"
             style="width: 450px; height: 100vh; overflow-y: auto; display: flex; flex-direction: column;">
             <div class="d-flex justify-content-between align-items-center">
-                <h3 class="panel-title">Panel title</h3>
+                <h3 class="panel-title">Filter Panel</h3>
                 <button class="btn-close" @onclick="CloseFilterPanel"></button>
             </div>
             <hr class="my-2">
             <div class="Filter-Content flex-grow-1">
-                <DateTimePicker LabelName="Ngày tạo" ModelData="NgayTaoModelData" Type="@CDateTimePickerType.DateTime" />
+                <DateTimePicker LabelName="Ngày tạo" ModelData="NgayTaoData" Type="@CDateTimePickerType.DateTime" />
+                <!-- Add other filter controls as needed -->
             </div>
             <hr>
             <div class="d-flex justify-content-end mt-auto">
-                <button class="btn btn-sm btn-outline-secondary me-2 bi bi-x" @onclick="CloseFilterPanel">Hủy bỏ</button>
+                <button class="btn btn-sm btn-outline-secondary me-2" @onclick="CloseFilterPanel">Cancel</button>
                 <button class="btn btn-sm btn-outline-primary" @onclick="ApplyFilter">Apply Filter</button>
             </div>
         </div>
-
-
     }
+
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
@@ -47,19 +52,18 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var row in filteredData ?? new List<Dictionary<string, object>>())
+            @foreach (var row in filteredData ?? new List<TData>())
             {
                 <tr>
                     @foreach (var column in columns.Where(c => c.IsSelected))
                     {
-                        <td>@row[column.Value.ToString() ?? string.Empty]</td>
+                        <td>@row.GetType().GetProperty(column.Name)?.GetValue(row, null)</td>
                     }
                 </tr>
             }
         </tbody>
     </table>
 
-    <!-- Paging Controls -->
     <div class="d-flex justify-content-center mt-3">
         <button class="btn btn-outline-secondary me-3" @onclick="PreviousPage" disabled="@(!CanNavigatePrevious)">
             <i class="bi bi-chevron-left"></i> Previous
@@ -71,96 +75,95 @@
     </div>
 </div>
 
+@if (IsLoading)
+{
+    <LoadingElement />
+}
+
 @code {
-    // Sample data structure
-    private List<Dictionary<string, object>> data = new List<Dictionary<string, object>>
-{
-new Dictionary<string, object> { { "Name", "John" }, { "Age", 30 }, { "Country", "USA" } },
-new Dictionary<string, object> { { "Name", "Anna" }, { "Age", 25 }, { "Country", "Canada" } },
-new Dictionary<string, object> { { "Name", "Mike" }, { "Age", 35 }, { "Country", "UK" } },
-};
-
-    // Columns configuration
-    private List<DropdownItemModel> columns = new List<DropdownItemModel>
-{
-new DropdownItemModel { Name = "Name", Value = "Name", IsSelected = true },
-new DropdownItemModel { Name = "Age", Value = "Age", IsSelected = true },
-new DropdownItemModel { Name = "Country", Value = "Country", IsSelected = true },
-};
-
-    // Filter and Search state
-    private DateTimePickerModelData NgayTaoModelData { get; set; } = new();
-    private string? searchQuery;
-    private string? filterValue;
-    private List<Dictionary<string, object>>? filteredData;
-    private bool showFilterPanel = false;
-    private bool showColumnSelector = false;
+    private bool IsLoading { get; set; } = false;
+    private List<TData> filteredData { get; set; } = new();
+    private string searchQuery = string.Empty;
     private int currentPage = 1;
-    private int itemsPerPage = 2;
-    private int totalPages => (int)Math.Ceiling((double)(filteredData?.Count ?? 0) / itemsPerPage);
+    private int itemsPerPage = 10;
+    private List<DropdownItemModel> columns { get; set; } = new();
+    private int totalPages => (int)Math.Ceiling((double)(filteredData.Count) / itemsPerPage);
 
-    // When the component is initialized, filter data initially
-    protected override void OnInitialized()
+    private DateTimePickerModelData NgayTaoData { get; set; } = new();
+
+    [Parameter]
+    public string ApiEndpoint { get; set; } = string.Empty;
+
+    [Parameter]
+    public CHttpClientType HttpClientType { get; set; }
+
+    [Parameter]
+    public CPortalType PortalType { get; set; }
+
+    private TableParam<TFilter> RequestData { get; set; } = new TableParam<TFilter>();
+
+    private bool showFilterPanel = false;
+
+    protected override async Task OnInitializedAsync()
     {
-        filteredData = data;
-        base.OnInitialized();
+        await LoadData();
     }
 
-    // Method for toggling filter panel visibility
-    private void ToggleFilterPanel()
+    private async Task LoadData()
     {
-        showFilterPanel = !showFilterPanel;
-    }
-
-    // Method for toggling column selector panel visibility
-    private void ToggleColumnSelector()
-    {
-        showColumnSelector = !showColumnSelector;
-    }
-
-    // Apply filter to the data
-    private void ApplyFilter()
-    {
-        filteredData = data.Where(d => d.Values.Any(v => v.ToString().Contains(filterValue ?? string.Empty,
-        StringComparison.OrdinalIgnoreCase))).ToList();
-        ApplyPaging();
-    }
-
-    private void ApplyColumnSelection(List<DropdownItemModel> selectedColumns)
-    {
-        // Update the IsVisible property of columns based on selected columns
-        foreach (var column in columns)
+        try
         {
-            column.IsSelected = selectedColumns.Any(c => c.Name == column.Name && c.IsSelected);
+            IsLoading = true;
+            var result = await _httpClientHelper.PostAsync<TableParam<TFilter>, BasePagedResult<TData>>(
+                ApiEndpoint, RequestData, HttpClientType, PortalType);
+
+            if (result?.Data != null)
+            {
+                filteredData = result.Data.Items;
+                columns = GetColumnsFromData(filteredData);
+            }
+            else
+            {
+                _toastService.ShowError("Error fetching data.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
-    private void CancelColumnSelection()
+    private List<DropdownItemModel> GetColumnsFromData(List<TData> data)
     {
-        showColumnSelector = false;
+        if (data?.Any() == true)
+        {
+            var firstItem = data.First();
+            return firstItem.GetType().GetProperties().Select(p => new DropdownItemModel
+            {
+                Name = p.Name,
+                Value = p.Name,
+                IsSelected = true
+            }).ToList();
+        }
+        return new List<DropdownItemModel>();
     }
 
-    private void CloseFilterPanel()
-    {
-        showFilterPanel = false;
-    }
-
-    // Method to handle search query and filter data
     private void Search()
     {
-        filteredData = data.Where(d => d.Values.Any(v => v.ToString().Contains(searchQuery ?? string.Empty,
-        StringComparison.OrdinalIgnoreCase))).ToList();
+        filteredData = filteredData.Where(d => d.GetType().GetProperties()
+            .Any(p => p.GetValue(d)?.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase) == true)).ToList();
         ApplyPaging();
     }
 
-    // Apply paging after search/filter
     private void ApplyPaging()
     {
-        var pagedData = filteredData?.Skip((currentPage - 1) * itemsPerPage).Take(itemsPerPage).ToList();
-        filteredData = pagedData;
+        filteredData = filteredData.Skip((currentPage - 1) * itemsPerPage).Take(itemsPerPage).ToList();
     }
 
-    // Method for next page
     private void NextPage()
     {
         if (CanNavigateNext)
@@ -170,7 +173,6 @@ new DropdownItemModel { Name = "Country", Value = "Country", IsSelected = true }
         }
     }
 
-    // Method for previous page
     private void PreviousPage()
     {
         if (CanNavigatePrevious)
@@ -180,9 +182,35 @@ new DropdownItemModel { Name = "Country", Value = "Country", IsSelected = true }
         }
     }
 
-    // Check if there is a previous page
     private bool CanNavigatePrevious => currentPage > 1;
 
-    // Check if there is a next page
     private bool CanNavigateNext => currentPage < totalPages;
+
+    private void ToggleFilterPanel()
+    {
+        showFilterPanel = !showFilterPanel;
+    }
+
+    private void CloseFilterPanel()
+    {
+        showFilterPanel = false;
+    }
+
+    private void ApplyFilter()
+    {
+        ApplyPaging();
+    }
+
+    private void ApplyColumnSelection(List<DropdownItemModel> selectedColumns)
+    {
+        foreach (var column in columns)
+        {
+            column.IsSelected = selectedColumns.Any(c => c.Name == column.Name && c.IsSelected);
+        }
+    }
+
+    private void CancelColumnSelection()
+    {
+        showFilterPanel = false;
+    }
 }
