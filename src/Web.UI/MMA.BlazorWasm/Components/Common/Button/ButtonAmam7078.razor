@@ -12,8 +12,12 @@
     {
         <i class="@Icon"></i>
     }
-    <span class="@(IconPosition == CIconPositionType.Right ? "ms-2" : "me-2")">@Text</span>
+    <span class="@(IconPosition == CIconPositionType.Right ? "ms-2" : IconPosition == CIconPositionType.Left ? "me-2" : string.Empty)">@Text</span>
     @if (IconPosition == CIconPositionType.Left)
+    {
+        <i class="@Icon"></i>
+    }
+    @if (IconPosition == CIconPositionType.Center)
     {
         <i class="@Icon"></i>
     }

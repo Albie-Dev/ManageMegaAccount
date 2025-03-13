@@ -11,17 +11,20 @@
         </div>
 
         <div class="d-flex flex-row-reverse">
-            <button class="btn btn-outline-primary" @onclick="ToggleFilterPanel">
-                <i class="bi bi-funnel"></i>
-            </button>
-            <DropdownCheckboxList Title="Columns" Items="columns" OnApply="ApplyColumnSelection"
+            <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2"
+                OnClick="ToggleFilterPanel"
+                Icon="bi bi-funnel"
+                IconPosition="CIconPositionType.Center"
+                Text="Cancel"
+            />
+            <DropdownCheckboxList Title="Columns" Items="_columns" OnApply="ApplyColumnSelection"
                 OnCancel="CancelColumnSelection" Class="mx-2" />
-            <input class="form-control w-auto" type="text" placeholder="Search..." @bind="searchQuery"
-                @oninput="Search" />
+            <input class="form-control w-auto" type="text" placeholder="Search..." @oninput="OnSearchInputChange"
+                @onkeydown="Search" />
         </div>
     </div>
 
-    @if (showFilterPanel)
+    @if (_showFilterPanel)
     {
         <div class="position-fixed top-0 p-2 end-0 border bg-light shadow-lg rounded"
             style="width: 450px; height: 100vh; overflow-y: auto; display: flex; flex-direction: column;">
@@ -31,13 +34,53 @@
             </div>
             <hr class="my-2">
             <div class="Filter-Content flex-grow-1">
-                <DateTimePicker LabelName="Ngày tạo" ModelData="NgayTaoData" Type="@CDateTimePickerType.DateTime" />
-                <!-- Add other filter controls as needed -->
+                @if (_requestData.Filter != null)
+                {
+                    foreach (PropertyInfo property in _requestData.Filter.GetType().GetProperties())
+                    {
+                        if (property.PropertyType == typeof(string))
+                        {
+                            <div class="mb-3">
+                                <label>@property.Name</label>
+                                <input class="form-control" type="text" value="@property.GetValue(_requestData.Filter)" 
+                                    @oninput="(e) => SetPropertyValue(property, e.Value)" />
+                            </div>
+                        }
+                        else if (property.PropertyType == typeof(DateTimeOffset))
+                        {
+                            <div class="mb-3">
+                                <label>@property.Name</label>
+                                <input class="form-control" type="date" value="@((property.GetValue(_requestData.Filter) as DateTimeOffset?)?.ToString("yyyy-MM-dd") ?? "")" 
+                                    @oninput="(e) => SetPropertyValue(property, e.Value)" />
+                            </div>
+                        }
+                        else if (property.PropertyType.IsEnum)
+                        {
+                            var enumValues = Enum.GetValues(property.PropertyType).Cast<Enum>();
+                            <div class="mb-3">
+                                <label>@property.Name</label>
+                                <select class="form-control" @onchange="(e) => SetPropertyValue(property, e.Value)">
+                                    @foreach (var enumValue in enumValues)
+                                    {
+                                        <option value="@enumValue">@enumValue</option>
+                                    }
+                                </select>
+                            </div>
+                        }
+                        // Add other filter types if needed
+                    }
+                }
             </div>
             <hr>
             <div class="d-flex justify-content-end mt-auto">
-                <button class="btn btn-sm btn-outline-secondary me-2" @onclick="CloseFilterPanel">Cancel</button>
-                <button class="btn btn-sm btn-outline-primary" @onclick="ApplyFilter">Apply Filter</button>
+                <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2"
+                    OnClick="CloseFilterPanel"
+                    Text="Cancel"
+                />
+                <ButtonAmam7078 Class="btn btn-sm btn-outline-primary"
+                    OnClick="ApplyFilter"
+                    Text="Apply Filter"
+                />
             </div>
         </div>
     }
@@ -45,49 +88,79 @@
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
-                @foreach (var column in columns.Where(c => c.IsSelected))
+                @foreach (var column in _columns.Where(c => c.IsSelected))
                 {
                     <th>@column.Name</th>
                 }
             </tr>
         </thead>
         <tbody>
-            @foreach (var row in filteredData ?? new List<TData>())
+            @foreach (TData row in _filteredData ?? new List<TData>())
             {
                 <tr>
-                    @foreach (var column in columns.Where(c => c.IsSelected))
+                    @foreach (var column in _columns.Where(c => c.IsSelected))
                     {
-                        <td>@row.GetType().GetProperty(column.Name)?.GetValue(row, null)</td>
+                        <td>@row?.GetType().GetProperty(column.Name)?.GetValue(row, null)</td>
                     }
                 </tr>
             }
         </tbody>
     </table>
 
-    <div class="d-flex justify-content-center mt-3">
-        <button class="btn btn-outline-secondary me-3" @onclick="PreviousPage" disabled="@(!CanNavigatePrevious)">
-            <i class="bi bi-chevron-left"></i> Previous
-        </button>
-        <span class="align-self-center">Page @currentPage of @totalPages</span>
-        <button class="btn btn-outline-secondary ms-3" @onclick="NextPage" disabled="@(!CanNavigateNext)">
-            <i class="bi bi-chevron-right"></i> Next
-        </button>
+    <div class="d-flex justify-content-end mt-3">
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1"
+            OnClick="FirstPage"
+            IsDisabled="@(!CanNavigateFirst)"
+            Icon="bi bi-chevron-double-left"
+            IconPosition="CIconPositionType.Center"
+            />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1"
+            OnClick="PreviousPage"
+            IsDisabled="@(!CanNavigatePrevious)"
+            Icon="bi bi-chevron-left"
+            IconPosition="CIconPositionType.Center"
+            />
+
+        <div class="d-flex align-items-center">
+            @foreach (var page in GetPagingNumbers())
+            {
+                string className = "btn btn-sm btn" + (_currentPage == page ? string.Empty : "-outline") + "-primary me-1";
+                <ButtonAmam7078 Class="@className"
+                    Text="@(page.ToString())"
+                    OnClick="EventCallback.Factory.Create(this, () => GoToPage(page))"
+                    IsDisabled="@(_currentPage == page)"
+                    />
+            }
+        </div>
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1"
+            OnClick="NextPage"
+            IsDisabled="@(!CanNavigateNext)"
+            Icon="bi bi-chevron-right"
+            IconPosition="CIconPositionType.Center"
+            />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1"
+            OnClick="LastPage"
+            IsDisabled="@(!CanNavigateLast)"
+            Icon="bi bi-chevron-double-right"
+            IconPosition="CIconPositionType.Center"
+            />
     </div>
 </div>
 
-@if (IsLoading)
+@if (_isLoading)
 {
     <LoadingElement />
 }
 
 @code {
-    private bool IsLoading { get; set; } = false;
-    private List<TData> filteredData { get; set; } = new();
-    private string searchQuery = string.Empty;
-    private int currentPage = 1;
-    private int itemsPerPage = 10;
-    private List<DropdownItemModel> columns { get; set; } = new();
-    private int totalPages => (int)Math.Ceiling((double)(filteredData.Count) / itemsPerPage);
+    private bool _isLoading { get; set; } = false;
+    private List<TData> _filteredData { get; set; } = new();
+    private int _currentPage = 1;
+    private int _itemsPerPage = 1;
+    private List<DropdownItemModel> _columns { get; set; } = new();
+
+    private int _totalPages { get; set; } = 0;
+    private int _totalItems { get; set; } = 0;
 
     private DateTimePickerModelData NgayTaoData { get; set; } = new();
 
@@ -100,27 +173,43 @@
     [Parameter]
     public CPortalType PortalType { get; set; }
 
-    private TableParam<TFilter> RequestData { get; set; } = new TableParam<TFilter>();
+    private TableParam<TFilter> _requestData { get; set; } = new TableParam<TFilter>();
 
-    private bool showFilterPanel = false;
+    private bool _showFilterPanel = false;
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadData();
+        await FetchDataAsync();
     }
 
-    private async Task LoadData()
+    private void SetPropertyValue(PropertyInfo property, object? value)
+    {
+        if (_requestData.Filter != null)
+        {
+            property.SetValue(_requestData.Filter, Convert.ChangeType(value, property.PropertyType));
+        }
+    }
+
+    private async Task FetchDataAsync()
     {
         try
         {
-            IsLoading = true;
+            _isLoading = true;
+
+            _requestData.PageNumber = _currentPage;
+            _requestData.PageSize = _itemsPerPage;
+
             var result = await _httpClientHelper.PostAsync<TableParam<TFilter>, BasePagedResult<TData>>(
-                ApiEndpoint, RequestData, HttpClientType, PortalType);
+            ApiEndpoint, _requestData, HttpClientType, PortalType);
 
             if (result?.Data != null)
             {
-                filteredData = result.Data.Items;
-                columns = GetColumnsFromData(filteredData);
+                _filteredData.Clear();
+                _filteredData = new List<TData>(result.Data.Items);
+                _columns = GetColumnsFromData(_filteredData);
+
+                _totalItems = result.Data.TotalItems;
+                _totalPages = result.Data.TotalPages;
             }
             else
             {
@@ -133,67 +222,125 @@
         }
         finally
         {
-            IsLoading = false;
+            _isLoading = false;
         }
     }
 
     private List<DropdownItemModel> GetColumnsFromData(List<TData> data)
     {
-        if (data?.Any() == true)
+        if (!data.IsNullOrEmpty())
         {
-            var firstItem = data.First();
-            return firstItem.GetType().GetProperties().Select(p => new DropdownItemModel
+            TData firstItem = data.First();
+            return firstItem!.GetType().GetProperties().Select(p => new DropdownItemModel
             {
                 Name = p.Name,
                 Value = p.Name,
                 IsSelected = true
             }).ToList();
         }
-        return new List<DropdownItemModel>();
+        return new();
     }
 
-    private void Search()
+    private async Task Search(KeyboardEventArgs e)
     {
-        filteredData = filteredData.Where(d => d.GetType().GetProperties()
-            .Any(p => p.GetValue(d)?.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase) == true)).ToList();
-        ApplyPaging();
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            await FetchDataAsync();
+            StateHasChanged();
+        }
+    }
+
+    private void OnSearchInputChange(ChangeEventArgs e)
+    {
+        _requestData.SearchQuery = e.Value?.ToString() ?? string.Empty;
+        StateHasChanged();
     }
 
     private void ApplyPaging()
     {
-        filteredData = filteredData.Skip((currentPage - 1) * itemsPerPage).Take(itemsPerPage).ToList();
+        _filteredData = _filteredData.Skip((_currentPage - 1) * _itemsPerPage).Take(_itemsPerPage).ToList();
     }
 
-    private void NextPage()
+    private async Task NextPage()
     {
         if (CanNavigateNext)
         {
-            currentPage++;
-            ApplyPaging();
+            _currentPage++;
+            _requestData.PageNumber = _currentPage;
+            await FetchDataAsync();
         }
     }
 
-    private void PreviousPage()
+    private async Task PreviousPage()
     {
         if (CanNavigatePrevious)
         {
-            currentPage--;
-            ApplyPaging();
+            _currentPage--;
+            _requestData.PageNumber = _currentPage;
+            await FetchDataAsync();
         }
     }
 
-    private bool CanNavigatePrevious => currentPage > 1;
+    private async Task FirstPage()
+    {
+        if (CanNavigateFirst)
+        {
+            _currentPage = 1;
+            _requestData.PageNumber = _currentPage;
+            await FetchDataAsync();
+        }
+    }
 
-    private bool CanNavigateNext => currentPage < totalPages;
+    private async Task LastPage()
+    {
+        if (CanNavigateLast)
+        {
+            _currentPage = _totalPages;
+            _requestData.PageNumber = _currentPage;
+            await FetchDataAsync();
+        }
+    }
+
+    private async Task GoToPage(int page)
+    {
+        if (page > 0 && page <= _totalPages)
+        {
+            _currentPage = page;
+            _requestData.PageNumber = _currentPage;
+            await FetchDataAsync();
+        }
+    }
+
+    private bool CanNavigatePrevious => _currentPage > 1;
+
+    private bool CanNavigateNext => _currentPage < _totalPages;
+
+    private bool CanNavigateFirst => _currentPage > 1;
+
+    private bool CanNavigateLast => _currentPage < _totalPages;
+
+    private List<int> GetPagingNumbers()
+    {
+        var start = Math.Max(1, _currentPage - 2);
+        var end = Math.Min(_totalPages, _currentPage + 2);
+        var pages = new List<int>();
+
+        for (int i = start; i <= end; i++)
+        {
+            pages.Add(i);
+        }
+
+        return pages;
+    }
 
     private void ToggleFilterPanel()
     {
-        showFilterPanel = !showFilterPanel;
+        _showFilterPanel = !_showFilterPanel;
     }
 
     private void CloseFilterPanel()
     {
-        showFilterPanel = false;
+        _showFilterPanel = false;
     }
 
     private void ApplyFilter()
@@ -203,7 +350,7 @@
 
     private void ApplyColumnSelection(List<DropdownItemModel> selectedColumns)
     {
-        foreach (var column in columns)
+        foreach (var column in _columns)
         {
             column.IsSelected = selectedColumns.Any(c => c.Name == column.Name && c.IsSelected);
         }
@@ -211,6 +358,6 @@
 
     private void CancelColumnSelection()
     {
-        showFilterPanel = false;
+        _showFilterPanel = false;
     }
 }
