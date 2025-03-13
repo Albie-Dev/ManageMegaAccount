@@ -11,14 +11,10 @@
         </div>
 
         <div class="d-flex flex-row-reverse">
-            <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2"
-                OnClick="ToggleFilterPanel"
-                Icon="bi bi-funnel"
-                IconPosition="CIconPositionType.Center"
-                Text="Cancel"
-            />
-            <DropdownCheckboxList Title="Columns" Items="_columns" OnApply="ApplyColumnSelection"
-                OnCancel="CancelColumnSelection" Class="mx-2" />
+            <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2" OnClick="ToggleFilterPanel"
+                Icon="bi bi-funnel" IconPosition="CIconPositionType.Center" />
+            <DropdownCheckboxList Items="_columns" OnApply="ApplyColumnSelection" OnCancel="CancelColumnSelection"
+                Class="mx-2" />
             <input class="form-control w-auto" type="text" placeholder="Search..." @oninput="OnSearchInputChange"
                 @onkeydown="Search" />
         </div>
@@ -30,57 +26,74 @@
             style="width: 450px; height: 100vh; overflow-y: auto; display: flex; flex-direction: column;">
             <div class="d-flex justify-content-between align-items-center">
                 <h3 class="panel-title">Filter Panel</h3>
-                <button class="btn-close" @onclick="CloseFilterPanel"></button>
+                <ButtonAmam7078 Class="btn-close" OnClick="CloseFilterPanel"></ButtonAmam7078>
             </div>
             <hr class="my-2">
             <div class="Filter-Content flex-grow-1">
-                @if (_requestData.Filter != null)
+                @foreach (PropertyInfo property in typeof(TFilter).GetProperties() ?? new PropertyInfo[0])
                 {
-                    foreach (PropertyInfo property in _requestData.Filter.GetType().GetProperties())
+                    var propertyType = property.PropertyType;
+
+                    // Kiểm tra Nullable<T> cho kiểu DateTimeOffset hoặc Enum
+                    if (Nullable.GetUnderlyingType(propertyType) == typeof(DateTimeOffset) || propertyType ==
+                    typeof(DateTimeOffset))
                     {
-                        if (property.PropertyType == typeof(string))
-                        {
-                            <div class="mb-3">
-                                <label>@property.Name</label>
-                                <input class="form-control" type="text" value="@property.GetValue(_requestData.Filter)" 
-                                    @oninput="(e) => SetPropertyValue(property, e.Value)" />
-                            </div>
+                        <div class="mb-3">
+                            <label>@property.Name</label>
+                            <input class="form-control" type="date"
+                                value="@( _requestData.Filter != null ? 
+                                (property.GetValue(_requestData.Filter) as DateTimeOffset?)?.ToString("yyyy-MM-dd") ?? string.Empty : string.Empty )"
+                    @oninput="(e) => SetPropertyValue(property, DateTimeOffset.Parse(e.Value?.ToString() ?? string.Empty))" />
+            </div>
                         }
-                        else if (property.PropertyType == typeof(DateTimeOffset))
-                        {
-                            <div class="mb-3">
-                                <label>@property.Name</label>
-                                <input class="form-control" type="date" value="@((property.GetValue(_requestData.Filter) as DateTimeOffset?)?.ToString("yyyy-MM-dd") ?? "")" 
-                                    @oninput="(e) => SetPropertyValue(property, e.Value)" />
-                            </div>
-                        }
-                        else if (property.PropertyType.IsEnum)
-                        {
-                            var enumValues = Enum.GetValues(property.PropertyType).Cast<Enum>();
-                            <div class="mb-3">
-                                <label>@property.Name</label>
-                                <select class="form-control" @onchange="(e) => SetPropertyValue(property, e.Value)">
-                                    @foreach (var enumValue in enumValues)
-                                    {
-                                        <option value="@enumValue">@enumValue</option>
-                                    }
-                                </select>
-                            </div>
-                        }
-                        // Add other filter types if needed
+                    else if (propertyType.IsEnum || Nullable.GetUnderlyingType(propertyType)?.IsEnum == true)
+                    {
+                        var enumValues = Enum.GetValues(propertyType).Cast<Enum>();
+                        <div class="mb-3">
+                            <label>@property.Name</label>
+                            <select class="form-control"
+                                @onchange="(e) => SetPropertyValue(property, Enum.Parse(propertyType, e.Value?.ToString() ?? string.Empty))">
+                                @foreach (var enumValue in enumValues)
+                                {
+                                    <option value="@enumValue">@enumValue</option>
+                                }
+                            </select>
+                        </div>
                     }
+                    else if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>) &&
+                    propertyType.GetGenericArguments()[0].IsEnum)
+                    {
+                        // Handling List<Enum> type
+                        var enumType = propertyType.GetGenericArguments()[0]; // The Enum type inside the List<>
+                        var enumValues = Enum.GetValues(enumType).Cast<Enum>();
+
+                        <div class="mb-3">
+                            <label>@property.Name</label>
+                            <select class="form-control" multiple @onchange="(e) => SetPropertyValue(property, e.Value)">
+                                @foreach (var enumValue in enumValues)
+                                {
+                                    <option value="@enumValue">@enumValue</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    else if (propertyType == typeof(string))
+                    {
+                        <div class="mb-3">
+                            <label>@property.Name</label>
+                            <input class="form-control" type="text" value="@property.GetValue(_requestData.Filter)?.ToString()"
+                                @oninput="(e) => SetPropertyValue(property, e.Value?.ToString())" />
+                        </div>
+                    }
+                    // Add other filter types if needed
                 }
+
+
             </div>
             <hr>
             <div class="d-flex justify-content-end mt-auto">
-                <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2"
-                    OnClick="CloseFilterPanel"
-                    Text="Cancel"
-                />
-                <ButtonAmam7078 Class="btn btn-sm btn-outline-primary"
-                    OnClick="ApplyFilter"
-                    Text="Apply Filter"
-                />
+                <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2" OnClick="CloseFilterPanel" Text="Cancel" />
+                <ButtonAmam7078 Class="btn btn-sm btn-outline-primary" OnClick="ApplyFilter" Text="Apply Filter" />
             </div>
         </div>
     }
@@ -108,42 +121,26 @@
     </table>
 
     <div class="d-flex justify-content-end mt-3">
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1"
-            OnClick="FirstPage"
-            IsDisabled="@(!CanNavigateFirst)"
-            Icon="bi bi-chevron-double-left"
-            IconPosition="CIconPositionType.Center"
-            />
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1"
-            OnClick="PreviousPage"
-            IsDisabled="@(!CanNavigatePrevious)"
-            Icon="bi bi-chevron-left"
-            IconPosition="CIconPositionType.Center"
-            />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="FirstPage"
+            IsDisabled="@(!CanNavigateFirst)" Icon="bi bi-chevron-double-left"
+            IconPosition="CIconPositionType.Center" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="PreviousPage"
+            IsDisabled="@(!CanNavigatePrevious)" Icon="bi bi-chevron-left" IconPosition="CIconPositionType.Center" />
 
         <div class="d-flex align-items-center">
             @foreach (var page in GetPagingNumbers())
             {
                 string className = "btn btn-sm btn" + (_currentPage == page ? string.Empty : "-outline") + "-primary me-1";
-                <ButtonAmam7078 Class="@className"
-                    Text="@(page.ToString())"
+                <ButtonAmam7078 Class="@className" Text="@(page.ToString())"
                     OnClick="EventCallback.Factory.Create(this, () => GoToPage(page))"
-                    IsDisabled="@(_currentPage == page)"
-                    />
+                    IsDisabled="@(_currentPage == page)" />
             }
         </div>
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1"
-            OnClick="NextPage"
-            IsDisabled="@(!CanNavigateNext)"
-            Icon="bi bi-chevron-right"
-            IconPosition="CIconPositionType.Center"
-            />
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1"
-            OnClick="LastPage"
-            IsDisabled="@(!CanNavigateLast)"
-            Icon="bi bi-chevron-double-right"
-            IconPosition="CIconPositionType.Center"
-            />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="NextPage"
+            IsDisabled="@(!CanNavigateNext)" Icon="bi bi-chevron-right" IconPosition="CIconPositionType.Center" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="LastPage"
+            IsDisabled="@(!CanNavigateLast)" Icon="bi bi-chevron-double-right"
+            IconPosition="CIconPositionType.Center" />
     </div>
 </div>
 
