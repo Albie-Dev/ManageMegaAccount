@@ -105,13 +105,118 @@ namespace MMA.Service
                     errors: modelState.GetErrors());
             }
 
-            IQueryable<ActorEntity> collection = _dbRepository.Queryable<ActorEntity>();
+            IQueryable<ActorEntity> collection = _dbRepository.Queryable<ActorEntity>()
+                .OrderByDescending(s => s.CreatedDate);
 
+            if (!string.IsNullOrEmpty(tableParam.SearchQuery))
+            {
+                var searchQuery = tableParam.SearchQuery.ToLower();
+                collection = collection.Where(ac => ac.Name.ToLower().Contains(searchQuery));
+            }
+
+            if (tableParam.Filter != null)
+            {
+                if (tableParam.Filter.FromBust.HasValue)
+                {
+                    collection = collection.Where(ac => ac.Bust >= tableParam.Filter.FromBust.Value);
+                }
+                if (tableParam.Filter.ToBust.HasValue)
+                {
+                    collection = collection.Where(ac => ac.Bust <= tableParam.Filter.ToBust.Value);
+                }
+                if (tableParam.Filter.FromWaist.HasValue)
+                {
+                    collection = collection.Where(ac => ac.Waist >= tableParam.Filter.FromWaist.Value);
+                }
+                if (tableParam.Filter.ToWaist.HasValue)
+                {
+                    collection = collection.Where(ac => ac.Waist <= tableParam.Filter.ToWaist.Value);
+                }
+                if (tableParam.Filter.FromHips.HasValue)
+                {
+                    collection = collection.Where(ac => ac.Hips >= tableParam.Filter.FromHips.Value);
+                }
+                if (tableParam.Filter.ToHips.HasValue)
+                {
+                    collection = collection.Where(ac => ac.Hips <= tableParam.Filter.ToHips.Value);
+                }
+                if (tableParam.Filter.FromHeight.HasValue)
+                {
+                    collection = collection.Where(ac => ac.Height >= tableParam.Filter.FromHeight.Value);
+                }
+                if (tableParam.Filter.ToHeight.HasValue)
+                {
+                    collection = collection.Where(ac => ac.Height <= tableParam.Filter.ToHeight.Value);
+                }
+
+                if (!tableParam.Filter.CupSizeTypes.IsNullOrEmpty())
+                {
+                    collection = collection.Where(ac => tableParam.Filter.CupSizeTypes.Contains(ac.CupSizeType));
+                }
+
+                if (tableParam.Filter.FromDebutDate.HasValue)
+                {
+                    collection = collection.Where(ac => ac.DebutDate >= tableParam.Filter.FromDebutDate.Value);
+                }
+                if (tableParam.Filter.ToDebutDate.HasValue)
+                {
+                    collection = collection.Where(ac => ac.DebutDate <= tableParam.Filter.ToDebutDate.Value);
+                }
+
+                if (tableParam.Filter.Status.HasValue)
+                {
+                    collection = collection.Where(ac => ac.Status == tableParam.Filter.Status.Value);
+                }
+
+                if (tableParam.Filter.CreatedFromDate.HasValue)
+                {
+                    collection = collection.Where(ac => ac.CreatedDate >= tableParam.Filter.CreatedFromDate.Value);
+                }
+                if (tableParam.Filter.CreatedToDate.HasValue)
+                {
+                    collection = collection.Where(ac => ac.CreatedDate <= tableParam.Filter.CreatedToDate.Value);
+                }
+            }
+
+            if (tableParam.Sorter != null)
+            {
+                var sorter = tableParam.Sorter;
+                if (!string.IsNullOrEmpty(sorter.KeyName))
+                {
+                    collection = sorter.KeyName switch
+                    {
+                        nameof(ActorEntity.Name) => sorter.IsASC
+                            ? collection.OrderBy(ac => ac.Name)
+                            : collection.OrderByDescending(ac => ac.Name),
+                        nameof(ActorEntity.Bust) => sorter.IsASC
+                            ? collection.OrderBy(ac => ac.Bust)
+                            : collection.OrderByDescending(ac => ac.Bust),
+                        nameof(ActorEntity.Waist) => sorter.IsASC
+                            ? collection.OrderBy(ac => ac.Waist)
+                            : collection.OrderByDescending(ac => ac.Waist),
+                        nameof(ActorEntity.Hips) => sorter.IsASC
+                            ? collection.OrderBy(ac => ac.Hips)
+                            : collection.OrderByDescending(ac => ac.Hips),
+                        nameof(ActorEntity.Height) => sorter.IsASC
+                            ? collection.OrderBy(ac => ac.Height)
+                            : collection.OrderByDescending(ac => ac.Height),
+                        nameof(ActorEntity.DebutDate) => sorter.IsASC
+                            ? collection.OrderBy(ac => ac.DebutDate)
+                            : collection.OrderByDescending(ac => ac.DebutDate),
+                        nameof(ActorEntity.CreatedDate) => sorter.IsASC
+                            ? collection.OrderBy(ac => ac.CreatedDate)
+                            : collection.OrderByDescending(ac => ac.CreatedDate),
+                        _ => collection
+                    };
+                }
+            }
 
             var pagedList = await PagedList<ActorEntity>.ToPagedListAsync(
                 source: collection, pageNumber: tableParam.PageNumber,
                 pageSize: tableParam.PageSize);
+
             var selected = pagedList.Select(ac => ac.Adapt<ActorDetailDto>()).ToList();
+
             var data = new BasePagedResult<ActorDetailDto>()
             {
                 CurrentPage = pagedList.CurrentPage,
@@ -121,9 +226,10 @@ namespace MMA.Service
                 TotalPages = pagedList.TotalPages,
                 Filter = tableParam.Filter,
             };
-            return data;
 
+            return data;
         }
+
 
         public async Task<NotificationResponse> AddActorAsync(CreateActorRequestDto actorRequestDto)
         {
@@ -139,7 +245,7 @@ namespace MMA.Service
             {
                 await _dbRepository.AddAsync<ActorEntity>(entity: actorEntity, clearTracker: true, needSaveChange: true);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 modelState.AddError(field: string.Empty, errorMessage: ex.Message, errorScope: CErrorScope.FormSummary);
                 throw new MMAException(statusCode: StatusCodes.Status500InternalServerError,
@@ -174,11 +280,12 @@ namespace MMA.Service
             if (!actorRequestDto.SubActorIds.IsNullOrEmpty())
             {
                 var oldSubIds = oldProperty.Select(s => s.SubActorId).ToList();
-                foreach(var subActorInfo in actorRequestDto.ActorInfos)
+                foreach (var subActorInfo in actorRequestDto.ActorInfos)
                 {
                     if (oldSubIds.Contains(subActorInfo.SubActorId))
                     {
-                        oldProperty.ForEach(s => {
+                        oldProperty.ForEach(s =>
+                        {
                             if (s.SubActorId == subActorInfo.SubActorId)
                             {
                                 s = subActorInfo;
@@ -193,15 +300,15 @@ namespace MMA.Service
             }
             else
             {
-               actorEntity = actorRequestDto.Adapt<ActorEntity>();
-               actorEntity.ActorInfos = oldProperty;
+                actorEntity = actorRequestDto.Adapt<ActorEntity>();
+                actorEntity.ActorInfos = oldProperty;
             }
             actorEntity.ActorInfoProperties = oldProperty.ToJson();
             try
             {
                 await _dbRepository.UpdateAsync<ActorEntity>(entity: actorEntity, needSaveChange: true, clearTracker: true);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 modelState.AddError(field: string.Empty, errorMessage: ex.Message, errorScope: CErrorScope.FormSummary);
                 throw new MMAException(statusCode: StatusCodes.Status500InternalServerError, errors: modelState.GetErrors());
@@ -241,7 +348,8 @@ namespace MMA.Service
                 removeIds.RemoveAll(s => deactiveIds.Contains(s));
                 oldProperty.RemoveAll(s => removeIds.Contains(s.SubActorId));
                 _logger.LogInformation(message: $"ActorService DeleteActorAsync: Remove SubActorIds: {string.Join(",", values: removeIds)}");
-                oldProperty.ForEach(s => {
+                oldProperty.ForEach(s =>
+                {
                     if (deactiveIds.Contains(s.SubActorId))
                     {
                         s.Status = CMasterStatus.Deactive;
