@@ -13,15 +13,23 @@ namespace MMA.Service
             _dbContext = dbContext;
         }
 
-        private static void InitBaseEntity<T>(T entity) where T : class
+        private static void InitBaseEntity<T>(T entity, bool isAdd = false) where T : class
         {
             if (entity is BaseEntity bEntity)
             {
                 bEntity.CreatedBy = bEntity.ModifiedBy = RuntimeContext.CurrentUser?.Id ?? CoreConstant.SYSTEM_ACCOUNT_ID;
+                if (isAdd)
+                {
+                    bEntity.Status = CMasterStatus.Active;
+                }
             }
             else if (entity is BaseInfo baseInfo)
             {
                 baseInfo.CreatedBy = baseInfo.ModifiedBy = RuntimeContext.CurrentUser?.Id ?? CoreConstant.SYSTEM_ACCOUNT_ID;
+                if (isAdd)
+                {
+                    baseInfo.Status = CMasterStatus.Active;
+                }
             }
         }
 
@@ -68,7 +76,7 @@ namespace MMA.Service
         public async Task<T> AddAsync<T>(T entity, bool clearTracker = false,
             CancellationToken cancellationToken = default, bool needSaveChange = true) where T : class
         {
-            InitBaseEntity(entity: entity);
+            InitBaseEntity(entity: entity, isAdd: true);
             var entry = await _dbContext.Set<T>().AddAsync(entity: entity, cancellationToken: cancellationToken);
             if (needSaveChange)
             {

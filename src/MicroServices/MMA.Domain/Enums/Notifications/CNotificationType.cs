@@ -7,5 +7,8 @@ namespace MMA.Domain
         Phone = 2,
         Auth = 3,
         Register = 4,
+        Add = 5,
+        Update = 6,
+        Delete = 7
     }
 }

@@ -23,8 +23,16 @@ namespace MMA.Service
         #region chat
         #endregion chat
 
+        #region Movie
+        public DbSet<MovieEntity> Movies { get; set; } = null!;
+        public DbSet<ActorEntity> Actors { get; set; } = null!;
+        #endregion Movie
+
         public DbSet<LinkHelperEntity> Links { get; set; } = null!;
         #endregion dbset
+
+
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

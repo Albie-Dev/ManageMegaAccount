@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MMA.Service.Migrations
 {
     [DbContext(typeof(MMADbContext))]
-    [Migration("20250309122525_KhoiTaoDatabase")]
+    [Migration("20250314143412_KhoiTaoDatabase")]
     partial class KhoiTaoDatabase
     {
         /// <inheritdoc />
@@ -20,10 +20,78 @@ namespace MMA.Service.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.13")
+                .HasAnnotation("ProductVersion", "8.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("MMA.Service.ActorEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ActorInfoProperties")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Avatar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Bust")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("NguoiTaoId");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("NgayTao");
+
+                    b.Property<int>("CupSize")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("DebutDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Height")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Hips")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("NguoiSuaDoiId");
+
+                    b.Property<DateTimeOffset>("ModifiedDate")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("NgaySuaDoi");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Waist")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Actors");
+                });
 
             modelBuilder.Entity("MMA.Service.LinkHelperEntity", b =>
                 {
@@ -114,6 +182,77 @@ namespace MMA.Service.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cloud_MegaAccount");
+                });
+
+            modelBuilder.Entity("MMA.Service.MovieEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ActorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ActorIds")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AgencyType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("NguoiTaoId");
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("NgayTao");
+
+                    b.Property<string>("GenreTypes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("NguoiSuaDoiId");
+
+                    b.Property<DateTimeOffset>("ModifiedDate")
+                        .HasColumnType("datetimeoffset")
+                        .HasColumnName("NgaySuaDoi");
+
+                    b.Property<int>("MovieType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RegionType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("ReleaseDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("StoragePRoperties")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("WorkType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Movies");
                 });
 
             modelBuilder.Entity("MMA.Service.RoleEntity", b =>

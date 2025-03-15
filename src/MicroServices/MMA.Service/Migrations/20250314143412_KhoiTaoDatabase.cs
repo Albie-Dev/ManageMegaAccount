@@ -12,6 +12,33 @@ namespace MMA.Service.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Actors",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateOfBirth = table.Column<DateOnly>(type: "date", nullable: false),
+                    Avatar = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DebutDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Bust = table.Column<int>(type: "int", nullable: false),
+                    Waist = table.Column<int>(type: "int", nullable: false),
+                    Hips = table.Column<int>(type: "int", nullable: false),
+                    CupSize = table.Column<int>(type: "int", nullable: false),
+                    Height = table.Column<int>(type: "int", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ActorInfoProperties = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NguoiTaoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NguoiSuaDoiId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NgayTao = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    NgaySuaDoi = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Actors", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CET_NguoiDung",
                 columns: table => new
                 {
@@ -95,6 +122,33 @@ namespace MMA.Service.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Links", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Movies",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    WorkType = table.Column<int>(type: "int", nullable: false),
+                    MovieType = table.Column<int>(type: "int", nullable: false),
+                    RegionType = table.Column<int>(type: "int", nullable: false),
+                    AgencyType = table.Column<int>(type: "int", nullable: false),
+                    GenreTypes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReleaseDate = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    StoragePRoperties = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ActorIds = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ActorId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    NguoiTaoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NguoiSuaDoiId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    NgayTao = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    NgaySuaDoi = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Movies", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -203,6 +257,9 @@ namespace MMA.Service.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Actors");
+
+            migrationBuilder.DropTable(
                 name: "CET_TokenNguoiDung");
 
             migrationBuilder.DropTable(
@@ -213,6 +270,9 @@ namespace MMA.Service.Migrations
 
             migrationBuilder.DropTable(
                 name: "Links");
+
+            migrationBuilder.DropTable(
+                name: "Movies");
 
             migrationBuilder.DropTable(
                 name: "CET_NguoiDung");

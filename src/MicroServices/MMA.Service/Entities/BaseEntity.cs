@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MMA.Domain;
 
 namespace MMA.Service
 {
@@ -11,6 +12,7 @@ namespace MMA.Service
 
     public abstract class BaseInfo
     {
+        public CMasterStatus Status { get; set; }
         [Column(name: "NguoiTaoId")]
         public Guid CreatedBy { get; set; }
         [Column(name: "NguoiSuaDoiId")]

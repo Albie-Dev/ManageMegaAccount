@@ -16,7 +16,7 @@ namespace MMA.Domain
     {
         None = 0,
         Active = 1,
-        Deleted = 2
+        Deleted = 2,
     }
 
     public enum CNodeType

@@ -51,6 +51,9 @@ namespace MMA.Service
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IMegaApiClient, MegaApiClient>();
             services.AddScoped<IMegaService, MegaService>();
+
+
+            services.AddScoped<IActorService, ActorService>();
             return services;
         }
 

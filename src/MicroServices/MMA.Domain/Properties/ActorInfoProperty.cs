@@ -1,10 +1,8 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using MMA.Domain;
-
-namespace MMA.Service
+namespace MMA.Domain
 {
-    public class ActorEntity : BaseEntity
+    public class ActorInfoProperty
     {
+        public Guid SubActorId { get; private set; } = Guid.NewGuid();
         public string Name { get; set; } = string.Empty;
         public DateOnly DateOfBirth { get; set; }
         public string Avatar { get; set; } = string.Empty;
@@ -16,12 +14,6 @@ namespace MMA.Service
         public int Height { get; set; }
         public string Address { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public string ActorInfoProperties { get; set; } = string.Empty;
-        [NotMapped]
-        public List<ActorInfoProperty> ActorInfos
-        {
-            get => ActorInfoProperties.FromJson<List<ActorInfoProperty>>();
-            set => ActorInfoProperties = ActorInfos.ToJson();
-        }
+        public CMasterStatus Status { get; set; }
     }
 }
