@@ -20,5 +20,18 @@ namespace MMA.Domain
         #endregion mega account
 
         public const string CET_Role_Paging = "roles/paging";
+
+
+
+        #region movie
+        public const string Movie_Base_Url = "api/v1/movie";
+        public const string Movie_Actor_Paging = "actor/paging";
+        public const string Movie_Actor_AllInfo = "actor/allinfos";
+        public const string Movie_Actor_Detail = "actor/detail";
+        public const string Movie_Actor_Create = "actor/delete";
+        public const string Movie_Actor_Update = "actor/update";
+        public const string Movie_Actor_Delete = "actor/delete";
+
+        #endregion movie
     }
 }

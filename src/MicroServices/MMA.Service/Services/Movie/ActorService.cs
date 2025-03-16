@@ -163,6 +163,15 @@ namespace MMA.Service
                     collection = collection.Where(ac => ac.DebutDate <= tableParam.Filter.ToDebutDate.Value);
                 }
 
+                if (tableParam.Filter.FromDateOfBirth.HasValue)
+                {
+                    collection = collection.Where(ac => ac.DateOfBirth >= tableParam.Filter.FromDateOfBirth.Value);
+                }
+                if (tableParam.Filter.ToDateOfBirth.HasValue)
+                {
+                    collection = collection.Where(ac => ac.DebutDate <= tableParam.Filter.ToDateOfBirth.Value);
+                }
+
                 if (tableParam.Filter.Status.HasValue)
                 {
                     collection = collection.Where(ac => ac.Status == tableParam.Filter.Status.Value);

@@ -304,7 +304,7 @@ namespace MMA.Service
                     FullName = name,
                     EmailConfirm = true,
                 };
-                await _repository.AddAsync<UserEntity>(entity: userEntity, needSaveChange: true);
+                await _repository.AddAsync<UserEntity>(entity: userEntity, needSaveChange: true, clearTracker: true);
                 await AddDefaultRoleAsync(userEntity: userEntity);
             }
             else

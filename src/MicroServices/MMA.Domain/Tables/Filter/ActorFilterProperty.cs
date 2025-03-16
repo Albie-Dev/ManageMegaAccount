@@ -13,6 +13,8 @@ namespace MMA.Domain
         public List<CCupSizeType> CupSizeTypes { get; set; } = new();
         public DateOnly? FromDebutDate { get; set; }
         public DateOnly? ToDebutDate { get; set; }
+        public DateOnly? FromDateOfBirth { get; set; }
+        public DateOnly? ToDateOfBirth { get; set; }
         public CMasterStatus? Status { get; set; }
     }
 }

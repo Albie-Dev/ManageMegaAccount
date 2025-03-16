@@ -5,7 +5,7 @@ using MMA.Service;
 namespace MMA.API
 {
     [ApiController]
-    [Route("/api/v1/actor")]
+    [Route("/api/v1/movie")]
     public class ActorController : ControllerBase
     {
         private readonly IActorService _actorService;
@@ -15,7 +15,7 @@ namespace MMA.API
             _actorService = actorService;
         }
 
-        [HttpPost("paging")]
+        [HttpPost("actor/paging")]
         public async Task<IActionResult> GetActorWithPaging(TableParam<ActorFilterProperty> tableParam)
         {
             var result = await _actorService.GetActorWithPagingAsync(tableParam: tableParam);
@@ -26,7 +26,7 @@ namespace MMA.API
             });
         }
 
-        [HttpPost("allactorinfos")]
+        [HttpPost("actor/allinfos")]
         public async Task<IActionResult> GetActorBaseInfo(TableParam<BaseFilter> tableParam)
         {
             var result = await _actorService.GetActorBaseInfoASync(tableParam: tableParam);
@@ -37,7 +37,7 @@ namespace MMA.API
             });
         }
 
-        [HttpGet("detail/{actorId:guid}")]
+        [HttpGet("actor/detail/{actorId:guid}")]
         public async Task<IActionResult> GetActorDetail(Guid actorId)
         {
             var result = await _actorService.GetActorDetaiAsync(actorId: actorId);
@@ -48,7 +48,7 @@ namespace MMA.API
             }); 
         }
 
-        [HttpPost("create")]
+        [HttpPost("actor/create")]
         public async Task<IActionResult> AddActor(CreateActorRequestDto actorRequestDto)
         {
             var result = await _actorService.AddActorAsync(actorRequestDto: actorRequestDto);
@@ -59,7 +59,7 @@ namespace MMA.API
             });
         }
 
-        [HttpPut("update")]
+        [HttpPut("actor/update")]
         public async Task<IActionResult> UpdateActor(UpdateActorRequestDto actorRequestDto)
         {
             var result = await _actorService.UpdateActorAsync(actorRequestDto: actorRequestDto);
@@ -70,7 +70,7 @@ namespace MMA.API
             });
         }
 
-        [HttpPost("delete")]
+        [HttpPost("actor/delete")]
         public async Task<IActionResult> DeleteActor(DeleteActorRequestDto actorRequestDto)
         {
             var result = await _actorService.DeleteActorAsync(actorRequestDto: actorRequestDto);
