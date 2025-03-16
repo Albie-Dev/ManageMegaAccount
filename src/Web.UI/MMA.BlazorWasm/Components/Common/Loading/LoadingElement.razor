@@ -1,33 +1,22 @@
 @inject IJSRuntime JSRuntime
 
-<div class="modal fade show" id="loadingModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
-    style="display: block;">
-    <div class="modal-dialog" id="loadingModalDialog">
-        <div class="modal-content" id="loadingModalContent">
-            <div class="modal-body text-center" id="loadingModalBody">
-                <div class="d-flex justify-content-center">
-                    <div class="">
-                        <div class="spinner">
-                            <i class="bi bi-heart text-danger"></i>
-                            <i class="bi bi-star text-warning"></i>
-                            <i class="bi-flower3 text-success"></i>
-                            <i class="bi bi-emoji-smile-upside-down text-info"></i>
-                        </div>
-                    </div>
-                    <div class="">
-                        <div class="spinner-grow fs-1 text-light" role="status"></div>
-                        <div class="spinner-grow text-secondary" role="status"></div>
-                        <div class="spinner-grow text-dark" role="status"></div>
-                        <div class="spinner-grow text-warning" role="status"></div>
-                        <div class="spinner-grow text-danger" role="status"></div>
-                        <div class="spinner-grow text-info" role="status"></div>
-                        <div class="spinner-grow text-success" role="status"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div id="loading">
+    <div class='waitContent'>
+        <div class='ball'></div>
+        <div class='ball'></div>
+        <div class='ball'></div>
+        <div class='ball'></div>
+        <div class='ball'></div>
+        <div class='ball'></div>
+        <div class='ball'></div>
+        <div class='ball'></div>
     </div>
+    @* <div class="d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="ms-3">Loading</div>
+    </div> *@
 </div>
-
 @code {
 }

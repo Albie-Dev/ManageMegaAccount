@@ -1,0 +1,12 @@
+@page "/movie/actor"
+
+<PageTitle>Diễn viên</PageTitle>
+
+<Table TData="ActorDetailDto" 
+    TFilter="ActorFilterProperty"
+    HttpClientType="CHttpClientType.Public"
+    PortalType="CPortalType.CET"
+    ApiEndpoint="@Path.Combine(EndpointConstant.Movie_Base_Url, EndpointConstant.Movie_Actor_Paging)" />
+
+
+

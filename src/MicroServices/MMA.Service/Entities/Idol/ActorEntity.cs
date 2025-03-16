@@ -14,6 +14,7 @@ namespace MMA.Service
         public int Hips { get; set; }
         public CCupSizeType CupSizeType { get; set; }
         public int Height { get; set; }
+        public CRegionType RegionType { get; set; }
         public string Address { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string ActorInfoProperties { get; set; } = string.Empty;

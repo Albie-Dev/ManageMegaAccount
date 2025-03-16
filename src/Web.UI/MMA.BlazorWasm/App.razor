@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+﻿@using MMA.BlazorWasm.Layout.Base
+@using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager Navigation
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
@@ -19,7 +20,7 @@
         </Found>
         <NotFound>
             <PageTitle>Không tìm thấy</PageTitle>
-            <LayoutView Layout="@typeof(AuthLayout)">
+            <LayoutView Layout="@typeof(BaseLayout)">
                 <NotFoundPage />
             </LayoutView>
         </NotFound>
