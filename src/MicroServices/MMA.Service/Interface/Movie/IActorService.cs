@@ -6,6 +6,7 @@ namespace MMA.Service
     {
         Task<BasePagedResult<UserBaseInfoDto>> GetActorBaseInfoASync(TableParam<BaseFilter> tableParam);
         Task<BasePagedResult<ActorDetailDto>> GetActorWithPagingAsync(TableParam<ActorFilterProperty> tableParam);
+        Task<ActorDetailDto> GetActorDetaiAsync(Guid actorId);
         Task<NotificationResponse> AddActorAsync(CreateActorRequestDto actorRequestDto);
         Task<NotificationResponse> UpdateActorAsync(UpdateActorRequestDto actorRequestDto);
         Task<NotificationResponse> DeleteActorAsync(DeleteActorRequestDto actorRequestDto);

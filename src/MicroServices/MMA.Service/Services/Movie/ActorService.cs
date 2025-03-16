@@ -230,6 +230,25 @@ namespace MMA.Service
             return data;
         }
 
+        public async Task<ActorDetailDto> GetActorDetaiAsync(Guid actorId)
+        {
+            var modelState = actorId.ModelStateValidate(); 
+            if (!modelState.GetErrors().IsNullOrEmpty())
+            {
+                throw new MMAException(statusCode: StatusCodes.Status400BadRequest,
+                    errors: modelState.GetErrors());
+            }
+            var actorEntity = await _dbRepository.FindAsync<ActorEntity>(predicate: s => s.Id == actorId);
+            if (actorEntity == null)
+            {
+                modelState.AddError(field: string.Empty, errorMessage: $"Không tìm thấy actor.", errorScope: CErrorScope.PageSumarry);
+                throw new MMAException(statusCode: StatusCodes.Status404NotFound,
+                    errors: modelState.GetErrors());
+            }
+            var result = actorEntity.Adapt<ActorDetailDto>();
+            result.ActorId = actorEntity.Id;
+            return result;
+        }
 
         public async Task<NotificationResponse> AddActorAsync(CreateActorRequestDto actorRequestDto)
         {
