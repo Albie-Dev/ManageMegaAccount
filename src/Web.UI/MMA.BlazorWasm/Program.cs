@@ -10,7 +10,6 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // Đăng ký LocalStorage
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddBlazoredToast();
 

@@ -1,5 +1,5 @@
 @typeparam TData
-@typeparam TFilter
+@typeparam TFilter where TFilter : new()
 
 <div class="container my-4">
     <div class="d-flex justify-content-between mb-3">
@@ -22,80 +22,10 @@
 
     @if (_showFilterPanel)
     {
-        <div class="filter-table position-fixed top-0 p-2 end-0 border bg-light shadow-lg rounded"
-            style="width: 450px; height: 100vh; overflow-y: auto; display: flex; flex-direction: column;">
-            <div class="d-flex justify-content-between align-items-center">
-                <h3 class="panel-title">Filter Panel</h3>
-                <ButtonAmam7078 Class="btn-close" OnClick="CloseFilterPanel"></ButtonAmam7078>
-            </div>
-            <hr class="my-2">
-            <div class="Filter-Content flex-grow-1">
-                @foreach (PropertyInfo property in typeof(TFilter).GetProperties() ?? new PropertyInfo[0])
-                {
-                    var propertyType = property.PropertyType;
-
-                    // Kiểm tra Nullable<T> cho kiểu DateTimeOffset hoặc Enum
-                    if (Nullable.GetUnderlyingType(propertyType) == typeof(DateTimeOffset) || propertyType ==
-                    typeof(DateTimeOffset))
-                    {
-                        <div class="mb-3">
-                            <label>@property.Name</label>
-                            <input class="form-control" type="date"
-                                value="@( _requestData.Filter != null ? 
-                                (property.GetValue(_requestData.Filter) as DateTimeOffset?)?.ToString("yyyy-MM-dd") ?? string.Empty : string.Empty )"
-                                @oninput="(e) => SetPropertyValue(property, DateTimeOffset.Parse(e.Value?.ToString() ?? string.Empty))" />
-                        </div>
-                    }
-                    else if (propertyType.IsEnum || Nullable.GetUnderlyingType(propertyType)?.IsEnum == true)
-                    {
-                        var enumValues = Enum.GetValues(propertyType).Cast<Enum>();
-                        <div class="mb-3">
-                            <label>@property.Name</label>
-                            <select class="form-control"
-                                @onchange="(e) => SetPropertyValue(property, Enum.Parse(propertyType, e.Value?.ToString() ?? string.Empty))">
-                                @foreach (var enumValue in enumValues)
-                                {
-                                    <option value="@enumValue">@enumValue</option>
-                                }
-                            </select>
-                        </div>
-                    }
-                    else if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>) &&
-                    propertyType.GetGenericArguments()[0].IsEnum)
-                    {
-                        // Handling List<Enum> type
-                        var enumType = propertyType.GetGenericArguments()[0]; // The Enum type inside the List<>
-                        var enumValues = Enum.GetValues(enumType).Cast<Enum>();
-
-                        <div class="mb-3">
-                            <label>@property.Name</label>
-                            <select class="form-control" multiple @onchange="(e) => SetPropertyValue(property, e.Value)">
-                                @foreach (var enumValue in enumValues)
-                                {
-                                    <option value="@enumValue">@enumValue</option>
-                                }
-                            </select>
-                        </div>
-                    }
-                    else if (propertyType == typeof(string))
-                    {
-                        <div class="mb-3">
-                            <label>@property.Name</label>
-                            <input class="form-control" type="text" value="@property.GetValue(_requestData.Filter)?.ToString()"
-                                @oninput="(e) => SetPropertyValue(property, e.Value?.ToString())" />
-                        </div>
-                    }
-                    // Add other filter types if needed
-                }
-
-
-            </div>
-            <hr>
-            <div class="d-flex justify-content-end mt-auto">
-                <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2" OnClick="CloseFilterPanel" Text="Cancel" />
-                <ButtonAmam7078 Class="btn btn-sm btn-outline-primary" OnClick="ApplyFilter" Text="Apply Filter" />
-            </div>
-        </div>
+        <Filter FilterLabelName="Test"
+            FilterProperty="FilterProperty"
+            ShowPanelFilterChanged="OnShowPanelFilterChanged"
+            ApplyFilterChanged="EventCallback.Factory.Create<TFilter>(this, OnApplyFilterChanged)"/>
     }
 
     <table class="table table-striped table-bordered">
@@ -169,22 +99,15 @@
 
     [Parameter]
     public CPortalType PortalType { get; set; }
+    private TFilter FilterProperty = new TFilter();
 
     private TableParam<TFilter> _requestData { get; set; } = new TableParam<TFilter>();
 
-    private bool _showFilterPanel = false;
+    private bool _showFilterPanel { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
         await FetchDataAsync();
-    }
-
-    private void SetPropertyValue(PropertyInfo property, object? value)
-    {
-        if (_requestData.Filter != null)
-        {
-            property.SetValue(_requestData.Filter, Convert.ChangeType(value, property.PropertyType));
-        }
     }
 
     private async Task FetchDataAsync()
@@ -330,19 +253,23 @@
         return pages;
     }
 
+    private async Task OnApplyFilterChanged(TFilter newFilter)
+    {
+        FilterProperty = newFilter;
+        _requestData.Filter = FilterProperty;
+
+        await FetchDataAsync();
+    }
+
     private void ToggleFilterPanel()
     {
         _showFilterPanel = !_showFilterPanel;
     }
 
-    private void CloseFilterPanel()
+    private void OnShowPanelFilterChanged(bool isVisible)
     {
-        _showFilterPanel = false;
-    }
-
-    private void ApplyFilter()
-    {
-        ApplyPaging();
+        _showFilterPanel = isVisible;
+        StateHasChanged();
     }
 
     private void ApplyColumnSelection(List<DropdownItemModel> selectedColumns)
