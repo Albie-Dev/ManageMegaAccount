@@ -212,6 +212,15 @@ namespace MMA.Service
                         nameof(ActorEntity.DebutDate) => sorter.IsASC
                             ? collection.OrderBy(ac => ac.DebutDate)
                             : collection.OrderByDescending(ac => ac.DebutDate),
+                        nameof(ActorEntity.CupSizeType) => sorter.IsASC
+                            ? collection.OrderBy(ac => ac.CupSizeType)
+                            : collection.OrderByDescending(ac => ac.CupSizeType),
+                        nameof(ActorEntity.RegionType) => sorter.IsASC
+                            ? collection.OrderBy(ac => ac.RegionType)
+                            : collection.OrderByDescending(ac => ac.RegionType),
+                        nameof(ActorEntity.DateOfBirth) => sorter.IsASC
+                            ? collection.OrderBy(ac => ac.DateOfBirth)
+                            : collection.OrderByDescending(ac => ac.DateOfBirth),
                         nameof(ActorEntity.CreatedDate) => sorter.IsASC
                             ? collection.OrderBy(ac => ac.CreatedDate)
                             : collection.OrderByDescending(ac => ac.CreatedDate),
@@ -224,7 +233,11 @@ namespace MMA.Service
                 source: collection, pageNumber: tableParam.PageNumber,
                 pageSize: tableParam.PageSize);
 
-            var selected = pagedList.Select(ac => ac.Adapt<ActorDetailDto>()).ToList();
+            var selected = pagedList.Select(ac => {
+                var result = ac.Adapt<ActorDetailDto>();
+                result.ActorId = ac.Id;
+                return result;
+            }).ToList();
 
             var data = new BasePagedResult<ActorDetailDto>()
             {

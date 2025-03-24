@@ -128,4 +128,194 @@
   <data name="Filter_RoleFilterProperty_ToDate_Entry" xml:space="preserve">
     <value>Ngày tạo đến</value>
   </data>
+
+  <data name="Column_Title_Actor_Name_Entry" xml:space="preserve">
+    <value>Tên</value>
+  </data>
+  <data name="Column_Title_Actor_DateOfBirth_Entry" xml:space="preserve">
+    <value>Ngày sinh</value>
+  </data>
+  <data name="Column_Title_Actor_DebutDate_Entry" xml:space="preserve">
+    <value>Ngày ra mắt</value>
+  </data>
+  <data name="Column_Title_Actor_Avatar_Entry" xml:space="preserve">
+    <value>Ảnh đại diện</value>
+  </data>
+  <data name="Column_Title_Actor_Height_Entry" xml:space="preserve">
+    <value>Chiều cao</value>
+  </data>
+  <data name="Column_Title_Actor_Waist_Entry" xml:space="preserve">
+    <value>Vòng eo</value>
+  </data>
+  <data name="Column_Title_Actor_Burt_Entry" xml:space="preserve">
+    <value>Vòng ngực</value>
+  </data>
+  <data name="Column_Title_Actor_Hips_Entry" xml:space="preserve">
+    <value>Vòng mông</value>
+  </data>
+  <data name="Column_Title_Actor_CupsizeType_Entry" xml:space="preserve">
+    <value>Kích cỡ cúp</value>
+  </data>
+  <data name="Column_Title_Actor_RegionType_Entry" xml:space="preserve">
+    <value>Quốc tịch</value>
+  </data>
+  <data name="Column_Title_Actor_Status_Entry" xml:space="preserve">
+    <value>Trạng thái</value>
+  </data>
+
+
+  <data name="Enum_CRegionType_None_Entry" xml:space="preserve">
+    <value>Không có</value>
+  </data>
+
+  <!-- Asia -->
+  <data name="Enum_CRegionType_Afghanistan_Entry" xml:space="preserve">
+      <value>Afghanistan</value>
+  </data>
+  <data name="Enum_CRegionType_Armenia_Entry" xml:space="preserve">
+      <value>Armenia</value>
+  </data>
+  <data name="Enum_CRegionType_Azerbaijan_Entry" xml:space="preserve">
+      <value>Azerbaijan</value>
+  </data>
+  <data name="Enum_CRegionType_Bahrain_Entry" xml:space="preserve">
+      <value>Bahrain</value>
+  </data>
+  <data name="Enum_CRegionType_Bangladesh_Entry" xml:space="preserve">
+      <value>Bangladesh</value>
+  </data>
+  <data name="Enum_CRegionType_Bhutan_Entry" xml:space="preserve">
+      <value>Bhutan</value>
+  </data>
+  <data name="Enum_CRegionType_Brunei_Entry" xml:space="preserve">
+      <value>Brunei</value>
+  </data>
+  <data name="Enum_CRegionType_Cambodia_Entry" xml:space="preserve">
+      <value>Campuchia</value>
+  </data>
+  <data name="Enum_CRegionType_China_Entry" xml:space="preserve">
+      <value>Trung Quốc</value>
+  </data>
+  <data name="Enum_CRegionType_Cyprus_Entry" xml:space="preserve">
+      <value>Síp</value>
+  </data>
+  <data name="Enum_CRegionType_Georgia_Entry" xml:space="preserve">
+      <value>Gruzia</value>
+  </data>
+  <data name="Enum_CRegionType_India_Entry" xml:space="preserve">
+      <value>Ấn Độ</value>
+  </data>
+  <data name="Enum_CRegionType_Indonesia_Entry" xml:space="preserve">
+      <value>Indonesia</value>
+  </data>
+  <data name="Enum_CRegionType_Iran_Entry" xml:space="preserve">
+      <value>Iran</value>
+  </data>
+  <data name="Enum_CRegionType_Iraq_Entry" xml:space="preserve">
+      <value>Iraq</value>
+  </data>
+  <data name="Enum_CRegionType_Israel_Entry" xml:space="preserve">
+      <value>Israel</value>
+  </data>
+  <data name="Enum_CRegionType_Japan_Entry" xml:space="preserve">
+      <value>Nhật Bản</value>
+  </data>
+  <data name="Enum_CRegionType_Jordan_Entry" xml:space="preserve">
+      <value>Jordan</value>
+  </data>
+  <data name="Enum_CRegionType_Kazakhstan_Entry" xml:space="preserve">
+      <value>Kazakhstan</value>
+  </data>
+  <data name="Enum_CRegionType_Kuwait_Entry" xml:space="preserve">
+      <value>Kuwait</value>
+  </data>
+  <data name="Enum_CRegionType_Kyrgyzstan_Entry" xml:space="preserve">
+      <value>Kirghizia</value>
+  </data>
+  <data name="Enum_CRegionType_Laos_Entry" xml:space="preserve">
+      <value>Lào</value>
+  </data>
+  <data name="Enum_CRegionType_Lebanon_Entry" xml:space="preserve">
+      <value>Lebanon</value>
+  </data>
+  <data name="Enum_CRegionType_Malaysia_Entry" xml:space="preserve">
+      <value>Malaysia</value>
+  </data>
+  <data name="Enum_CRegionType_Maldives_Entry" xml:space="preserve">
+      <value>Maldives</value>
+  </data>
+  <data name="Enum_CRegionType_Mongolia_Entry" xml:space="preserve">
+      <value>Mông Cổ</value>
+  </data>
+  <data name="Enum_CRegionType_Myanmar_Entry" xml:space="preserve">
+      <value>Myanmar</value>
+  </data>
+  <data name="Enum_CRegionType_Nepal_Entry" xml:space="preserve">
+      <value>Nepal</value>
+  </data>
+  <data name="Enum_CRegionType_NorthKorea_Entry" xml:space="preserve">
+      <value>Triều Tiên</value>
+  </data>
+  <data name="Enum_CRegionType_Oman_Entry" xml:space="preserve">
+      <value>Oman</value>
+  </data>
+  <data name="Enum_CRegionType_Pakistan_Entry" xml:space="preserve">
+      <value>Pakistan</value>
+  </data>
+  <data name="Enum_CRegionType_Palestine_Entry" xml:space="preserve">
+      <value>Palestine</value>
+  </data>
+  <data name="Enum_CRegionType_Philippines_Entry" xml:space="preserve">
+      <value>Philippines</value>
+  </data>
+  <data name="Enum_CRegionType_Qatar_Entry" xml:space="preserve">
+      <value>Qatar</value>
+  </data>
+  <data name="Enum_CRegionType_SaudiArabia_Entry" xml:space="preserve">
+      <value>Ả Rập Xê Út</value>
+  </data>
+  <data name="Enum_CRegionType_Singapore_Entry" xml:space="preserve">
+      <value>Singapore</value>
+  </data>
+  <data name="Enum_CRegionType_SouthKorea_Entry" xml:space="preserve">
+      <value>Hàn Quốc</value>
+  </data>
+  <data name="Enum_CRegionType_SriLanka_Entry" xml:space="preserve">
+      <value>Sri Lanka</value>
+  </data>
+  <data name="Enum_CRegionType_Syria_Entry" xml:space="preserve">
+      <value>Syria</value>
+  </data>
+  <data name="Enum_CRegionType_Taiwan_Entry" xml:space="preserve">
+      <value>Đài Loan</value>
+  </data>
+  <data name="Enum_CRegionType_Tajikistan_Entry" xml:space="preserve">
+      <value>Tajikistan</value>
+  </data>
+  <data name="Enum_CRegionType_Thailand_Entry" xml:space="preserve">
+      <value>Thái Lan</value>
+  </data>
+  <data name="Enum_CRegionType_TimorLeste_Entry" xml:space="preserve">
+      <value>Đông Timor</value>
+  </data>
+  <data name="Enum_CRegionType_Turkey_Entry" xml:space="preserve">
+      <value>Thổ Nhĩ Kỳ</value>
+  </data>
+  <data name="Enum_CRegionType_Turkmenistan_Entry" xml:space="preserve">
+      <value>Turkmenistan</value>
+  </data>
+  <data name="Enum_CRegionType_UnitedArabEmirates_Entry" xml:space="preserve">
+      <value>UAE</value>
+  </data>
+  <data name="Enum_CRegionType_Uzbekistan_Entry" xml:space="preserve">
+      <value>Uzbekistan</value>
+  </data>
+  <data name="Enum_CRegionType_Vietnam_Entry" xml:space="preserve">
+      <value>Việt Nam</value>
+  </data>
+  <data name="Enum_CRegionType_Yemen_Entry" xml:space="preserve">
+      <value>Yemen</value>
+  </data>
+
+
 </root>
