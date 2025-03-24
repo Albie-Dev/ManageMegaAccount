@@ -2,11 +2,328 @@
 
 <PageTitle>Diễn viên</PageTitle>
 
-<Table TData="ActorDetailDto" 
-    TFilter="ActorFilterProperty"
-    HttpClientType="CHttpClientType.Public"
-    PortalType="CPortalType.CET"
-    ApiEndpoint="@Path.Combine(EndpointConstant.Movie_Base_Url, EndpointConstant.Movie_Actor_Paging)" />
+@if (_isLoading)
+{
+    <LoadingElement />
+}
+
+<div class="d-flex justify-content-between">
+    <div class="div">
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi bi-cloud-plus text-primary"
+            IconPosition="CIconPositionType.Right" Text="Create" OnClick="CreateActorAsync" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi bi-pencil-square text-success"
+            IconPosition="CIconPositionType.Right" Text="Update" OnClick="UpdateActorAsync" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi-toggle-off text-primary"
+            IconPosition="CIconPositionType.Right" Text="Deactive" OnClick="DeactiveActorsAsync" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi bi-cloud-upload text-success"
+            IconPosition="CIconPositionType.Right" Text="Import" OnClick="DeactiveActorsAsync" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi bi-file-earmark-excel text-success"
+            IconPosition="CIconPositionType.Right" Text="Export" OnClick="DeactiveActorsAsync" />
+    </div>
+    
+    <div class="d-flex flex-row-reverse">
+        @* <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2" OnClick="ToggleFilterPanel"
+            Icon="bi bi-funnel" IconPosition="CIconPositionType.Center" /> *@
+        <DropdownCheckboxList Items="_displayColumns" OnApply="ApplyColumnSelection" OnCancel="CancelColumnSelection"
+            Class="mx-2" />
+        @* <input class="form-control w-auto" type="text" placeholder="Search..." @oninput="OnSearchInputChange"
+            @onkeydown="Search" /> *@
+    </div>
+</div>
+
+<div class="table mt-2">
+    <table class="table table-bordered text-center">
+        <thead>
+            <tr>
+                <th>#</th>
+                @foreach(var col in _displayColumns.Where(c => c.IsSelected))
+                {
+                    <th>
+                        <div class="d-flex">
+                            @if (col.IsSort)
+                            {
+                                <span style="cursor: pointer;" @onclick="EventCallback.Factory.Create(this, () => SortAsync(propertyName: col.Value.ToString() ?? string.Empty))">@col.Name</span>
+                                @if (_requestDto.Sorter != null && _requestDto.Sorter.KeyName == col.Value.ToString())
+                                {
+                                    if (_requestDto.Sorter.IsASC)
+                                    {
+                                        <i class="bi bi-sort-alpha-down"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-sort-alpha-up-alt"></i>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <span>@col.Name</span>
+                            }
+                        </div>
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody id="sortableTable">
+            @if (!_result.Items.IsNullOrEmpty())
+            {
+                foreach(var item in _result.Items)
+                {
+                    <tr>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="@item.ActorId" id="flexCheckDefault">
+                            </div>
+                        </td>
+                        <td>@item.Name</td>
+                        <td>@item.DateOfBirth</td>
+                        <td>@item.DebutDate</td>
+                        <td>
+                            <img src="@item.Avatar" alt="Avatar" class="img-thumbnail" style="width: 50px; height: 50px;">
+                        </td>
+                        <td>@item.Height</td>
+                        <td>@item.Waist</td>
+                        <td>@item.Burt</td>
+                        <td>@item.Hips</td>
+                        <td>@item.CupsizeType</td>
+                        <td>@item.RegionType</td>
+                        <td>@item.Status</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr class="text-secondary">
+                    <td colspan="@InitDisplayColumns().Count">No items available to show.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        _displayColumns = InitDisplayColumns();
+        await FetchDataAsync();
+    }
 
+    private async Task FetchDataAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            var apiResponse = await _httpClientHelper.PostAsync<TableParam<ActorFilterProperty>, BasePagedResult<ActorDetailDto>>(
+            endpoint: Path.Combine(EndpointConstant.Movie_Base_Url, EndpointConstant.Movie_Actor_Paging),
+            data: _requestDto, requestType: CHttpClientType.Private, portalType: CPortalType.CET);
+            if (apiResponse == null)
+            {
+                _toastService.ShowError($"An error occured while call to get actors.");
+            }
+            else if (!apiResponse.Errors.IsNullOrEmpty())
+            {
+                _errors = apiResponse.Errors;
+            }
+            else if (apiResponse.Data == null)
+            {
+                _toastService.ShowError(message: "không thể get data");
+            }
+            else
+            {
+                _result = apiResponse.Data;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            _toastService.ShowError(ex.Message);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+
+    #region variable
+    private bool _isLoading { get; set; } = false;
+    private bool _isShowColumns { get; set; } = false;
+    private TableParam<ActorFilterProperty> _requestDto { get; set; } = new TableParam<ActorFilterProperty>();
+    private List<ErrorDetailDto> _errors { get; set; } = new List<ErrorDetailDto>();
+    private BasePagedResult<ActorDetailDto> _result = new BasePagedResult<ActorDetailDto>();
+    private List<DropdownItemModel> _displayColumns { get; set; } = new List<DropdownItemModel>();
+    #endregion variable
+
+
+    #region event
+
+    #region filter
+
+    #endregion filter
+
+    #region sorter
+    private async Task SortAsync(string propertyName)
+    {
+        if (_requestDto.Sorter == null)
+        {
+            _requestDto.Sorter = new();
+        }
+        _requestDto.Sorter.KeyName = propertyName;
+        _requestDto.Sorter.IsASC = !_requestDto.Sorter.IsASC;
+        await FetchDataAsync();
+    }
+    #endregion sorter
+
+    #region paging
+
+    #endregion paging
+
+    #region search
+
+    #endregion search
+
+    #region column selection
+    private void ApplyColumnSelection(List<DropdownItemModel> selectedColumns)
+    {
+        foreach (var column in _displayColumns)
+        {
+            column.IsSelected = selectedColumns.Any(c => c.Name == column.Name && c.IsSelected);
+        }
+
+    }
+    private void CancelColumnSelection()
+    {
+        _isShowColumns = false;
+    }
+    #endregion column selection
+
+    #endregion event
+
+
+    #region action
+
+    #region view detail
+
+    #endregion view detail
+
+    #region update
+    private async Task UpdateActorAsync()
+    {
+        await Task.CompletedTask;
+    }
+    #endregion update
+
+    #region delete
+
+    #endregion delete
+
+    #region deactive
+    private async Task DeactiveActorsAsync()
+    {
+        await Task.CompletedTask;
+    }
+    #endregion deactive
+
+    #region create
+    private async Task CreateActorAsync()
+    {
+        await Task.CompletedTask;
+    }
+    #endregion create
+
+    #region import
+
+    #endregion import
+
+    #region export
+
+    #endregion export
+
+    #endregion action
+    private List<DropdownItemModel> InitDisplayColumns()
+    {
+        return new List<DropdownItemModel>()
+        {
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Name)}_Entry"),
+                Value = nameof(ActorDetailDto.Name),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.DateOfBirth)}_Entry"),
+                Value = nameof(ActorDetailDto.DateOfBirth),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.DebutDate)}_Entry"),
+                Value = nameof(ActorDetailDto.DebutDate),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Avatar)}_Entry"),
+                Value = nameof(ActorDetailDto.Avatar),
+                IsSelected = true,
+                IsSort = false
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Height)}_Entry"),
+                Value = nameof(ActorDetailDto.Height),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Waist)}_Entry"),
+                Value = nameof(ActorDetailDto.Waist),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Burt)}_Entry"),
+                Value = nameof(ActorDetailDto.Burt),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Hips)}_Entry"),
+                Value = nameof(ActorDetailDto.Hips),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.CupsizeType)}_Entry"),
+                Value = nameof(ActorDetailDto.CupsizeType),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.RegionType)}_Entry"),
+                Value = nameof(ActorDetailDto.RegionType),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Status)}_Entry"),
+                Value = nameof(ActorDetailDto.Status),
+                IsSelected = true,
+                IsSort = true
+            }
+        };
+    }
+}

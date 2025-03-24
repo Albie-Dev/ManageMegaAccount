@@ -1,0 +1,70 @@
+@page "/movie/actor/create"
+<PageTitle>Tạo mới diễn viên</PageTitle>
+
+
+<div class="div">
+    <h3 class="form-title mb-5">Tạo mới diễn viên</h3>
+
+    <div class="form-create-actor">
+        @* <form action="" method="post"> *@
+            <div class="mb-3">
+                <label for="datalistInput" class="form-label">Chọn quốc gia</label>
+                <input class="form-control" list="@($"{_idDataList}_RegionType")" id="datalistInput" 
+                    placeholder="" 
+                    @bind-value="_requestDto.RegionType"
+                    >
+                <datalist id="@($"{_idDataList}_RegionType")">
+                    @foreach (var item in DropdownItems)
+                    {
+                        <option data-value="@item.Value">@item.Name</option>
+                    }
+                </datalist>
+            </div>
+            
+            <ButtonAmam7078 Class="btn btn-sm btn-outline-primary"
+                Icon="bi bi-submit"
+                IconPosition="CIconPositionType.Right"
+                OnClick="CreateActorAsync"
+                Text="Xác nhận"/>
+
+
+            <select class="selectpicker" data-live-search="true">
+                <option data-tokens="ketchup mustard">Hot Dog, Fries and a Soda</option>
+                <option data-tokens="mustard">Burger, Shake and a Smile</option>
+                <option data-tokens="frosting">Sugar, Spice and all things nice</option>
+            </select>
+
+        @* </form> *@
+    </div>
+</div>
+
+
+
+
+@if (_isLoading)
+{
+    <LoadingElement />
+}
+
+
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        CRegionType regionType = CRegionType.None;
+        DropdownItems = regionType.ToDropdownModels();
+        await Task.CompletedTask;
+    }
+
+    private Guid _idDataList = Guid.NewGuid();
+    private bool _isLoading { get; set; } = false;
+    List<DropdownItemModel> DropdownItems { get; set; } = new List<DropdownItemModel>();
+    public object? RegionTyeObj { get; set; }
+    private CreateActorRequestDto _requestDto { get; set; } = new CreateActorRequestDto();
+
+    private void CreateActorAsync()
+    {
+        _toastService.ShowInfo(_requestDto.RegionType.ToDescription());
+    }
+}

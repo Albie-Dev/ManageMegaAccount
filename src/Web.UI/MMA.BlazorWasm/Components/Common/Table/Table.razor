@@ -22,10 +22,8 @@
 
     @if (_showFilterPanel)
     {
-        <Filter FilterLabelName="Test"
-            FilterProperty="FilterProperty"
-            ShowPanelFilterChanged="OnShowPanelFilterChanged"
-            ApplyFilterChanged="EventCallback.Factory.Create<TFilter>(this, OnApplyFilterChanged)"/>
+        <Filter FilterLabelName="Test" FilterProperty="FilterProperty" ShowPanelFilterChanged="OnShowPanelFilterChanged"
+            ApplyFilterChanged="EventCallback.Factory.Create<TFilter>(this, OnApplyFilterChanged)" />
     }
 
     <table class="table table-striped table-bordered">
@@ -33,7 +31,22 @@
             <tr>
                 @foreach (var column in _columns.Where(c => c.IsSelected))
                 {
-                    <th>@column.Name</th>
+                    <th @onclick="() => SortByColumn(column.Name)">
+                        @column.Name
+                        @if (_sortColumn == column.Name)
+                        {
+                            <i class="bi" style="font-size: 12px;">
+                                @if (_sortAscending)
+                                {
+                                    <text>▲</text>
+                                }
+                                else
+                                {
+                                    <text>▼</text>
+                                }
+                            </i>
+                        }
+                    </th>
                 }
             </tr>
         </thead>
@@ -105,6 +118,9 @@
 
     private bool _showFilterPanel { get; set; } = false;
 
+    private string _sortColumn = string.Empty;
+    private bool _sortAscending = true;
+
     protected override async Task OnInitializedAsync()
     {
         await FetchDataAsync();
@@ -118,6 +134,11 @@
 
             _requestData.PageNumber = _currentPage;
             _requestData.PageSize = _itemsPerPage;
+            _requestData.Sorter = new SorterParam
+            {
+                KeyName = _sortColumn,
+                IsASC = _sortAscending
+            };
 
             var result = await _httpClientHelper.PostAsync<TableParam<TFilter>, BasePagedResult<TData>>(
             ApiEndpoint, _requestData, HttpClientType, PortalType);
@@ -283,5 +304,26 @@
     private void CancelColumnSelection()
     {
         _showFilterPanel = false;
+    }
+
+    private async Task SortByColumn(string columnName)
+    {
+        if (_sortColumn == columnName)
+        {
+            _sortAscending = !_sortAscending;
+        }
+        else
+        {
+            _sortColumn = columnName;
+            _sortAscending = true;
+        }
+
+        _requestData.Sorter = new SorterParam
+        {
+            KeyName = _sortColumn,
+            IsASC = _sortAscending
+        };
+
+        await FetchDataAsync();
     }
 }
