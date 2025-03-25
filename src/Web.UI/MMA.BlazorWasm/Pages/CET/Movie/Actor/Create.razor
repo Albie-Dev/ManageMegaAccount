@@ -1,70 +1,189 @@
 @page "/movie/actor/create"
 <PageTitle>Tạo mới diễn viên</PageTitle>
 
-
-<div class="div">
-    <h3 class="form-title mb-5">Tạo mới diễn viên</h3>
+<div class="container my-5">
+    <h3 class="form-title text-center mb-5">Tạo mới diễn viên</h3>
 
     <div class="form-create-actor">
-        @* <form action="" method="post"> *@
-            <div class="mb-3">
-                <label for="datalistInput" class="form-label">Chọn quốc gia</label>
-                <input class="form-control" list="@($"{_idDataList}_RegionType")" id="datalistInput" 
-                    placeholder="" 
-                    @bind-value="_requestDto.RegionType"
-                    >
-                <datalist id="@($"{_idDataList}_RegionType")">
-                    @foreach (var item in DropdownItems)
-                    {
-                        <option data-value="@item.Value">@item.Name</option>
-                    }
-                </datalist>
+        <EditForm id="create-actor-id" Model="_requestDto" OnValidSubmit="CreateActorAsync">
+            @* <DataAnnotationsValidator /> *@
+            <NotificationElement Notification="_notificationResponse" />
+            <ErrorElement Errors="Errors" FormSummaryId="create-actor-id" />
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="Name">Tên diễn viên:</label>
+                    <InputText id="Name" class="form-control" @bind-Value="_requestDto.Name" placeholder="Nhập tên diễn viên" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="Avatar">Avatar:</label>
+                    <InputText id="Avatar" class="form-control" @bind-Value="_requestDto.Avatar" placeholder="Nhập URL avatar" />
+                </div>
             </div>
-            
-            <ButtonAmam7078 Class="btn btn-sm btn-outline-primary"
-                Icon="bi bi-submit"
-                IconPosition="CIconPositionType.Right"
-                OnClick="CreateActorAsync"
-                Text="Xác nhận"/>
 
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="DateOfBirth">Ngày sinh:</label>
+                    <InputDate id="DateOfBirth" class="form-control" @bind-Value="_requestDto.DateOfBirth" />
+                </div>
 
-            <select class="selectpicker" data-live-search="true">
-                <option data-tokens="ketchup mustard">Hot Dog, Fries and a Soda</option>
-                <option data-tokens="mustard">Burger, Shake and a Smile</option>
-                <option data-tokens="frosting">Sugar, Spice and all things nice</option>
-            </select>
+                <div class="col-md-6 mb-3">
+                    <label for="DebutDate">Ngày ra mắt:</label>
+                    <InputDate id="DebutDate" class="form-control" @bind-Value="_requestDto.DebutDate" />
+                </div>
+            </div>
 
-        @* </form> *@
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="Bust">Vòng ngực:</label>
+                    <InputNumber id="Bust" class="form-control" @bind-Value="_requestDto.Burt" />
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="Waist">Vòng eo:</label>
+                    <InputNumber id="Waist" class="form-control" @bind-Value="_requestDto.Waist" />
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="Hips">Vòng mông:</label>
+                    <InputNumber id="Hips" class="form-control" @bind-Value="_requestDto.Hips" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="Height">Chiều cao:</label>
+                    <InputNumber id="Height" class="form-control" @bind-Value="_requestDto.Height" />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="Address">Địa chỉ:</label>
+                    <InputText id="Address" class="form-control" @bind-Value="_requestDto.Address" placeholder="Nhập địa chỉ" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="Description">Mô tả:</label>
+                    <InputTextArea id="Description" class="form-control" @bind-Value="_requestDto.Description" placeholder="Mô tả về diễn viên" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <DropdownElement Items="RegionItems"
+                        SelectedOption="RegionDropItem"
+                        SelectedOptionChanged="OnRegionSelected"
+                        LabelName="Chọn quốc tịch: " />
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <DropdownElement Items="CupSizeItems"
+                        SelectedOption="CupSizeDropItem"
+                        SelectedOptionChanged="OnCupSizeSelected"
+                        LabelName="Chọn cỡ ngực: " />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <ButtonAmam7078 Class="btn btn-primary"
+                        Icon="bi bi-check-circle"
+                        IconPosition="CIconPositionType.Right"
+                        Text="Xác nhận" />
+                </div>
+            </div>
+        </EditForm>
     </div>
 </div>
-
-
-
 
 @if (_isLoading)
 {
     <LoadingElement />
 }
 
+@code {
+    private CreateActorRequestDto _requestDto { get; set; } = new CreateActorRequestDto();
+    private NotificationResponse? _notificationResponse { get; set; }
+    private bool _isLoading { get; set; } = false;
+    List<DropdownItemModel> RegionItems { get; set; } = new List<DropdownItemModel>();
+    List<DropdownItemModel> CupSizeItems { get; set; } = new List<DropdownItemModel>();
 
+    private DropdownItemModel? RegionDropItem { get; set; }
+    private DropdownItemModel? CupSizeDropItem { get; set; }
 
-@code
-{
+    private List<ErrorDetailDto> Errors { get; set; } = new List<ErrorDetailDto>();
+
     protected override async Task OnInitializedAsync()
     {
         CRegionType regionType = CRegionType.None;
-        DropdownItems = regionType.ToDropdownModels();
+        RegionItems = regionType.ToDropdownModels();
+        RegionDropItem = new DropdownItemModel()
+        {
+            Name = RegionItems.Where(s => s.Value.ToString() == regionType.ToString()).Select(s => s.Name).FirstOrDefault() ?? string.Empty,
+            Value = regionType
+        };
+
+        CCupSizeType cupSizeType = CCupSizeType.None;
+        CupSizeItems = cupSizeType.ToDropdownModels();
+        CupSizeDropItem = new DropdownItemModel()
+        {
+            Name = CupSizeItems.Where(s => s.Value.ToString() == cupSizeType.ToString()).Select(s => s.Name).FirstOrDefault() ?? string.Empty,
+            Value = cupSizeType
+        };
+
+        _requestDto.Status = CMasterStatus.Active;
         await Task.CompletedTask;
     }
 
-    private Guid _idDataList = Guid.NewGuid();
-    private bool _isLoading { get; set; } = false;
-    List<DropdownItemModel> DropdownItems { get; set; } = new List<DropdownItemModel>();
-    public object? RegionTyeObj { get; set; }
-    private CreateActorRequestDto _requestDto { get; set; } = new CreateActorRequestDto();
-
-    private void CreateActorAsync()
+    private async Task CreateActorAsync()
     {
-        _toastService.ShowInfo(_requestDto.RegionType.ToDescription());
+        try
+        {
+            _isLoading = true;
+            ResponseResult<NotificationResponse>? apiResponse = await _httpClientHelper.PostAsync<CreateActorRequestDto, NotificationResponse>(
+                endpoint: Path.Combine(EndpointConstant.Movie_Base_Url, EndpointConstant.Movie_Actor_Create),
+                data: _requestDto,
+                requestType: CHttpClientType.Private,
+                portalType: CPortalType.CET);
+            if (apiResponse == null)
+            {
+                _toastService.ShowError(message: "An error occured while call to server.");
+            }
+            else if (!apiResponse.Errors.IsNullOrEmpty())
+            {
+                Errors = apiResponse.Errors;
+            }
+            else if (apiResponse.Data == null)
+            {
+                _toastService.ShowError(message: "Không thể nhận được phản hồi từ API.");
+            }
+            else
+            {
+                _notificationResponse = apiResponse.Data;
+            }
+            _isLoading = false;
+
+        }
+        catch(Exception ex)
+        {
+            _toastService.ShowError(message: ex.Message);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void OnRegionSelected(DropdownItemModel option)
+    {
+        RegionDropItem = option;
+        _requestDto.RegionType = Enum.Parse<CRegionType>(value: option.Value.ToString() ?? string.Empty);
+    }
+
+    private void OnCupSizeSelected(DropdownItemModel option)
+    {
+        CupSizeDropItem = option;
+        _requestDto.CupsizeType = Enum.Parse<CCupSizeType>(value: option.Value.ToString() ?? string.Empty);
     }
 }

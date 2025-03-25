@@ -1,0 +1,44 @@
+/* alert classes for styling */
+.alert {
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-info {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.alert-secondary {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+/* Add spacing between icon and text */
+.alert i {
+    margin-right: 15px;
+}
+
+.alert i.bi {
+    font-size: 1.5rem;
+}

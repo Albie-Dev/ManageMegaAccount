@@ -1,0 +1,103 @@
+@using System.Linq
+
+<div class="form-group">
+    <label for="@_dropDownId.ToString()">@LabelName</label>
+    <div class="dropdown-container" id="@_dropDownId.ToString()">
+        <div class="dropdown-header" @onclick="ToggleDropdown">
+            <span>@(SelectedOption?.Name ?? "Select an option")</span>
+            <i class="arrow @(IsOpen ? "up" : "down")"></i>
+        </div>
+        
+        @if (IsOpen)
+        {
+            <div class="dropdown-list">
+                <input type="text" 
+                    class="dropdown-search" 
+                    placeholder="Search..."
+                    @bind="SearchText"
+                    @bind:event="oninput"
+                    @onclick:stopPropagation />
+                
+                <ul class="dropdown-options">
+                    @if (FilteredOptions.Any())
+                    {
+                        @foreach (var option in FilteredOptions)
+                        {
+                            <li class="dropdown-option @(option.Value == SelectedOption?.Value ? "selected" : "")"
+                                @onclick="() => SelectOption(option)"
+                                key="@option.Value">
+                                @option.Name
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="dropdown-option no-results">No options found</li>
+                    }
+                </ul>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private Guid _dropDownId { get; set; } = Guid.NewGuid();
+
+    [Parameter]
+    public string LabelName { get; set; } = string.Empty;
+
+    [Parameter]
+    public List<DropdownItemModel> Items { get; set; } = new();
+
+    [Parameter]
+    public DropdownItemModel? SelectedOption { get; set; }
+
+    [Parameter]
+    public EventCallback<DropdownItemModel> SelectedOptionChanged { get; set; }
+
+    private bool IsOpen { get; set; }
+    private string SearchText { get; set; } = string.Empty;
+
+    private IEnumerable<DropdownItemModel> FilteredOptions => 
+        string.IsNullOrWhiteSpace(SearchText)
+            ? Items
+            : Items.Where(o => o.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+
+    private void ToggleDropdown()
+    {
+        IsOpen = !IsOpen;
+        if (IsOpen) SearchText = string.Empty;
+    }
+
+    private void SelectOption(DropdownItemModel option)
+    {
+        SelectedOption = option;
+        SelectedOptionChanged.InvokeAsync(option);
+        IsOpen = false;
+    }
+
+    protected override void OnInitialized()
+    {
+        if (Items == null)
+        {
+            Items = new List<DropdownItemModel>();
+        }
+    }
+
+    // Close dropdown when clicking outside
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _jsRuntime.InvokeVoidAsync("setupDropdownCloseHandler", 
+                DotNetObjectReference.Create(this));
+        }
+    }
+
+    [JSInvokable]
+    public void CloseDropdown()
+    {
+        IsOpen = false;
+        StateHasChanged();
+    }
+}

@@ -375,7 +375,7 @@ namespace MMA.Service
             var actorEntity = await _dbRepository.FindAsync<ActorEntity>(predicate: s => s.Id == actorRequestDto.ActorId);
             if (actorEntity == null)
             {
-                modelState.AddError(field: string.Empty, errorMessage: $"Không tìm thấy Actor.");
+                modelState.AddError(field: string.Empty, errorMessage: $"Không tìm thấy Actor.", errorScope: CErrorScope.FormSummary);
                 throw new MMAException(statusCode: StatusCodes.Status404NotFound, errors: modelState.GetErrors());
             }
             string responseMessage = string.Empty;

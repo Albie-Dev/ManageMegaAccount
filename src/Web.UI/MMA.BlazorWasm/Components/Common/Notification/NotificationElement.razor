@@ -1,0 +1,44 @@
+@inject NavigationManager Navigation
+@if (Notification != null)
+{
+    <div class="alert @GetNotificationClass(Notification.Level)" role="alert" style="margin-bottom: 20px;">
+        @if (Notification.DisplayType == CNotificationDisplayType.Redirect)
+        {
+            Navigation.NavigateTo("/thongbao");
+        }
+        else
+        {
+            <i class="@GetIconClass(Notification.Level)" style="font-size: 1.5rem; margin-right: 10px;"></i>
+            <strong>@Notification.Message</strong>
+        }
+    </div>
+}
+
+
+@code {
+    [Parameter] public NotificationResponse? Notification { get; set; }
+
+    private string GetNotificationClass(CNotificationLevel level)
+    {
+        return level switch
+        {
+            CNotificationLevel.Success => "alert-success",
+            CNotificationLevel.Info => "alert-info",
+            CNotificationLevel.Warning => "alert-warning",
+            CNotificationLevel.Error => "alert-danger",
+            _ => "alert-secondary"
+        };
+    }
+
+    private string GetIconClass(CNotificationLevel level)
+    {
+        return level switch
+        {
+            CNotificationLevel.Success => "bi bi-check-circle-fill text-success",
+            CNotificationLevel.Info => "bi bi-info-circle-fill text-info",
+            CNotificationLevel.Warning => "bi bi-exclamation-triangle-fill text-warning",
+            CNotificationLevel.Error => "bi bi-x-circle-fill text-danger",
+            _ => "bi bi-info-circle-fill text-secondary"
+        };
+    }
+}

@@ -1,7 +1,5 @@
 $(document).ready(function () {
     window.initDateTimePicker = (type, dotNetHelper) => {
-        console.log(type);
-
         if (type === "DateOnly") {
             $('#dateRange').daterangepicker({
                 opens: 'left',

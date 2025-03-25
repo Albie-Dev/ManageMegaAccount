@@ -12,9 +12,10 @@ namespace MMA.Domain
             foreach (var value in enumValues)
             {
                 var enumName = Enum.GetName(enumType.GetType(), value) ?? string.Empty;
+                var nameEnum = I18NHelper.GetString(key: $"Enum_{enumTypeName}_{enumName}_Entry");
                 var dropDownModel = new DropdownItemModel
                 {
-                    Name = I18NHelper.GetString(key: $"Enum_{enumTypeName}_{enumName}_Entry"),
+                    Name = !string.IsNullOrEmpty(nameEnum) ? nameEnum : (value.ToString() ?? string.Empty),
                     Value = value,
                     IsSelected = value.Equals(valueSelected)
                 };

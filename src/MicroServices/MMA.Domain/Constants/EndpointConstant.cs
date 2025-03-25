@@ -28,7 +28,7 @@ namespace MMA.Domain
         public const string Movie_Actor_Paging = "actor/paging";
         public const string Movie_Actor_AllInfo = "actor/allinfos";
         public const string Movie_Actor_Detail = "actor/detail";
-        public const string Movie_Actor_Create = "actor/delete";
+        public const string Movie_Actor_Create = "actor/create";
         public const string Movie_Actor_Update = "actor/update";
         public const string Movie_Actor_Delete = "actor/delete";
 
