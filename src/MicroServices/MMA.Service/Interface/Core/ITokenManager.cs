@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 using MMA.Domain;
 
 namespace MMA.Service
@@ -16,5 +17,11 @@ namespace MMA.Service
             UserEntity? userEntity = null);
 
         Task<JwtSecurityToken> ValidateIdTokenAsync(string idToken);
+
+        Task<string> GenerateJWTTokenAsync(
+            Dictionary<string, object> payload,
+            string symmetricSecurityKey,
+            string publicKey,
+            string algorithm = SecurityAlgorithms.HmacSha256);
     }
 }

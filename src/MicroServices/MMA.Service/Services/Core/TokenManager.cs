@@ -4,6 +4,7 @@ using MMA.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 
 namespace MMA.Service
 {
@@ -187,5 +188,59 @@ namespace MMA.Service
                 return jsonWebKeySet;
             }
         }
+
+
+        /// <summary>
+        /// Generate custom JWT token with payload is object
+        /// </summary>
+        /// <param name="dto">Data to using for payload of jwt</param>
+        /// <param name="algorithms">Default security algorithms : HmacSha256</param>
+        /// <param name="tokenExpire">Default 5 minutes</param>
+        /// <returns></returns>
+        // public async Task<string> GenerateJWTTokenAsync(List<Claim> claims, string symmetricSecurityKey,
+        //     string algorithm = SecurityAlgorithms.HmacSha256,
+        //     int tokenExpire = 300)
+        // {
+        //     var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(s: symmetricSecurityKey));
+        //     var credentials = new SigningCredentials(key: securityKey, algorithm: algorithm);
+
+        //     var tokenHandler = new JwtSecurityTokenHandler();
+        //     var tokenDescriptor = new JwtSecurityToken(
+        //         issuer: $"{RuntimeContext.AppSettings.EndpointConfig.MMA_API}",
+        //         audience: $"{RuntimeContext.AppSettings.EndpointConfig.MMA_BlazorWasm}",
+        //         claims: claims,
+        //         notBefore: DateTime.UtcNow,
+        //         expires: DateTime.UtcNow.AddSeconds(tokenExpire),
+        //         signingCredentials: credentials
+        //     );
+        //     tokenDescriptor.Header["kid"] = RuntimeContext.AppSettings.CloudSetting.ImageKitIOConfig.PublicKey;
+        //     var jwtToken = tokenHandler.WriteToken(tokenDescriptor);
+        //     return await Task.FromResult<string>(result: jwtToken);
+        // }
+
+        public async Task<string> GenerateJWTTokenAsync(
+            Dictionary<string, object> payload,
+            string symmetricSecurityKey,
+            string publicKey,
+            string algorithm = SecurityAlgorithms.HmacSha256)
+        {
+            var keyBytes = Encoding.UTF8.GetBytes(symmetricSecurityKey);
+            var securityKey = new SymmetricSecurityKey(keyBytes);
+            var credentials = new SigningCredentials(securityKey, algorithm);
+
+            var header = new JwtHeader(credentials);
+            header["kid"] = publicKey;
+
+            var jwtPayload = new JwtPayload();
+            foreach (var kvp in payload)
+            {
+                jwtPayload.Add(kvp.Key, kvp.Value);
+            }
+
+            var token = new JwtSecurityToken(header, jwtPayload);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return await Task.FromResult(tokenHandler.WriteToken(token));
+        }
+
     }
 }

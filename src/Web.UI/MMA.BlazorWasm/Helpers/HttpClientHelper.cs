@@ -84,6 +84,26 @@ namespace MMA.BlazorWasm
             return result;
         }
 
+        public async Task<ResponseResult<TResponse>?> DeleteAsync<TResponse>(
+            string endpoint,
+            CHttpClientType requestType = CHttpClientType.Private,
+            CPortalType portalType = CPortalType.CET)
+        {
+            var httpClient = await GetHttpClientAsync(httpClientType: requestType, portalType: portalType);
+
+            var response = await httpClient.DeleteAsync(requestUri: endpoint);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                await ProcessRefreshTokenAsync(httpClient: httpClient, endpoint: endpoint,
+                    response: response, content: null, requestType: CRequestType.Delete);
+            }
+
+            var responseData = await response.Content.ReadAsStringAsync();
+            var result = responseData.FromJson<ResponseResult<TResponse>>();
+            return result;
+        }
+
 
         private async Task ProcessRefreshTokenAsync(HttpClient httpClient, string endpoint,
             CRequestType requestType,

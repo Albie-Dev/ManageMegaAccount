@@ -8,6 +8,6 @@ namespace MMA.Domain
         public ClientApp ClientApp { get; set; } = null!;
         public EndpointConfig EndpointConfig { get; set; } = null!;
         public SocialAuthConfig SocialAuthConfig { get; set; } = null!;
-
+        public CloudSetting CloudSetting { get; set; } = null!;
     }
 }

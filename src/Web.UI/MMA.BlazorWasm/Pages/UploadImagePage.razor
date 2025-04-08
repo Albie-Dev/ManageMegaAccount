@@ -1,0 +1,144 @@
+@page "/fileupload"
+@using System.Net.Http.Headers
+@inject HttpClient Http
+@inject IJSRuntime _jsRuntime
+@inject IToastService _toastService
+
+<h3>File Upload</h3>
+
+<EditForm Model="FileDetail" OnValidSubmit="HandleFileUpload">
+    <InputFile OnChange="OnFileSelected" />
+    <button type="submit">Upload</button>
+</EditForm>
+
+@if (isUploading)
+{
+    <progress value="@progress" max="100"></progress>
+}
+
+@if (uploadResult != null)
+{
+    <p>Upload result: @uploadResult</p>
+}
+
+@if (FileDetail != null && !string.IsNullOrEmpty(FileDetail.Url))
+{
+    <div class="image-preview">
+        <img src="@FileDetail.Url" alt="Image Preview" />
+        <button class="delete-button" @onclick="DeleteImagePreview">
+            <i class="fas fa-trash"></i> Delete
+        </button>
+    </div>
+}
+
+@code {
+    private string? uploadResult;
+    private bool isUploading;
+    private double progress = 0;
+    private IBrowserFile? selectedFile;
+    private string imagePreviewUrl = string.Empty;
+
+    private ImageKitIOFileResponseDto FileDetail { get; set; } = new ImageKitIOFileResponseDto();
+
+    private DotNetObjectReference<UploadImagePage>? _dotNetObjRef;
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private async Task HandleFileUpload()
+    {
+        if (selectedFile == null)
+        {
+            uploadResult = "No file selected!";
+            return;
+        }
+
+        isUploading = true;
+        progress = 0;
+
+        var authenticationEndpoint = "https://localhost:7201/api/v1/cloud/imagekit/generatetoken";
+        List<string> tags = new List<string>
+        {
+            "MiKi_Mihama",
+            "Avatar",
+            "JAV",
+            "Reduce_Mosaic",
+            "JUQ-555"
+        };
+
+        var apiResponse = await _httpClientHelper.PostAsync<ImageKitIOGenerateJWTRequestDto, string>(
+            endpoint: authenticationEndpoint,
+            data: new ImageKitIOGenerateJWTRequestDto
+            {
+                UploadPayload = new ImageKitIOUploadPayloadRequest
+                {
+                    FileName = selectedFile.Name,
+                    UseUniqueFileName = true,
+                    Tags = tags
+                },
+                Expire = 3600,
+                PublicKey = "public_P6mG9BMRfzdb7StyxwAqIjc6nDI="
+            });
+
+        if (apiResponse != null && !apiResponse.Success)
+        {
+            uploadResult = "Authentication failed.";
+            isUploading = false;
+            return;
+        }
+
+        var token = apiResponse?.Data ?? string.Empty;
+
+        _dotNetObjRef = DotNetObjectReference.Create(this);
+
+        var fileBuffer = new byte[selectedFile.Size];
+        await selectedFile.OpenReadStream(maxAllowedSize: 1024*1024*50).ReadAsync(fileBuffer);
+
+        await _jsRuntime.InvokeVoidAsync("uploadFile", fileBuffer, selectedFile.Name, token, string.Join(",", tags), _dotNetObjRef);
+    }
+
+    private async Task DeleteImagePreview()
+    {
+        string deleteEndpoint = $"https://localhost:7201/api/v1/cloud/imagekit/{FileDetail?.FileId}";
+        var apiResponse = await _httpClientHelper.DeleteAsync<bool>(
+            endpoint: deleteEndpoint);
+        if (apiResponse != null && apiResponse.Success)
+        {
+            uploadResult = "Image deleted successfully.";
+            selectedFile = null;
+            imagePreviewUrl = string.Empty;
+        }
+        else
+        {
+            uploadResult = "Failed to delete image.";
+        }
+
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void UpdateProgress(double progressValue)
+    {
+        progress = progressValue;
+        _toastService.ShowInfo($"{progress.ToString()}%");
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public void UploadComplete(bool success, string? jsonResponse)
+    {
+        if (success)
+        {
+            uploadResult = $"Upload successful: {jsonResponse}";
+            FileDetail = jsonResponse?.FromJson<ImageKitIOFileResponseDto>() ?? new();
+        }
+        else
+        {
+            uploadResult = "Upload failed.";
+        }
+        isUploading = false;
+        StateHasChanged();
+    }
+}

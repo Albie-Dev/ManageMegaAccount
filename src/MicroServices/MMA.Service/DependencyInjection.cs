@@ -4,6 +4,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using CG.Web.MegaApiClient;
+using Imagekit;
+using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -51,6 +53,17 @@ namespace MMA.Service
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IMegaApiClient, MegaApiClient>();
             services.AddScoped<IMegaService, MegaService>();
+            services.AddSingleton<ImagekitClient>(provider => 
+            {
+                var logger = provider.GetRequiredService<ILogger<ImagekitClient>>();
+                logger.LogInformation($"Start create new instance of ImageKit");
+                return new ImagekitClient(
+                    publicKey: RuntimeContext.AppSettings.CloudSetting.ImageKitIOConfig.PublicKey,
+                    privateKey: RuntimeContext.AppSettings.CloudSetting.ImageKitIOConfig.PrivateKey,
+                    urlEndPoint: RuntimeContext.AppSettings.CloudSetting.ImageKitIOConfig.UrlEndpoint
+                );
+            });
+            services.AddScoped<IImageKitIOService, ImageKitIOService>();
 
 
             services.AddScoped<IActorService, ActorService>();

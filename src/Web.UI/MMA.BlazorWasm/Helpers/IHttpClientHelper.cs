@@ -13,5 +13,10 @@ namespace MMA.BlazorWasm
             TRequest data,
             CHttpClientType requestType = CHttpClientType.Private,
             CPortalType portalType = CPortalType.CET);
+        
+        Task<ResponseResult<TResponse>?> DeleteAsync<TResponse>(
+            string endpoint,
+            CHttpClientType requestType = CHttpClientType.Private,
+            CPortalType portalType = CPortalType.CET);
     }
 }
