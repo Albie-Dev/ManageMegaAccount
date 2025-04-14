@@ -1,4 +1,6 @@
 window.uploadFile = function (fileBuffer, fileName, token, tags, dotNetHelper) {
+    const dotnetMethodName = 'UploadComplete';
+    const dotnetProgressMethodName = 'UpdateProgress';
     try {
         var blob = new Blob([fileBuffer], { type: 'application/octet-stream' });
         var file = new File([blob], fileName, { type: 'application/octet-stream' });
@@ -13,8 +15,6 @@ window.uploadFile = function (fileBuffer, fileName, token, tags, dotNetHelper) {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "https://upload.imagekit.io/api/v2/files/upload", true);
 
-        console.log("Uploading file: ", fileName, " with token: ", token);
-
         xhr.upload.onprogress = function (event) {
             if (event.lengthComputable) {
                 var progress = (event.loaded / event.total) * 100;
@@ -25,37 +25,25 @@ window.uploadFile = function (fileBuffer, fileName, token, tags, dotNetHelper) {
         xhr.onload = function () {
             try {
                 if (xhr.status == 200) {
-                    var response = JSON.parse(xhr.responseText);
-                    console.log(response);
-                    dotNetHelper.invokeMethodAsync("UploadComplete", true, xhr.responseText);
+                    dotNetHelper.invokeMethodAsync(dotnetMethodName, true, xhr.responseText);
                 } else {
-                    // Log failed status and response for debugging
-                    console.error("Upload failed with status: " + xhr.status);
-                    console.error("Response: ", xhr.responseText);
-                    dotNetHelper.invokeMethodAsync("UploadComplete", false, null);
+                    dotNetHelper.invokeMethodAsync(dotnetMethodName, false, `Status Code = ${xhr.status}. Error = ${xhr.responseText}`);
                 }
             } catch (error) {
-                // Catch any parsing errors and log them
-                console.error("Error parsing response: ", error);
-                dotNetHelper.invokeMethodAsync("UploadComplete", false, null);
+                dotNetHelper.invokeMethodAsync(dotnetMethodName, false, error);
             }
         };
 
         xhr.onerror = function () {
             try {
-                console.error("Request failed with status: " + xhr.status);
-                console.error("Error response: ", xhr.responseText);
-                dotNetHelper.invokeMethodAsync("UploadComplete", false, null);
+                dotNetHelper.invokeMethodAsync(dotnetMethodName, false, `Status Code = ${xhr.status}. Error = ${xhr.responseText}`);
             } catch (error) {
-                console.error("Error in onerror handler: ", error);
-                dotNetHelper.invokeMethodAsync("UploadComplete", false, null);
+                dotNetHelper.invokeMethodAsync(dotnetMethodName, false, xhr.responseText);
             }
         };
 
         xhr.send(formData);
     } catch (error) {
-        // Catch any general errors during the function execution
-        console.error("Error in file upload: ", error);
-        dotNetHelper.invokeMethodAsync("UploadComplete", false, null);
+        dotNetHelper.invokeMethodAsync(dotnetMethodName, false, xhr.responseText);
     }
 };

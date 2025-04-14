@@ -147,13 +147,13 @@
   <data name="Column_Title_Actor_Waist_Entry" xml:space="preserve">
     <value>Vòng eo</value>
   </data>
-  <data name="Column_Title_Actor_Burt_Entry" xml:space="preserve">
+  <data name="Column_Title_Actor_Bust_Entry" xml:space="preserve">
     <value>Vòng ngực</value>
   </data>
   <data name="Column_Title_Actor_Hips_Entry" xml:space="preserve">
     <value>Vòng mông</value>
   </data>
-  <data name="Column_Title_Actor_CupsizeType_Entry" xml:space="preserve">
+  <data name="Column_Title_Actor_CupSizeType_Entry" xml:space="preserve">
     <value>Kích cỡ cúp</value>
   </data>
   <data name="Column_Title_Actor_RegionType_Entry" xml:space="preserve">

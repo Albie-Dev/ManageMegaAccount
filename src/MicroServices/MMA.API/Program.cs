@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using MMA.Service;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,11 @@ builder.Services.AddMMAService();
 builder.Services.AddCoreService();
 
 builder.Services.AddCoreAuthentication<Program>();
+
+builder.Services.Configure<ApiBehaviorOptions>(opt =>
+{
+    opt.SuppressModelStateInvalidFilter = true;
+});
 
 var app = builder.Build();
 

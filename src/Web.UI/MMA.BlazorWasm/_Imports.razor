@@ -19,6 +19,8 @@
 @using MMA.BlazorWasm.Components.Common.Page;
 @using MMA.BlazorWasm.Components.Common.Profile;
 @using MMA.BlazorWasm.Components.Common.Table;
+@using MMA.BlazorWasm.Components.FileUploader;
+@using MMA.BlazorWasm.Components.ImageView.Single;
 @using MMA.BlazorWasm;
 @using MMA.BlazorWasm.Pages;
 @using MMA.BlazorWasm.Pages.Common;
@@ -39,6 +41,7 @@
 @inject NavigationManager _navigationManager;
 @inject IHttpClientHelper _httpClientHelper;
 @inject ILocalStorageService _localStorageService;
+@inject IConfiguration _configuration;
 
 
 @inject IJSRuntime _jsRuntime;

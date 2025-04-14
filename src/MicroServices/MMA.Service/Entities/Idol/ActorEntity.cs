@@ -8,6 +8,7 @@ namespace MMA.Service
         public string Name { get; set; } = string.Empty;
         public DateOnly DateOfBirth { get; set; }
         public string Avatar { get; set; } = string.Empty;
+        public string FileId { get; set; } = string.Empty;
         public DateOnly DebutDate { get; set; }
         public int Bust { get; set; }
         public int Waist { get; set; }

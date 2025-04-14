@@ -1,0 +1,54 @@
+<div class="grid-container">
+    @if (Images != null && Images.Any())
+    {
+        @foreach (var item in Images.Select((img, index) => new { img, index }))
+        {
+            <div class="grid-item" @onclick="() => OpenModal(item.index)">
+                <img src="@item.img?.Url" alt="@item.img?.Name" />
+            </div>
+        }
+    }
+</div>
+
+@if (IsModalOpen)
+{
+    <div class="modal-content">
+        <div class="modal-keyboard-wrapper" @onkeydown="HandleKeyDown" tabindex="0" @ref="modalKeyboardRef">
+            <button class="close-btn" @onclick="CloseModal">&#10005;</button>
+            
+            @if (Images != null && Images.Count > 1 && CurrentIndex > 0)
+            {
+                <button class="nav-btn prev-btn" @onclick="PrevImage">&#9664;</button>
+            }
+
+            <div class="zoom-control">
+                <button class="zoom-btn" @onclick="ZoomOut" title="Zoom Out">-</button>
+                <button class="zoom-btn" @onclick="ZoomIn" title="Zoom In">+</button>
+            </div>
+
+            <div class="modal-image-wrapper">
+                <img src="@CurrentImage?.Url" alt="@CurrentImage?.Name" style="transform: scale(@ImageScale);" />
+            </div>
+            
+            @if (Images != null && Images.Count > 1 && CurrentIndex < Images.Count - 1)
+            {
+                <button class="nav-btn next-btn" @onclick="NextImage">&#9654;</button>
+            }
+        </div>
+
+        @if (Images != null && Images.Count > 1)
+        {
+            <div class="image-counter">
+                <input type="number"
+                    class="index-input"
+                    value="@IndexInput"
+                    placeholder="Index"
+                    min="1"
+                    max="@Images.Count"
+                    @onchange="HandleIndexInput"
+                />
+                @($" / {Images.Count}")
+            </div>
+        }
+    </div>
+}

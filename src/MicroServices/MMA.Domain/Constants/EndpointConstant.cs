@@ -33,5 +33,11 @@ namespace MMA.Domain
         public const string Movie_Actor_Delete = "actor/delete";
 
         #endregion movie
+
+
+
+        public const string Cloud_Base_Url = "api/v1/cloud";
+        public const string Cloud_ImageKitIO_GenerateToken = "imagekit/generatetoken";
+        public const string Cloud_ImageKitIO = "imagekit";
     }
 }

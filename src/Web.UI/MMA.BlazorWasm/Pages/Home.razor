@@ -21,8 +21,32 @@
   HttpClientType="CHttpClientType.Public"
   PortalType="CPortalType.CET" />
 
+@foreach(var item in UploadedFiles)
+{
+  <p>@item.FileId</p>
+  <p>@item.Name</p>
+  <p>@item.Url</p>
+}
+
+
+
+<ImageUploader
+  @bind-UploadedFiles="UploadedFiles"/>
+
+
+
 
   @code{
+
+    private List<ImageKitIOFileResponseDto> UploadedFiles = new List<ImageKitIOFileResponseDto>()
+    {
+      new ImageKitIOFileResponseDto()
+      {
+        FileId = "67fb4379432c476416075ef5",
+        Name = "marumo-rea-丸最レア-maruishi-rea-v0-ykflpaur8owd1_vJVeBcz6v.jpg",
+        Url = "https://ik.imagekit.io/qlptzvw00/marumo-rea-%E4%B8%B8%E6%9C%80%E3%83%AC%E3%82%A2-maruishi-rea-v0-ykflpaur8owd1_vJVeBcz6v.jpg"
+      }
+    };
 
     private async Task TestAuthAsync()
     {

@@ -1,14 +1,10 @@
-@page "/fileupload"
+@* @page "/fileupload"
 @using System.Net.Http.Headers
 @inject HttpClient Http
-@inject IJSRuntime _jsRuntime
-@inject IToastService _toastService
-
-<h3>File Upload</h3>
 
 <EditForm Model="FileDetail" OnValidSubmit="HandleFileUpload">
     <InputFile OnChange="OnFileSelected" />
-    <button type="submit">Upload</button>
+    <button class="btn btn-sm btn-outline-secondary" type="submit">Upload</button>
 </EditForm>
 
 @if (isUploading)
@@ -26,7 +22,7 @@
     <div class="image-preview">
         <img src="@FileDetail.Url" alt="Image Preview" />
         <button class="delete-button" @onclick="DeleteImagePreview">
-            <i class="fas fa-trash"></i> Delete
+            <i class="bi bi-trash"></i>
         </button>
     </div>
 }
@@ -141,4 +137,4 @@
         isUploading = false;
         StateHasChanged();
     }
-}
+} *@

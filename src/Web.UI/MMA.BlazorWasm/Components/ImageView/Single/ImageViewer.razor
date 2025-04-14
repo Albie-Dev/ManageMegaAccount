@@ -1,0 +1,9 @@
+@if (IsOpen)
+{
+    <div class="image-viewer-modal" @onkeydown="HandleKeyDown" tabindex="0">
+        <button type="button" class="close-btn" @onclick="CloseImageViewer">&times;</button>
+        <div class="image-viewer-content rounded" @onclick:stopPropagation="true">
+            <img src="@ImageUrl" alt="Image Viewer" class="image-viewer-img rounded" />
+        </div>
+    </div>
+}
