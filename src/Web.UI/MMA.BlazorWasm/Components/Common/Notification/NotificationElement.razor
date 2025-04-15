@@ -1,17 +1,44 @@
 @inject NavigationManager Navigation
 @if (Notification != null)
 {
-    <div class="alert @GetNotificationClass(Notification.Level)" role="alert" style="margin-bottom: 20px;">
         @if (Notification.DisplayType == CNotificationDisplayType.Redirect)
         {
             Navigation.NavigateTo("/thongbao");
         }
+        else if (Notification.DisplayType == CNotificationDisplayType.Page)
+        {
+            switch(Notification.Level)
+            {
+                case CNotificationLevel.Error:
+                {
+                    _toastService.ShowError(message: Notification.Message);
+                    break;
+                }
+                case CNotificationLevel.Info:
+                {
+                    _toastService.ShowInfo(message: Notification.Message);
+                    break;
+                }
+                case CNotificationLevel.Warning:
+                {
+                    _toastService.ShowWarning(message: Notification.Message);
+                    break;
+                }
+                case CNotificationLevel.Success:
+                {
+                    _toastService.ShowSuccess(message: Notification.Message);
+                    break;
+                }
+                default: break;
+            }
+        }
         else
         {
-            <i class="@GetIconClass(Notification.Level)" style="font-size: 1.5rem; margin-right: 10px;"></i>
-            <strong>@Notification.Message</strong>
+            <div class="alert @GetNotificationClass(Notification.Level)" role="alert" style="margin-bottom: 20px;">
+                <i class="@GetIconClass(Notification.Level)" style="font-size: 1.5rem; margin-right: 10px;"></i>
+                <strong>@Notification.Message</strong>
+            </div>
         }
-    </div>
 }
 
 

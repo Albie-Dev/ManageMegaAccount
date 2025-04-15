@@ -1,0 +1,6 @@
+.region-flag {
+    width: 25px;
+    height: 15px;
+    border-radius: 3px;
+    display: inline-block;
+}

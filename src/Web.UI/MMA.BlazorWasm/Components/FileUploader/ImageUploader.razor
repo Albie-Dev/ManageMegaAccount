@@ -36,17 +36,17 @@
             <tr>
                 <td>@(i + 1)</td>
                 <td>
-                    <img src="@file.Url" alt="Preview" style="width:100px; height:auto;" />
+                    <img src="@file.Url" alt="Preview" style="width: 50px; height: auto; max-height: 50px;" />
                 </td>
                 <td>
                     <div>@file.Name</div>
                     <div><small>@file.FileId</small></div>
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-danger" @onclick="()=>DeleteImage(file.FileId)">
+                    <button type="button" class="btn btn-sm btn-danger" @onclick="()=>DeleteImage(file.FileId)">
                         <i class="bi bi-trash"></i>
                     </button>
-                    <button class="btn btn-sm btn-info" @onclick="()=>ViewImage(file.Url)">
+                    <button type="button" class="btn btn-sm btn-info" @onclick="()=>ViewImage(file.Url)">
                         <i class="bi bi-eye"></i>
                     </button>
                 </td>

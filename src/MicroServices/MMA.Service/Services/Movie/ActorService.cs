@@ -341,7 +341,7 @@ namespace MMA.Service
             }
             else
             {
-                actorEntity = actorRequestDto.Adapt<ActorEntity>();
+                actorRequestDto.Adapt(actorEntity);
                 actorEntity.ActorInfos = oldProperty;
             }
             actorEntity.ActorInfoProperties = oldProperty.ToJson();
@@ -424,6 +424,24 @@ namespace MMA.Service
                 Level = CNotificationLevel.Success,
                 Message = responseMessage,
                 Type = CNotificationType.Update
+            };
+        }
+
+        public async Task<NotificationResponse> DeactiveActorAsync(DeactiveActorRequestDto actorRequestDto)
+        {
+            var actors = await _dbRepository.GetAsync<ActorEntity>(predicate: at => actorRequestDto.ActorIds.Contains(at.Id)
+                && at.Status == CMasterStatus.Active);
+            if (!actors.IsNullOrEmpty())
+            {
+                actors.ForEach(s => s.Status = CMasterStatus.Deactive);
+                await _dbRepository.UpdateRangeAsync<ActorEntity>(entities: actors);
+            }
+            return new NotificationResponse()
+            {
+                DisplayType = CNotificationDisplayType.Page,
+                Level = CNotificationLevel.Info,
+                Type = CNotificationType.Update,
+                Message = $"Deactive actors successfully."
             };
         }
     }

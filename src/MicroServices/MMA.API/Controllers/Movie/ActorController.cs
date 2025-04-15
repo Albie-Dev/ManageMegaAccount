@@ -59,7 +59,7 @@ namespace MMA.API
             });
         }
 
-        [HttpPut("actor/update")]
+        [HttpPost("actor/update")]
         public async Task<IActionResult> UpdateActor(UpdateActorRequestDto actorRequestDto)
         {
             var result = await _actorService.UpdateActorAsync(actorRequestDto: actorRequestDto);
@@ -68,6 +68,17 @@ namespace MMA.API
                 Data = result,
                 Success = true,
             });
+        }
+
+        [HttpPost("actor/deactive")]
+        public async Task<IActionResult> DeactiveActor(DeactiveActorRequestDto actorRequestDto)
+        {
+            NotificationResponse result = await _actorService.DeactiveActorAsync(actorRequestDto: actorRequestDto);
+            return Ok(new ResponseResult<NotificationResponse>()
+            {
+                Data = result,
+                Success = true,
+            }); 
         }
 
         [HttpPost("actor/delete")]

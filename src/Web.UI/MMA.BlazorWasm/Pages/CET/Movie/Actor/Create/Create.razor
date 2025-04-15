@@ -76,14 +76,16 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <DropdownElement Items="RegionItems" SelectedOption="RegionDropItem"
-                        SelectedOptionChanged="OnRegionSelected" LabelName="Chọn quốc tịch: " />
+                    <label for="Hips">Quốc tịch :</label>
+                    <RadioComboboxList Items="_requestDto.RegionType.ToComboboxModels()"
+                        @bind-BindValue="_requestDto.RegionType"/>
                     <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.RegionType)"/>
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <DropdownElement Items="CupSizeItems" SelectedOption="CupSizeDropItem"
-                        SelectedOptionChanged="OnCupSizeSelected" LabelName="Chọn cỡ ngực: " />
+                    <label for="Hips">Loại kích cỡ ngực :</label>
+                    <RadioComboboxList Items="_requestDto.CupSizeType.ToComboboxModels()"
+                        @bind-BindValue="_requestDto.CupSizeType"/>
                     <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.CupSizeType)"/>
                 </div>
             </div>
@@ -99,7 +101,7 @@
             <div class="row">
                 <div class="col-md-12 text-center">
                     <ButtonAmam7078 Class="btn btn-primary" Icon="bi bi-check-circle"
-                        IconPosition="CIconPositionType.Right" Text="Xác nhận" />
+                        IconPosition="CIconPositionType.Right" Type="submit" Text="Xác nhận" />
                 </div>
             </div>
         </EditForm>

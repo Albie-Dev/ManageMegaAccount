@@ -10,5 +10,6 @@ namespace MMA.Service
         Task<NotificationResponse> AddActorAsync(CreateActorRequestDto actorRequestDto);
         Task<NotificationResponse> UpdateActorAsync(UpdateActorRequestDto actorRequestDto);
         Task<NotificationResponse> DeleteActorAsync(DeleteActorRequestDto actorRequestDto);
+        Task<NotificationResponse> DeactiveActorAsync(DeactiveActorRequestDto actorRequestDto);
     }
 }

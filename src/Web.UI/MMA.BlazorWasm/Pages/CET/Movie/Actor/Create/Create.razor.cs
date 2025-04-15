@@ -1,40 +1,17 @@
 using MMA.Domain;
 
-namespace MMA.BlazorWasm.Pages.CET.Movie.Actor
+namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Create
 {
     public partial class Create
     {
         private CreateActorRequestDto _requestDto { get; set; } = new CreateActorRequestDto();
         private NotificationResponse? _notificationResponse { get; set; }
         private bool _isLoading { get; set; } = false;
-        List<DropdownItemModel> RegionItems { get; set; } = new List<DropdownItemModel>();
-        List<DropdownItemModel> CupSizeItems { get; set; } = new List<DropdownItemModel>();
-
         private List<ImageKitIOFileResponseDto> UploadedFiles = new List<ImageKitIOFileResponseDto>();
-
-        private DropdownItemModel? RegionDropItem { get; set; }
-        private DropdownItemModel? CupSizeDropItem { get; set; }
-
         private List<ErrorDetailDto> Errors { get; set; } = new List<ErrorDetailDto>();
 
         protected override async Task OnInitializedAsync()
         {
-            CRegionType regionType = CRegionType.None;
-            RegionItems = regionType.ToDropdownModels();
-            RegionDropItem = new DropdownItemModel()
-            {
-                Name = RegionItems.Where(s => s.Value.ToString() == regionType.ToString()).Select(s => s.Name).FirstOrDefault() ?? string.Empty,
-                Value = regionType
-            };
-
-            CCupSizeType cupSizeType = CCupSizeType.None;
-            CupSizeItems = cupSizeType.ToDropdownModels();
-            CupSizeDropItem = new DropdownItemModel()
-            {
-                Name = CupSizeItems.Where(s => s.Value.ToString() == cupSizeType.ToString()).Select(s => s.Name).FirstOrDefault() ?? string.Empty,
-                Value = cupSizeType
-            };
-
             _requestDto.Status = CMasterStatus.Active;
             await Task.CompletedTask;
         }
@@ -70,11 +47,10 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor
                 else
                 {
                     _notificationResponse = apiResponse.Data;
+                    _isLoading = false;
+                    await Task.Delay(delay: TimeSpan.FromSeconds(value: 5));
+                    _navigationManager.NavigateTo(uri: "/movie/actor", forceLoad: true);
                 }
-                _isLoading = false;
-                await Task.Delay(delay: TimeSpan.FromSeconds(value: 5));
-                _navigationManager.NavigateTo(uri: "/movie/actor", forceLoad: true);
-
             }
             catch (Exception ex)
             {
@@ -84,18 +60,6 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor
             {
                 _isLoading = false;
             }
-        }
-
-        private void OnRegionSelected(DropdownItemModel option)
-        {
-            RegionDropItem = option;
-            _requestDto.RegionType = Enum.Parse<CRegionType>(value: option.Value.ToString() ?? string.Empty);
-        }
-
-        private void OnCupSizeSelected(DropdownItemModel option)
-        {
-            CupSizeDropItem = option;
-            _requestDto.CupSizeType = Enum.Parse<CCupSizeType>(value: option.Value.ToString() ?? string.Empty);
         }
     }
 }

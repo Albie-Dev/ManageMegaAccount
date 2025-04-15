@@ -6,7 +6,8 @@
     @onmouseout="OnMouseOut" 
     @ondblclick="OnDoubleClick" 
     @onkeypress="OnKeyPress"
-    disabled="@IsDisabled">
+    disabled="@IsDisabled"
+    type="@(string.IsNullOrEmpty(Type) ? "button" : Type)">
     
     @if (IconPosition == CIconPositionType.Right)
     {
@@ -54,4 +55,7 @@
 
     [Parameter]
     public bool IsDisabled { get; set; }
+
+    [Parameter]
+    public string Type { get; set; } = string.Empty;
 }

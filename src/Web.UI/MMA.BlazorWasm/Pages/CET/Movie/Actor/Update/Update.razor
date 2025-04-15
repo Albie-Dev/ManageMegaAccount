@@ -1,0 +1,117 @@
+@page "/movie/actor/update/{actorId:guid}"
+
+<PageTitle>Cập nhật diễn viên</PageTitle>
+
+<div class="container my-5">
+    <h3 class="form-title text-center mb-5">Cập nhật thông tin diễn viên</h3>
+
+    @if (_requestDto != null)
+    {
+        <EditForm id="update-actor-id" Model="_requestDto" OnValidSubmit="UpdateActorAsync">
+            <NotificationElement Notification="_notificationResponse" />
+            <ErrorElement Errors="Errors" FormSummaryId="update-actor-id" />
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="Name">Tên diễn viên (<span class="text-danger">*</span>) : </label>
+                    <InputText id="Name" class="form-control" @bind-Value="_requestDto.Name" 
+                        placeholder="Nhập tên diễn viên"/>
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.Name)" />
+                </div>
+                <div class="col-md-6">
+                    <label for="Height">Chiều cao (<span class="text-danger">*</span>) : </label>
+                    <InputNumber id="Height" class="form-control" @bind-Value="_requestDto.Height"
+                        placeholder="Nhập chiều cao" min="20" max="300" />
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.Height)" />
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="DateOfBirth">Ngày sinh:</label>
+                    <InputDate id="DateOfBirth" class="form-control" @bind-Value="_requestDto.DateOfBirth" />
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.DateOfBirth)"/>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="DebutDate">Ngày ra mắt:</label>
+                    <InputDate id="DebutDate" class="form-control" @bind-Value="_requestDto.DebutDate" />
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.DebutDate)"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="Bust">Vòng ngực:</label>
+                    <InputNumber id="Bust" class="form-control" @bind-Value="_requestDto.Bust" />
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.Bust)"/>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="Waist">Vòng eo:</label>
+                    <InputNumber id="Waist" class="form-control" @bind-Value="_requestDto.Waist" />
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.Waist)"/>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label for="Hips">Vòng mông:</label>
+                    <InputNumber id="Hips" class="form-control" @bind-Value="_requestDto.Hips" />
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.Hips)"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="Address">Địa chỉ:</label>
+                    <InputText id="Address" class="form-control" @bind-Value="_requestDto.Address"
+                        placeholder="Nhập địa chỉ" />
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.Address)"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="Description">Mô tả:</label>
+                    <InputTextArea id="Description" class="form-control" @bind-Value="_requestDto.Description"
+                        placeholder="Mô tả về diễn viên" />
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.Description)"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="Hips">Quốc tịch :</label>
+                    <RadioComboboxList Items="_requestDto.RegionType.ToComboboxModels()"
+                        @bind-BindValue="_requestDto.RegionType"/>
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.RegionType)"/>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="Hips">Loại kích cỡ ngực :</label>
+                    <RadioComboboxList Items="_requestDto.CupSizeType.ToComboboxModels()"
+                        @bind-BindValue="_requestDto.CupSizeType"/>
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.CupSizeType)"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="Avatar">Avatar:</label>
+                    <ImageUploader @bind-UploadedFiles="UploadedFiles" />
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.Avatar)"/>
+                    <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.FileId)"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <ButtonAmam7078 Class="btn btn-primary" Icon="bi bi-check-circle"
+                        IconPosition="CIconPositionType.Right" Type="submit" Text="Xác nhận" />
+                </div>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@if (_isLoading)
+{
+    <LoadingElement />
+}

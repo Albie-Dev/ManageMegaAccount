@@ -1,0 +1,50 @@
+@typeparam T where T : notnull
+
+
+<div class="dropdown-wrapper rounded @ClassName">
+    <div class="input-container rounded" id="@DropDownInputContainer" @onclick="ToggleDropdown">
+        @if (SelectedOption != null)
+        {
+            <span class="tag rounded" data-value="@SelectedOption.Value">
+                @SelectedOption.Name
+            </span>
+        }
+        else
+        {
+            <input type="text" id="@DropDownMainSearchId" placeholder="Select an option" readonly />
+        }
+        <span class="dropdown-arrow" style="position: absolute; right: 10px; pointer-events: none">
+            @if (ShowDropdown)
+            {
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="5,12 10,7 15,12" />
+                </svg>
+            }
+            else
+            {
+                <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="5,7 10,12 15,7" />
+                </svg>
+            }
+        </span>
+    </div>
+
+    <div class="dropdown-content @(ShowDropdown ? "show" : "")" id="@DropDownContentId">
+        <div class="dropdown-search">
+            <input class="rounded bg-light" type="text" id="@DropDownSearchId" placeholder="Filter options..." @oninput="FilterOptions"
+                value="@SearchFilter" />
+        </div>
+
+        <div class="options-list" id="optionsList">
+            @foreach (var option in FilteredOptions)
+            {
+                <label>
+                    <input type="radio" name="@RadioGroupName" value="@option.Value"
+                        checked="@(SelectedOption?.Value == option.Value)"
+                        @onchange="(e => HandleRadioSelection(option))" />
+                    @option.Name
+                </label>
+            }
+        </div>
+    </div>
+</div>
