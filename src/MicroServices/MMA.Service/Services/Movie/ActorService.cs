@@ -9,14 +9,17 @@ namespace MMA.Service
     public class ActorService : IActorService
     {
         private readonly IDbRepository _dbRepository;
+        private readonly IExcelCoreService _excelCoreService;
         private readonly ILogger<ActorService> _logger;
 
         public ActorService(
             IDbRepository dbRepository,
+            IExcelCoreService excelCoreService,
             ILogger<ActorService> logger
         )
         {
             _dbRepository = dbRepository;
+            _excelCoreService = excelCoreService;
             _logger = logger;
         }
 
@@ -97,6 +100,23 @@ namespace MMA.Service
         }
 
         public async Task<BasePagedResult<ActorDetailDto>> GetActorWithPagingAsync(TableParam<ActorFilterProperty> tableParam)
+        {
+            var result = await GetActorDetailBasePagingAsync(tableParam: tableParam);
+
+            var data = new BasePagedResult<ActorDetailDto>()
+            {
+                CurrentPage = result.Paged.CurrentPage,
+                Items = result.Actors,
+                PageSize = result.Paged.PageSize,
+                TotalItems = result.Paged.TotalCount,
+                TotalPages = result.Paged.TotalPages,
+                Filter = tableParam.Filter,
+            };
+
+            return data;
+        }
+
+        private async Task<(List<ActorDetailDto> Actors, PagedList<ActorEntity> Paged)> GetActorDetailBasePagingAsync(TableParam<ActorFilterProperty> tableParam)
         {
             var modelState = tableParam.ModelStateValidate();
             if (!modelState.GetErrors().IsNullOrEmpty())
@@ -239,17 +259,7 @@ namespace MMA.Service
                 return result;
             }).ToList();
 
-            var data = new BasePagedResult<ActorDetailDto>()
-            {
-                CurrentPage = pagedList.CurrentPage,
-                Items = selected,
-                PageSize = pagedList.PageSize,
-                TotalItems = pagedList.TotalCount,
-                TotalPages = pagedList.TotalPages,
-                Filter = tableParam.Filter,
-            };
-
-            return data;
+            return (Actors: selected, Paged: pagedList);
         }
 
         public async Task<ActorDetailDto> GetActorDetaiAsync(Guid actorId)
@@ -444,5 +454,16 @@ namespace MMA.Service
                 Message = $"Deactive actors successfully."
             };
         }
+
+
+        #region import and export
+        public async Task<byte[]> ExportActorByExcelTemplateAsyn(TableParam<ActorFilterProperty> tableParam)
+        {
+            var result = await GetActorDetailBasePagingAsync(tableParam: tableParam);
+            var importResult = await _excelCoreService.ExportExcelByTemplateAsync<ActorDetailDto>(exportDataModels: result.Actors,
+                fileName: "ActorExportTemplate.xlsx", assemblyName: "MMA.Service", sheetKey: "{{ActorDetail}}", sheetName: "Actor details");
+            return importResult;
+        }
+        #endregion import and export
     }
 }

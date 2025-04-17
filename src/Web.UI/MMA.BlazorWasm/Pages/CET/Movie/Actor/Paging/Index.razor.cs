@@ -219,7 +219,32 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Paging
         #endregion import
 
         #region export
+        private async Task ExportActorAsync()
+        {
+            try
+            {
+                var apiResonse = await _httpClientHelper.PostAsync<TableParam<ActorFilterProperty>, byte[]>(
+                    endpoint: EndpointConstant.Movie_Actor_Export,
+                    data: _requestDto, requestType: CHttpClientType.Private, portalType: CPortalType.CET);
+                if (apiResonse == null)
+                {
 
+                }
+                else
+                {
+                    if (apiResonse.)
+                }
+            }
+            catch (Exception ex)
+            {
+                _toastService.ShowError($"An error occurred: {ex.Message}");
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
         #endregion export
 
         #endregion action

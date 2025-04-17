@@ -91,5 +91,17 @@ namespace MMA.API
                 Success = true,
             });
         }
+
+        [HttpPost("actor/export")]
+        public async Task<IActionResult> ExportActor(TableParam<ActorFilterProperty> tableParam)
+        {
+            var currentUser = RuntimeContext.CurrentUser;
+            string ownerName = currentUser?.FullName ?? "System";
+            var exportResult = await _actorService.ExportActorByExcelTemplateAsyn(tableParam);
+            return new FileContentResult(fileContents: exportResult, contentType: "application/octet-stream")
+            {
+                FileDownloadName = $"Export_Actor_Details_by_{ownerName}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx"
+            };
+        }
     }
 }

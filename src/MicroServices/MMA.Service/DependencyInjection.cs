@@ -4,7 +4,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using CG.Web.MegaApiClient;
-using Imagekit;
 using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -64,7 +63,7 @@ namespace MMA.Service
                 );
             });
             services.AddScoped<IImageKitIOService, ImageKitIOService>();
-
+            services.AddScoped<IExcelCoreService, ExcelCoreService>();
 
             services.AddScoped<IActorService, ActorService>();
             return services;

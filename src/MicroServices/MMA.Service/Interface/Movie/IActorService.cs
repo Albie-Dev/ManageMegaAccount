@@ -11,5 +11,6 @@ namespace MMA.Service
         Task<NotificationResponse> UpdateActorAsync(UpdateActorRequestDto actorRequestDto);
         Task<NotificationResponse> DeleteActorAsync(DeleteActorRequestDto actorRequestDto);
         Task<NotificationResponse> DeactiveActorAsync(DeactiveActorRequestDto actorRequestDto);
+        Task<byte[]> ExportActorByExcelTemplateAsyn(TableParam<ActorFilterProperty> tableParam);
     }
 }
