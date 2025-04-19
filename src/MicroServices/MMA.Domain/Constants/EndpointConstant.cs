@@ -20,6 +20,7 @@ namespace MMA.Domain
         #endregion mega account
 
         public const string CET_Role_Paging = "roles/paging";
+        public const string CET_Role_Sync = "roles/sync";
 
 
 

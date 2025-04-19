@@ -1,5 +1,4 @@
 using MMA.Domain;
-using MMA.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -19,8 +18,13 @@ namespace MMA.Service
         }
 
         #region sync new role
-        public async Task<bool> SyncRolesAsync()
+        public async Task<NotificationResponse> SyncRolesAsync()
         {
+            var response = new NotificationResponse()
+            {
+                Type = CNotificationType.Add,
+                DisplayType = CNotificationDisplayType.Page
+            };
             var existRoles = await _repository.GetAsync<RoleEntity>();
             var newRoles = new List<RoleEntity>();
             foreach (CRoleType roleType in Enum.GetValues<CRoleType>())
@@ -43,11 +47,15 @@ namespace MMA.Service
             if (newRoles.IsNullOrEmpty())
             {
                 _logger.LogWarning($"Không có vai trò mới nào được thêm.");
-                return false;
+                response.Message = $"Không có vai trò mới nào được thêm. SyncDate = {DateTimeOffset.UtcNow.ToString("dd/MM/yyyy HH:mm:ss")}";
+                response.Level = CNotificationLevel.Warning;
+                return response;
             }
             try
             {
-                await _repository.AddRangeAsync<RoleEntity>(entities: newRoles, clearTracker: true);
+                int newRoleAdded = await _repository.AddRangeAsync<RoleEntity>(entities: newRoles, clearTracker: true);
+                response.Message = $"Sync vai trò mới thành công. Role = {string.Join(",", newRoles.Select(s => s.RoleName).ToList())}, SyncDate = {DateTimeOffset.UtcNow.ToString("dd/MM/yyyy HH:mm:ss")}";
+                response.Level = CNotificationLevel.Success;
             }
             catch (Exception ex)
             {
@@ -62,7 +70,7 @@ namespace MMA.Service
                         }
                     });
             }
-            return await Task.FromResult<bool>(true);
+            return await Task.FromResult<NotificationResponse>(response);
         }
         #endregion sync new role
 
@@ -144,7 +152,5 @@ namespace MMA.Service
             return data;
         }
         #endregion get all roles
-
-        
     }
 }

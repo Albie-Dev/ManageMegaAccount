@@ -24,7 +24,7 @@ namespace MMA.API
         public async Task<IActionResult> SyncNewRole()
         {
             var result = await _roleService.SyncRolesAsync();
-            return Ok(new ResponseResult<bool>()
+            return Ok(new ResponseResult<NotificationResponse>()
             {
                 Data = result,
                 Success = true

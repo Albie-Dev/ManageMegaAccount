@@ -8,7 +8,7 @@ namespace MMA.Domain
         None = 0,
         [Description(description: "Quản trị viên")]
         Admin = 1,
-        [Description(description: "Khách")]
+        [Description(description: "Khách hàng")]
         Client = 2
     }
 }
