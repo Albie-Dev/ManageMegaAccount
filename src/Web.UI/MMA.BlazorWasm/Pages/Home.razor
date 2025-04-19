@@ -8,54 +8,126 @@
 <PageTitle>Trang chủ</PageTitle>
 
 <h1>Welcome to User Sign In ASP.NET Core Blazor WebAssembly</h1>
-<ButtonAmam7078 Class="btn btn-sm btn-outline-info"
-  Icon="bi bi-person"
-  Id="@Guid.NewGuid().ToString()"
-  IconPosition="@CIconPositionType.Left" 
-  Text="Button"
-  OnClick="TestAuthAsync"/>
+<ButtonAmam7078 Class="btn btn-sm btn-outline-info" Icon="bi bi-person" Id="@Guid.NewGuid().ToString()"
+  IconPosition="@CIconPositionType.Left" Text="Button" OnClick="TestAuthAsync" />
 
 
-<Table TData="RoleDetailResponseDto" TFilter="RoleFilterProperty"
+<Table TData="RoleDetailResponseDto" TFilter="RoleFilterProperty" TSelection="Guid"
   ApiEndpoint="@Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Role_Paging)"
-  HttpClientType="CHttpClientType.Public"
-  PortalType="CPortalType.CET" />
+  HttpClientType="CHttpClientType.Public" PortalType="CPortalType.CET"
+  Columns="InitColumns()"
+  @bind-FilterProperty="FilterProperty"
+  @bind-SelectedItems="RoleIds"
+  MapSelection="s => s.RoleId"
+  IsEnableSelection="true"
+  >
+  <FilterContent>
+    <label for="Roles">Chọn quyền: </label>
+    <ComboboxList T="@(CRoleType)" Items="CRoleType.None.ToComboboxModels()" Mode="CComboboxModeType.Checkbox"
+      @bind-BindValues="FilterProperty.RoleTypes" PlaceHolderName="Chọn quyền" />
+    <label for="FromDate">Ngày tạo: </label>
+    <InputDate id="FromDate" class="form-control" @bind-Value="FilterProperty.FromDate" />
+    <label for="ToDate">Đến ngày:</label>
+    <InputDate id="ToDate" class="form-control" @bind-Value="FilterProperty.ToDate" />
+  </FilterContent>
 
-@foreach(var item in UploadedFiles)
-{
-  <p>@item.FileId</p>
-  <p>@item.Name</p>
-  <p>@item.Url</p>
-}
+  <ActionContent>
+    <ButtonAmam7078 Class="btn btn-sm btn-outline-primary me-2" Icon="bi bi-cloud-plus"
+        IconPosition="CIconPositionType.Right"
+        Text="Create"
+    />
+    <ButtonAmam7078 Class="btn btn-sm btn-outline-success me-2" Icon="bi bi-pencil-square"
+        IconPosition="CIconPositionType.Right"
+        Text="Update"
+    />
+    <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2" Icon="bi-toggle-off"
+        IconPosition="CIconPositionType.Right"
+        Text="Deactive"
+    />
+    <ButtonAmam7078 Class="btn btn-sm btn-outline-info me-2" Icon="bi bi-cloud-upload"
+        IconPosition="CIconPositionType.Right"
+        Text="Import"
+    />
+    <ButtonAmam7078 Class="btn btn-sm btn-outline-success me-2" Icon="bi bi-file-earmark-excel"
+        IconPosition="CIconPositionType.Right"
+        Text="Export"
+    />
+    <ButtonAmam7078 Class="btn btn-sm btn-outline-danger" Icon="bi bi-trash"
+        IconPosition="CIconPositionType.Right"
+        Text="Delete"
+        OnClick="DeleteSelectedRoles" IsDisabled="@(RoleIds.Count == 0)"
+    />
+  </ActionContent>
+</Table>
 
 
-
-<ImageUploader
-  @bind-UploadedFiles="UploadedFiles"/>
-
-
-
-
-  @code{
-
-    private List<ImageKitIOFileResponseDto> UploadedFiles = new List<ImageKitIOFileResponseDto>()
+@code {
+  private RoleFilterProperty FilterProperty { get; set; } = new RoleFilterProperty();
+  private List<Guid> RoleIds { get; set; } = new List<Guid>();
+  private async Task TestAuthAsync()
+  {
+    _toastService.ShowError("OK");
+    var response = await _httpClientHelper.GetAsync<string>(endpoint: "api/v1/cet/auth/protected",
+    requestType: CHttpClientType.Private, portalType: CPortalType.CET);
+    if (response != null && response.Success)
     {
-      new ImageKitIOFileResponseDto()
-      {
-        FileId = "67fb4379432c476416075ef5",
-        Name = "marumo-rea-丸最レア-maruishi-rea-v0-ykflpaur8owd1_vJVeBcz6v.jpg",
-        Url = "https://ik.imagekit.io/qlptzvw00/marumo-rea-%E4%B8%B8%E6%9C%80%E3%83%AC%E3%82%A2-maruishi-rea-v0-ykflpaur8owd1_vJVeBcz6v.jpg"
-      }
-    };
-
-    private async Task TestAuthAsync()
-    {
-      _toastService.ShowError("OK");
-      var response = await _httpClientHelper.GetAsync<string>(endpoint: "api/v1/cet/auth/protected",
-        requestType: CHttpClientType.Private, portalType: CPortalType.CET);
-      if (response != null && response.Success)
-      {
-        Console.WriteLine("");
-      }
+      Console.WriteLine("");
     }
   }
+
+
+  private async Task DeleteSelectedRoles()
+  {
+    _toastService.ShowInfo(RoleIds.ToJson());
+    await Task.CompletedTask;
+  }
+
+  private List<DropdownItemModel> InitColumns()
+  {
+    return new List<DropdownItemModel>()
+    {
+      new DropdownItemModel()
+      {
+        Name = "#",
+        Value = "#",
+        IsSelected = true,
+        IsSort = false
+      },
+      new DropdownItemModel()
+      {
+        Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.RoleId)}_Entry"),
+        Value = nameof(RoleDetailResponseDto.RoleId),
+        IsSelected = true,
+        IsSort = false
+      },
+      new DropdownItemModel()
+      {
+        Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.RoleName)}_Entry"),
+        Value = nameof(RoleDetailResponseDto.RoleName),
+        IsSelected = true,
+        IsSort = true
+      },
+      new DropdownItemModel()
+      {
+        Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.RoleType)}_Entry"),
+        Value = nameof(RoleDetailResponseDto.RoleType),
+        IsSelected = true,
+        IsSort = true
+      },
+      new DropdownItemModel()
+      {
+        Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.CreatedDate)}_Entry"),
+        Value = nameof(RoleDetailResponseDto.CreatedDate),
+        IsSelected = true,
+        IsSort = true
+      },
+      new DropdownItemModel()
+      {
+        Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.ModifiedDate)}_Entry"),
+        Value = nameof(RoleDetailResponseDto.ModifiedDate),
+        IsSelected = true,
+        IsSort = true
+      }
+    };
+  }
+}

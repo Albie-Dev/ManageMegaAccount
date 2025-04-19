@@ -8,71 +8,9 @@
     </div>
     <hr class="my-2">
     <div class="Filter-Content flex-grow-1">
-        @foreach (PropertyInfo property in typeof(TFilter).GetProperties() ?? new PropertyInfo[0])
+        @if (CustomFilterContent != null)
         {
-            var propertyType = property.PropertyType;
-
-            if (Nullable.GetUnderlyingType(propertyType) == typeof(DateTimeOffset) || propertyType == typeof(DateTimeOffset))
-            {
-                <div class="mb-3">
-                    <label>@I18NHelper.GetString($"Filter_{typeof(TFilter).Name}_{property.Name}_Entry")</label>
-                    <input class="form-control" type="date"
-                        value="@((property.GetValue(FilterProperty) as DateTimeOffset?)?.ToString("yyyy-MM-dd") ?? string.Empty)"
-                         @oninput="(e) => SetPropertyValue(property, DateTimeOffset.TryParse(e.Value?.ToString(), out var dateValue) ? dateValue : (DateTimeOffset?)null)" />
-                </div>
-            }
-            else if (propertyType.IsEnum || Nullable.GetUnderlyingType(propertyType)?.IsEnum == true)
-            {
-                var enumValues = Enum.GetValues(propertyType).Cast<Enum>();
-
-                // Tạo danh sách DropdownItemModel từ Enum
-                var dropdownItems = enumValues.Select(enumValue => new DropdownItemModel
-                {
-                    Name = enumValue.ToString(),
-                    Value = enumValue,
-                    IsSelected = enumValue.Equals(property.GetValue(FilterProperty))
-                }).ToList();
-
-                <div class="mb-3">
-                    <label>@I18NHelper.GetString($"Filter_{typeof(TFilter).Name}_{property.Name}_Entry")</label>
-                    <select class="form-control"
-                        @onchange="(e) => SetPropertyValue(property, Enum.TryParse(propertyType, e.Value?.ToString() ?? string.Empty, out var enumValue) ? enumValue : null)">
-                        @foreach (var item in dropdownItems)
-                        {
-                            <option value="@item.Value">@item.Name</option>
-                        }
-                    </select>
-                </div>
-            }
-            else if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(List<>) &&
-            propertyType.GetGenericArguments()[0].IsEnum)
-            {
-                var enumType = propertyType.GetGenericArguments()[0];
-                var enumValues = Enum.GetValues(enumType).Cast<Enum>();
-
-                var currentEnumValues = property.GetValue(FilterProperty) as List<Enum>;
-
-                <div class="mb-3">
-                    <label>@I18NHelper.GetString($"Filter_{typeof(TFilter).Name}_{property.Name}_Entry")</label>
-                    @foreach (var enumValue in enumValues)
-                    {
-                        var isChecked = currentEnumValues?.Contains(enumValue) ?? false;
-                        <div>
-                            <input type="checkbox" checked="@isChecked" @onchange="(e) => ToggleEnumValue(property, enumValue, e.Value)" />
-                            <label>@enumValue.ToString()</label>
-                        </div>
-                    }
-                </div>
-            }
-            else if (propertyType == typeof(string))
-            {
-                <div class="mb-3">
-                    <label>@I18NHelper.GetString($"Filter_{typeof(TFilter).Name}_{property.Name}_Entry")</label>
-                    <input class="form-control" type="text" value="@property.GetValue(FilterProperty)?.ToString()"
-                        @oninput="(e) => SetPropertyValue(property, e.Value?.ToString())" />
-                </div>
-            }
-            // Add other filter types if needed
+            @CustomFilterContent
         }
     </div>
     <hr>
@@ -88,95 +26,33 @@
     public string FilterLabelName { get; set; } = string.Empty;
     [Parameter]
     public TFilter FilterProperty { get; set; } = new TFilter();
+    [Parameter]
+    public EventCallback<TFilter> FilterPropertyChanged { get; set; }
 
     [Parameter]
-    public EventCallback<bool> ShowPanelFilterChanged { get; set; }
+    public EventCallback OnApplyFilter { get; set; }
+
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
     [Parameter]
-    public EventCallback<TFilter> ApplyFilterChanged { get; set; }
+    public RenderFragment? CustomFilterContent { get; set; }
 
     #endregion Parameter
-
-    #region property
-    #endregion property
 
     #region callback
     private async Task CloseFilterPanel()
     {
-        await ShowPanelFilterChanged.InvokeAsync(false);
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(IsOpen);
         StateHasChanged();
     }
 
     private async Task ApplyFilter()
     {
-        await ApplyFilterChanged.InvokeAsync(FilterProperty);
+        await FilterPropertyChanged.InvokeAsync(FilterProperty);
+        await OnApplyFilter.InvokeAsync();
         StateHasChanged();
     }
     #endregion callback
-
-    #region 
-
-    private void SetPropertyValue(PropertyInfo property, object? value)
-    {
-        if (FilterProperty != null)
-        {
-            try
-            {
-                var targetType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-                if (value == null && property.PropertyType.IsValueType && Nullable.GetUnderlyingType(property.PropertyType) == null)
-                {
-                    return;
-                }
-                property.SetValue(FilterProperty, Convert.ChangeType(value, targetType));
-            }
-            catch (Exception ex)
-            {
-                _toastService.ShowError($"Error setting property value: {ex.Message}");
-            }
-        }
-    }
-
-    private void ToggleEnumValue(PropertyInfo property, Enum enumValue, object? isChecked)
-    {
-        // Lấy kiểu dữ liệu của TEnum từ PropertyInfo
-        var enumType = property.PropertyType.GetGenericArguments()[0];
-
-        // Lấy danh sách hiện tại từ property
-        var currentEnumValues = property.GetValue(FilterProperty) as dynamic;
-
-        // Nếu danh sách chưa được khởi tạo, tạo mới danh sách
-        if (currentEnumValues == null)
-        {
-            // Tạo một instance của List<TEnum> bằng reflection
-            var listType = typeof(List<>).MakeGenericType(enumType);
-            currentEnumValues = Activator.CreateInstance(listType);
-            property.SetValue(FilterProperty, currentEnumValues);
-        }
-
-        // Chuyển đổi enumValue sang kiểu TEnum
-        var specificEnumValue = Convert.ChangeType(enumValue, enumType);
-
-        if (isChecked != null && (bool)isChecked)
-        {
-            // Kiểm tra null trước khi ép kiểu và sử dụng Contains
-            if (currentEnumValues != null)
-            {
-                var list = (IEnumerable<object>)currentEnumValues ?? new List<object>();
-                if (list != null && !list.Contains(specificEnumValue))
-                {
-                    if (currentEnumValues != null)
-                    {
-                        currentEnumValues.Add(specificEnumValue);
-                    }
-                }
-                
-            }
-        }
-        else
-        {
-            // Xóa giá trị enum khỏi danh sách
-            currentEnumValues?.Remove(specificEnumValue);
-        }
-    }
-
-    #endregion
 }
