@@ -1,0 +1,64 @@
+@typeparam T where T : notnull
+
+<div class="dropdown-wrapper rounded @ClassName">
+    <div class="input-container rounded" @onclick="ToggleDropdown">
+        @if (SelectedOptions.Any())
+        {
+            @foreach (var opt in SelectedOptions)
+            {
+                <span class="tag rounded" data-value="@opt.Value">@opt.Name</span>
+            }
+        }
+        else
+        {
+            <input type="text" placeholder="@PlaceHolderName" readonly />
+        }
+
+        <span class="dropdown-arrow" style="position: absolute; right: 10px; pointer-events: none">
+            @if (ShowDropdown)
+            {
+                <svg viewBox="0 0 20 20" width="16" height="16"><polyline points="5,12 10,7 15,12" /></svg>
+            }
+            else
+            {
+                <svg viewBox="0 0 20 20" width="16" height="16"><polyline points="5,7 10,12 15,7" /></svg>
+            }
+        </span>
+    </div>
+
+    <div class="dropdown-content @(ShowDropdown ? "show" : "")">
+        <div class="dropdown-search">
+            <input class="rounded bg-light" type="text" placeholder="Filter..." @oninput="FilterOptions" value="@SearchFilter" />
+        </div>
+
+        <div class="options-list">
+            @foreach (var option in FilteredOptions)
+            {
+                <label>
+                    @if (Mode == CComboboxModeType.Checkbox)
+                    {
+                        <input type="checkbox"
+                            value="@option.Value"
+                            checked="@SelectedValues.Contains((T)option.Value!)"
+                            @onchange="@((e) => HandleCheckboxSelection(option, (bool)((ChangeEventArgs)e).Value!))" />
+                    }
+                    else if (Mode == CComboboxModeType.Radio)
+                    {
+                        <input type="radio"
+                            name="@RadioGroupName"
+                            value="@option.Value"
+                            checked="@(SelectedValues.Contains((T)option.Value!))"
+                            @onchange="@(() => HandleRadioSelection(option))" />
+                    }
+                    else if (Mode == CComboboxModeType.Select)
+                    {
+                        <div @onclick="@(() => HandleSelectOption(option))">
+                            @option.Name
+                        </div>
+                    }
+                    <span class="ms-2">@option.Name</span>
+                </label>
+            }
+        </div>
+    </div>
+</div>
