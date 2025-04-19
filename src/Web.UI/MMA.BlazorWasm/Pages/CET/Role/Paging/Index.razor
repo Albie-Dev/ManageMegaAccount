@@ -1,0 +1,119 @@
+@page "/admin/role"
+@using MMA.BlazorWasm.Pages.CET.Role.Element
+<PageTitle>Vai trò</PageTitle>
+
+@if (_notificationResponse != null)
+{
+    <NotificationElement Notification="_notificationResponse" />
+    _notificationResponse = null;
+}
+<Table TData="RoleDetailResponseDto" TFilter="RoleFilterProperty" TSelection="Guid"
+    ApiEndpoint="@(Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Role_Paging))"
+    HttpClientType="CHttpClientType.Private" PortalType="CPortalType.CET" Columns="InitColumns()"
+    @bind-Errors="_errors"
+    @bind-IsLoading="_isLoading"
+    @bind-FilterProperty="_roleFilterProperty"
+    @bind-SelectedItems="_selectedRoleIds" MapSelection="rd => rd.RoleId"
+    IsEnableSelection="true"
+    CellContents="GetCellContents()">
+
+    <FilterContent>
+        <label for="Roles">Chọn quyền: </label>
+        <ComboboxList T="@(CRoleType)" Items="CRoleType.None.ToComboboxModels()" Mode="CComboboxModeType.Checkbox"
+            @bind-BindValues="_roleFilterProperty.RoleTypes" PlaceHolderName="Chọn quyền" />
+        <label for="FromDate">Ngày tạo: </label>
+        <InputDate id="FromDate" class="form-control" @bind-Value="_roleFilterProperty.FromDate" />
+        <label for="ToDate">Đến ngày:</label>
+        <InputDate id="ToDate" class="form-control" @bind-Value="_roleFilterProperty.ToDate" />
+    </FilterContent>
+
+    <ActionContent>
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary"
+            Icon="bi bi-arrow-repeat"
+            IconPosition="CIconPositionType.Right"
+            Text="Sync"
+            Type="button"
+            OnClick="SyncNewRolesAsync"
+        />
+    </ActionContent>
+
+</Table>
+
+@if (_isLoading)
+{
+    <LoadingElement />
+}
+
+
+
+@code {
+    #region Init column
+    private List<DropdownItemModel> InitColumns()
+    {
+        return new List<DropdownItemModel>()
+        {
+            new DropdownItemModel()
+            {
+                Name = "#",
+                Value = "#",
+                IsSelected = true,
+                IsSort = false
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.RoleName)}_Entry"),
+                Value = nameof(RoleDetailResponseDto.RoleName),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.RoleType)}_Entry"),
+                Value = nameof(RoleDetailResponseDto.RoleType),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.CreatedDate)}_Entry"),
+                Value = nameof(RoleDetailResponseDto.CreatedDate),
+                IsSelected = true,
+                IsSort = true
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.ModifiedDate)}_Entry"),
+                Value = nameof(RoleDetailResponseDto.ModifiedDate),
+                IsSelected = true,
+                IsSort = true
+            }
+        };
+    }
+    #endregion Init column
+
+    #region Cell format
+    public Dictionary<string, RenderFragment<RoleDetailResponseDto>> GetCellContents()
+    {
+        var contents = new Dictionary<string, RenderFragment<RoleDetailResponseDto>>()
+        {
+            {
+                nameof(RoleDetailResponseDto.RoleName),
+                row => @<text><span class="fw-semibold text-primary">@row.RoleName</span></text>
+            },
+            {
+                nameof(RoleDetailResponseDto.RoleType),
+                row => @<text><RoleTypeElement RoleType="@row.RoleType" /></text>
+            },
+            {
+                nameof(RoleDetailResponseDto.CreatedDate),
+                    row => @<text><span>@row.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span></text>
+            },
+            {
+                nameof(RoleDetailResponseDto.ModifiedDate),
+                row => @<text><span>@(row.ModifiedDate.ToString("dd/MM/yyyy HH:mm"))</span></text>
+            }
+        };
+        return contents;
+    }
+    #endregion Cell format
+}
