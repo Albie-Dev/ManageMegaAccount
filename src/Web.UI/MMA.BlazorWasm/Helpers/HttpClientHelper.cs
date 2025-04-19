@@ -3,6 +3,7 @@ using MMA.Domain;
 using System.Text;
 using Blazored.LocalStorage;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Components;
 
 namespace MMA.BlazorWasm
 {
@@ -10,14 +11,17 @@ namespace MMA.BlazorWasm
     {
         private readonly IHttpClientFactory _httpClient;
         private readonly ILocalStorageService _localStorage;
+        private readonly NavigationManager _navigationManager;
         private readonly ApiAuthenticationStateProvider _authenticationStateProvider;
         public HttpClientHelper(IHttpClientFactory httpClient,
             ILocalStorageService localStorage,
+            NavigationManager navigationManager,
             ApiAuthenticationStateProvider authenticationStateProvider)
         {
             _httpClient = httpClient;
             _localStorage = localStorage;
             _authenticationStateProvider = authenticationStateProvider;
+            _navigationManager = navigationManager;
         }
 
         public async Task<HttpClient> GetHttpClientAsync(CHttpClientType httpClientType = CHttpClientType.Private,
@@ -43,6 +47,48 @@ namespace MMA.BlazorWasm
             return client;
         }
 
+        public async Task<HttpResponseMessage?> BaseAPICallAsync<TRequest>(string endpoint,
+            TRequest data,
+            CRequestType methodType,
+            CHttpClientType requestType = CHttpClientType.Private,
+            CPortalType portalType = CPortalType.CET)
+        {
+            var httpClient = await GetHttpClientAsync(httpClientType: requestType, portalType: portalType);
+            HttpResponseMessage? response = null;
+            HttpContent? content = null;
+            switch(methodType)
+            {
+                case CRequestType.Get:{
+                    response = await httpClient.GetAsync(requestUri: endpoint);
+                    break;
+                }
+                case CRequestType.Post:{
+                    var jsonContent = data?.ToJson() ?? string.Empty;
+                    content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                    response = await httpClient.PostAsync(requestUri: endpoint, content: data == null ? null : content);
+                    break;
+                }
+                case CRequestType.Put:{
+
+                    break;
+                }
+                case CRequestType.Delete:{
+
+                    break;
+                }
+                default: break;
+            }
+
+            if (response != null && response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                await ProcessRefreshTokenAsync(httpClient: httpClient, endpoint: endpoint,
+                    requestType: methodType, response: response, content: content);
+            }
+
+            await ProcessAPIStatusResponseAsync(response?.StatusCode ?? 0);
+            return response;
+        }
+
         public async Task<ResponseResult<TResponse>?> PostAsync<TRequest, TResponse>(
             string endpoint,
             TRequest data,
@@ -60,6 +106,31 @@ namespace MMA.BlazorWasm
                 await ProcessRefreshTokenAsync(httpClient: httpClient, endpoint: endpoint,
                     requestType: CRequestType.Post, response: response, content: content);
             }
+
+            await ProcessAPIStatusResponseAsync(response.StatusCode);
+
+            var responseData = await response.Content.ReadAsStringAsync();
+            var result = responseData.FromJson<ResponseResult<TResponse>>();
+            return result;
+        }
+
+        public async Task<ResponseResult<TResponse>?> PostAsync<TResponse>(
+            string endpoint,
+            CHttpClientType requestType = CHttpClientType.Private,
+            CPortalType portalType = CPortalType.CET)
+        {
+            var httpClient = await GetHttpClientAsync(httpClientType: requestType, portalType: portalType);
+
+            var response = await httpClient.PostAsync(requestUri: endpoint, content: null);
+            // nếu kết quả trả về không xác thực được -> cần refresh access token mới.
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                await ProcessRefreshTokenAsync(httpClient: httpClient, endpoint: endpoint,
+                    requestType: CRequestType.Post, response: response, content: null);
+            }
+
+            await ProcessAPIStatusResponseAsync(response.StatusCode);
+
             var responseData = await response.Content.ReadAsStringAsync();
             var result = responseData.FromJson<ResponseResult<TResponse>>();
             return result;
@@ -79,6 +150,9 @@ namespace MMA.BlazorWasm
                 await ProcessRefreshTokenAsync(httpClient: httpClient, endpoint: endpoint,
                     response: response, content: null, requestType: CRequestType.Get);
             }
+
+            await ProcessAPIStatusResponseAsync(response.StatusCode);
+
             var responseData = await response.Content.ReadAsStringAsync();
             var result = responseData.FromJson<ResponseResult<TResponse>>();
             return result;
@@ -98,6 +172,8 @@ namespace MMA.BlazorWasm
                 await ProcessRefreshTokenAsync(httpClient: httpClient, endpoint: endpoint,
                     response: response, content: null, requestType: CRequestType.Delete);
             }
+
+            await ProcessAPIStatusResponseAsync(response.StatusCode);
 
             var responseData = await response.Content.ReadAsStringAsync();
             var result = responseData.FromJson<ResponseResult<TResponse>>();
@@ -158,6 +234,24 @@ namespace MMA.BlazorWasm
                 await _localStorage.RemoveItemAsync(key: ApiClientConstant.LocalStorage_Key);
                 _authenticationStateProvider.MarkUserAsLoggedOut();
             }
+        }
+
+        private async Task ProcessAPIStatusResponseAsync(HttpStatusCode statusCode)
+        {
+            switch(statusCode)
+            {
+                case HttpStatusCode.Forbidden:
+                {
+                    _navigationManager.NavigateTo(uri: "/forbiden/403");
+                    break;
+                }
+                case HttpStatusCode.Unauthorized:
+                {
+                    _navigationManager.NavigateTo(uri: "/login");
+                    break;
+                }
+            }
+            await Task.CompletedTask;
         }
     }
 }
