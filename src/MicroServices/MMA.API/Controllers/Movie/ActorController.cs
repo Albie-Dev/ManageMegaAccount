@@ -82,6 +82,7 @@ namespace MMA.API
         }
 
         [HttpPost("actor/delete")]
+        [MMAAuthorized(Permission = CPermissionType.Manage, Resource = CResourceType.AdminUserManagement, Role = CRoleType.Admin)]
         public async Task<IActionResult> DeleteActor(DeleteActorRequestDto actorRequestDto)
         {
             var result = await _actorService.DeleteActorAsync(actorRequestDto: actorRequestDto);
@@ -100,7 +101,7 @@ namespace MMA.API
             var exportResult = await _actorService.ExportActorByExcelTemplateAsyn(tableParam);
             return new FileContentResult(fileContents: exportResult, contentType: "application/octet-stream")
             {
-                FileDownloadName = $"Export_Actor_Details_by_{ownerName}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx"
+                FileDownloadName = $"Export_Actor_Details_by_{ownerName}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx".Trim().Replace(" ", "_")
             };
         }
     }

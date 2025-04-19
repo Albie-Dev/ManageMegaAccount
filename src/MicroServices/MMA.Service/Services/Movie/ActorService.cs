@@ -136,6 +136,10 @@ namespace MMA.Service
 
             if (tableParam.Filter != null)
             {
+                if (!tableParam.Filter.ActorIds.IsNullOrEmpty())
+                {
+                    collection = collection.Where(s => tableParam.Filter.ActorIds.Contains(s.Id));
+                }
                 if (tableParam.Filter.FromBust.HasValue)
                 {
                     collection = collection.Where(ac => ac.Bust >= tableParam.Filter.FromBust.Value);
@@ -461,7 +465,7 @@ namespace MMA.Service
         {
             var result = await GetActorDetailBasePagingAsync(tableParam: tableParam);
             var importResult = await _excelCoreService.ExportExcelByTemplateAsync<ActorDetailDto>(exportDataModels: result.Actors,
-                fileName: "ActorExportTemplate.xlsx", assemblyName: "MMA.Service", sheetKey: "{{ActorDetail}}", sheetName: "Actor details");
+                fileName: "Excel.ActorExportTemplate.xlsx", assemblyName: "MMA.Service", sheetKey: "{{SheetKey}}", sheetName: "Actor details");
             return importResult;
         }
         #endregion import and export

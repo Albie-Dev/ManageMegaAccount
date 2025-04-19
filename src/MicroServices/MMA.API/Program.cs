@@ -30,7 +30,8 @@ app.UseCors(corsPolicyBuilder =>
 {
     corsPolicyBuilder.AllowAnyOrigin()
         .AllowAnyHeader()
-        .AllowAnyMethod();
+        .AllowAnyMethod()
+        .WithExposedHeaders("Content-Disposition");
 });
 
 app.UseHttpsRedirection();

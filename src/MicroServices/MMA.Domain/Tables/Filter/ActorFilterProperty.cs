@@ -2,6 +2,7 @@ namespace MMA.Domain
 {
     public class ActorFilterProperty : BaseFilter
     {
+        public List<Guid> ActorIds { get; set; } = new();
         public int? FromBust { get; set; }
         public int? ToBust { get; set; }
         public int? FromWaist { get; set; }

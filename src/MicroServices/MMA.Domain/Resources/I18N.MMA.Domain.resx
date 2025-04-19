@@ -168,6 +168,30 @@
     <value>Không có</value>
   </data>
 
+  <!-- Role -->
+  <data name="Enum_CRoleType_Client_Entry" xml:space="preserve">
+    <value>Khách hàng</value>
+  </data>
+  <data name="Enum_CRoleType_Admin_Entry" xml:space="preserve">
+    <value>Quản trị viên</value>
+  </data>
+  <data name="Column_Title_Role_RoleId_Entry" xml:space="preserve">
+    <value>Role ID</value>
+  </data>
+  <data name="Column_Title_Role_RoleName_Entry" xml:space="preserve">
+    <value>Tên quyền</value>
+  </data>
+  <data name="Column_Title_Role_RoleType_Entry" xml:space="preserve">
+    <value>Loại quyền</value>
+  </data>
+  <data name="Column_Title_Role_CreatedDate_Entry" xml:space="preserve">
+    <value>Ngày tạo</value>
+  </data>
+  <data name="Column_Title_Role_ModifiedDate_Entry" xml:space="preserve">
+    <value>Ngày cập nhật</value>
+  </data>
+  <!-- Role -->
+
   <!-- Asia -->
   <data name="Enum_CRegionType_Afghanistan_Entry" xml:space="preserve">
       <value>Afghanistan</value>
