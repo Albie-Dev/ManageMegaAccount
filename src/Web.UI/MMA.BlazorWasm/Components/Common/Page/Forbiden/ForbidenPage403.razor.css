@@ -1,0 +1,30 @@
+body {
+    background-image: url('');
+    /* Gợi cảm nhưng không phản cảm */
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.overlay {
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(5px);
+    border-radius: 20px;
+    padding: 3rem;
+    color: #fff;
+}
+
+.forbidden-icon {
+    font-size: 4rem;
+    color: #ff4e8b;
+}
+
+.btn-danger-pink {
+    background-color: #ff4e8b;
+    border: none;
+}
+
+.btn-danger-pink:hover {
+    background-color: #e9437d;
+}

@@ -1,0 +1,25 @@
+@page "/forbiden/403"
+@using MMA.BlazorWasm.Layout.Base
+@layout BaseLayout
+
+<PageTitle>Forbiden</PageTitle>
+
+<div class="overlay shadow-lg">
+    <div class="forbidden-icon mb-3">
+        <i class="bi bi-shield-lock-fill"></i>
+    </div>
+    <h1 class="display-5 fw-bold text-warning">403 - KHU VỰC CẤM</h1>
+    <p class="lead mt-3 mb-4">
+        Bạn đã lạc vào một thế giới đầy <strong>sự huyền bí</strong> và <em> vô cùng kích thích</em>.<br>
+        Nhưng xin lỗi… <strong>bạn không có quyền truy cập</strong>!
+    </p>
+    <p class="text-light small mb-4">
+        Vui lòng quay lại trước khi bạn bị "đốt mắt" 🔥
+    </p>
+    <ButtonAmam7078 Class="btn btn-danger-pink px-4 py-2 rounded-pill"
+        Icon="bi bi-arrow-left-circle-fill me-2"
+        IconPosition="CIconPositionType.Left"
+        Text="Trở về an toàn"
+        Type="button"
+        OnClick="BackToHomePage" />
+</div>
