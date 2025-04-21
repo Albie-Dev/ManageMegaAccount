@@ -14,28 +14,42 @@
 }
 <div class="d-flex justify-content-between">
     <div class="div">
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi bi-cloud-plus text-primary"
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-primary" Icon="bi bi-cloud-plus"
             IconPosition="CIconPositionType.Right" Text="Create" OnClick="CreateActorAsync" />
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi bi-pencil-square text-success"
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-success" Icon="bi bi-pencil-square"
             IconPosition="CIconPositionType.Right" Text="Update" IsDisabled="!ShowUpdateActor" OnClick="UpdateActorAsync" />
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi-toggle-off text-primary"
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi-toggle-off"
             IconPosition="CIconPositionType.Right" Text="Deactive" IsDisabled="ShowDeactiveActor" OnClick="DeactiveActorsAsync" />
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi bi-cloud-upload text-success"
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-info" Icon="bi bi-cloud-upload"
             IconPosition="CIconPositionType.Right" Text="Import" OnClick="DeactiveActorsAsync" />
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi bi-file-earmark-excel text-success"
-            IconPosition="CIconPositionType.Right" Text="Export" OnClick="DeactiveActorsAsync" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-success" Icon="bi bi-file-earmark-excel"
+            IconPosition="CIconPositionType.Right" Text="Export" OnClick="ExportActorsAsync" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-danger" Icon="bi bi-trash"
+            IconPosition="CIconPositionType.Right" Text="Delete" IsDisabled="!ShowUpdateActor" OnClick="DeleteActorsAsync" />
     </div>
     
     <div class="d-flex flex-row-reverse">
-        @* <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2" OnClick="ToggleFilterPanel"
-            Icon="bi bi-funnel" IconPosition="CIconPositionType.Center" /> *@
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2" OnClick="ShowFilterPanel"
+            Icon="bi bi-funnel" IconPosition="CIconPositionType.Center" />
         <DropdownCheckboxList Items="_displayColumns" OnApply="ApplyColumnSelection" OnCancel="CancelColumnSelection"
-            Class="mx-2" />
+            Class="mx-2" Title=""/>
         @* <input class="form-control w-auto" type="text" placeholder="Search..." @oninput="OnSearchInputChange"
             @onkeydown="Search" /> *@
     </div>
 </div>
 <ImageViewer ImageUrl="@currentImageUrl" IsOpen="@_isShowImage" IsOpenChanged="(open) => _isShowImage = open" />
+@if(_isShowFilterPanel)
+{
+    <Filter TFilter="ActorFilterProperty" IsOpen="@_isShowFilterPanel" IsOpenChanged="(open) => _isShowFilterPanel = open"
+        FilterLabelName="Lọc diễn viên">
+        <CustomFilterContent>
+            <label for="Hips">Loại kích cỡ ngực :</label>
+            <ComboboxList T="@(CCupSizeType)" Items="CCupSizeType.A.ToComboboxModels()"
+                Mode="CComboboxModeType.Checkbox" @bind-BindValues="FilterProperty.CupSizeTypes"
+                PlaceHolderName="Chọn loại kích thước ngực" />
+        </CustomFilterContent>
+    </Filter>
+}
 <div class="table mt-2">
     <table class="table table-striped table-bordered align-middle">
         <thead>

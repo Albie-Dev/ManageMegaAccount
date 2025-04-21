@@ -18,7 +18,12 @@ namespace MMA.BlazorWasm.Components.Common.Combobox
         [Parameter] public List<T> BindValues { get; set; } = new();
         [Parameter] public EventCallback<List<T>> BindValuesChanged { get; set; }
 
+        [Parameter] public EventCallback<T?> OnValueChanged { get; set; }
+        [Parameter] public EventCallback<List<T>> OnValuesChanged { get; set; }
+
+
         public List<CComboboxModel> FilteredOptions { get; set; } = new();
+        [Parameter]
         public List<CComboboxModel> SelectedOptions { get; set; } = new();
         public HashSet<T> SelectedValues { get; set; } = new();
 
@@ -58,6 +63,30 @@ namespace MMA.BlazorWasm.Components.Common.Combobox
 
         public void ToggleDropdown() => ShowDropdown = !ShowDropdown;
 
+        public async Task RemoveOption(CComboboxModel option)
+        {
+            if (Mode == CComboboxModeType.Checkbox)
+            {
+                var value = (T)option.Value!;
+                SelectedValues.Remove(value);
+                SelectedOptions = Items.Where(i => SelectedValues.Contains((T)i.Value!)).ToList();
+
+                await BindValuesChanged.InvokeAsync(SelectedValues.ToList());
+                await OnValuesChanged.InvokeAsync(SelectedValues.ToList());
+            }
+            else
+            {
+                SelectedValues.Clear();
+                SelectedOptions.Clear();
+
+                await BindValueChanged.InvokeAsync(default);
+                await OnValueChanged.InvokeAsync(default);
+            }
+
+            ShowDropdown = false;
+            StateHasChanged();
+        }
+
         public async Task HandleRadioSelection(CComboboxModel option)
         {
             SelectedValues.Clear();
@@ -66,6 +95,8 @@ namespace MMA.BlazorWasm.Components.Common.Combobox
             ShowDropdown = false;
 
             await BindValueChanged.InvokeAsync((T)option.Value!);
+            await OnValueChanged.InvokeAsync((T)option.Value!);
+
             StateHasChanged();
         }
 
@@ -77,6 +108,8 @@ namespace MMA.BlazorWasm.Components.Common.Combobox
             ShowDropdown = false;
 
             await BindValueChanged.InvokeAsync((T)option.Value!);
+            await OnValueChanged.InvokeAsync((T)option.Value!);
+            
             StateHasChanged();
         }
 
@@ -90,6 +123,7 @@ namespace MMA.BlazorWasm.Components.Common.Combobox
 
             SelectedOptions = Items.Where(i => SelectedValues.Contains((T)i.Value!)).ToList();
             await BindValuesChanged.InvokeAsync(SelectedValues.ToList());
+            await OnValuesChanged.InvokeAsync(SelectedValues.ToList());
             StateHasChanged();
         }
 

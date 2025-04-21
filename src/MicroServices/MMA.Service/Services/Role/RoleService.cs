@@ -1,6 +1,8 @@
 using MMA.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Mapster;
+using Microsoft.EntityFrameworkCore;
 
 namespace MMA.Service
 {
@@ -16,6 +18,22 @@ namespace MMA.Service
             _repository = repository;
             _logger = logger;
         }
+
+        #region get all roles
+        public async Task<List<RoleDetailResponseDto>> GetAllRolesAsync()
+        {
+            var roles = await _repository.Queryable<RoleEntity>()
+                .Select(s => new RoleDetailResponseDto()
+                {
+                    RoleId = s.Id,
+                    RoleName = s.RoleName,
+                    RoleType = s.RoleType
+                })
+                .ToListAsync();
+
+            return roles;
+        }
+        #endregion get all roles
 
         #region sync new role
         public async Task<NotificationResponse> SyncRolesAsync()

@@ -8,7 +8,7 @@ namespace MMA.BlazorWasm.Components.Common.Table
     {
         private List<TData> _filteredData { get; set; } = new();
         private int _currentPage = 1;
-        private int _itemsPerPage = 1;
+        private int _itemsPerPage = 10;
         [Parameter]
         public bool IsLoading { get; set; } = false;
         [Parameter]
@@ -61,6 +61,9 @@ namespace MMA.BlazorWasm.Components.Common.Table
 
         [Parameter]
         public Func<TData, TSelection>? MapSelection { get; set; }
+
+        [Parameter]
+        public string SearchPlaceHolder { get; set; } = "Search....";
 
         protected override async Task OnInitializedAsync()
         {
@@ -242,6 +245,12 @@ namespace MMA.BlazorWasm.Components.Common.Table
                 _requestData.PageNumber = _currentPage;
                 await FetchDataAsync();
             }
+        }
+
+        private async Task HandlePageChange(int itemsPerPage)
+        {
+            _itemsPerPage = itemsPerPage;
+            await FetchDataAsync();
         }
         #endregion paging action
 

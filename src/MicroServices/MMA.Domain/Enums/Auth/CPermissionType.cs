@@ -15,7 +15,7 @@ namespace MMA.Domain
         Update = 2,
 
         [Description(description: "Xóa")]
-        Delete = 3,
+        Delete = 4,
 
         [Description(description: "Tất cả quyền")]
         Manage = Read | Update | Delete

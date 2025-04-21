@@ -47,7 +47,6 @@ namespace MMA.Service
 
             services.AddScoped<IAuthMethodService, AuthMethodService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<ITokenManager, TokenManager>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IMegaApiClient, MegaApiClient>();
@@ -64,6 +63,10 @@ namespace MMA.Service
             });
             services.AddScoped<IImageKitIOService, ImageKitIOService>();
             services.AddScoped<IExcelCoreService, ExcelCoreService>();
+
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRoleService, UserRoleService>();
 
             services.AddScoped<IActorService, ActorService>();
             return services;

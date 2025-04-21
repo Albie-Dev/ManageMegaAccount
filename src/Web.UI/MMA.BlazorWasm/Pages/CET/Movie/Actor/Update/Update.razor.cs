@@ -90,7 +90,7 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Update
                     portalType: CPortalType.CET);
                 if (apiResponse == null)
                 {
-                    _toastService.ShowError(message: "An error occured while call to server.");
+                    _toastService.ShowError(message: $"Không thể kết nối đến server. Host: {CPortalType.CET.ToDescription()}");
                 }
                 else if (!apiResponse.Errors.IsNullOrEmpty())
                 {
@@ -98,7 +98,7 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Update
                 }
                 else if (apiResponse.Data == null)
                 {
-                    _toastService.ShowError(message: "Không thể nhận được phản hồi từ API.");
+                    _toastService.ShowError(message: "Đã có lỗi xảy ra trong quá trình cập thông tin diễn viên.");
                 }
                 else
                 {

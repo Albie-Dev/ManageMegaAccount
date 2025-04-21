@@ -7,5 +7,6 @@ namespace MMA.Service
     {
         Task<BasePagedResult<RoleDetailResponseDto>> GetWithPagingAsync(TableParam<RoleFilterProperty> tableParam);
         Task<NotificationResponse> SyncRolesAsync();
+        Task<List<RoleDetailResponseDto>> GetAllRolesAsync();
     }
 }

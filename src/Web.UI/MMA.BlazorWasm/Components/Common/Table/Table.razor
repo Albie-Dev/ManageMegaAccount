@@ -4,18 +4,18 @@
 
 
 <div class="container my-4">
-    <div class="d-flex justify-content-between mb-3">
-        <div class="d-flex justify-content-start">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div class="d-flex flex-wrap align-items-center gap-2">
             @ActionContent
         </div>
 
-        <div class="d-flex flex-row-reverse">
-            <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2" OnClick="ToggleFilterPanel"
+        <div class="d-flex flex-wrap align-items-stretch gap-2">
+            <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" OnClick="ToggleFilterPanel"
                 Icon="bi bi-funnel" IconPosition="CIconPositionType.Center" />
             <DropdownCheckboxList Items="Columns" OnApply="ApplyColumnSelection" OnCancel="CancelColumnSelection"
-                Class="mx-2" Title=""/>
-            <input class="form-control w-auto" type="text" placeholder="Search..." @oninput="OnSearchInputChange"
-                @onkeydown="Search" />
+                Title="" />
+            <input class="form-control w-auto" style="min-width: 100px;" type="text" placeholder="@SearchPlaceHolder"
+                @oninput="OnSearchInputChange" @onkeydown="Search" />
         </div>
     </div>
 
@@ -29,104 +29,176 @@
             </CustomFilterContent>    
         </Filter>
     }
-
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr class="table-primary">
-                @foreach (var column in Columns.Where(c => c.IsSelected))
-                {
-                    <th>
-                        <div class="d-flex">
-                            @if (column.IsSort)
-                            {
-                                <span style="cursor: pointer;" @onclick="EventCallback.Factory.Create(this, 
-                                    () => SortAsync(propertyName: column.Value.ToString() ?? string.Empty))">@column.Name</span>
-                                @if (_requestData.Sorter != null && _requestData.Sorter.KeyName == column.Value.ToString())
+    <div class="table-responsive-wrapper">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr class="table-primary">
+                    @foreach (var column in Columns.Where(c => c.IsSelected))
+                    {
+                        <th>
+                            <div class="d-flex">
+                                @if (column.IsSort)
                                 {
-                                    if (_requestData.Sorter.IsASC)
+                                    <span style="cursor: pointer;" @onclick="EventCallback.Factory.Create(this, 
+                                        () => SortAsync(propertyName: column.Value.ToString() ?? string.Empty))">@column.Name</span>
+                                    @if (_requestData.Sorter != null && _requestData.Sorter.KeyName == column.Value.ToString())
                                     {
-                                        <i class="bi bi-sort-alpha-down ms-1 text-danger"></i>
+                                        if (_requestData.Sorter.IsASC)
+                                        {
+                                            <i class="bi bi-sort-alpha-down ms-1 text-danger"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-sort-alpha-up-alt ms-1 text-success"></i>
+                                        }
                                     }
-                                    else
-                                    {
-                                        <i class="bi bi-sort-alpha-up-alt ms-1 text-success"></i>
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                <span>@column.Name</span>
-                            }
-                        </div>
-                    </th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @if (!_filteredData.IsNullOrEmpty())
-            {
-                @foreach (TData row in _filteredData ?? new List<TData>())
-                {
-                    <tr>
-                        @foreach (var column in Columns.Where(c => c.IsSelected))
-                        {
-                            if (column.Name == "#" && MapSelection != null)
-                            {
-                                var selectionItem = MapSelection.Invoke(row);
-                                var isChecked = SelectedItems.Contains(selectionItem);
-                                <td>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" checked="@isChecked"
-                                            id="flexCheckDefault"
-                                            @onchange="() => OnToggleSelectedItem(row: row)">
-                                    </div>
-                                </td>
-                            }
-                            else
-                            {
-                                if (!CellContents.IsNullOrEmpty() && CellContents.TryGetValue(column.Value.ToString() ?? string.Empty,
-                                    out RenderFragment<TData>? template))
-                                {
-                                    <td>@template.Invoke(row)</td>
                                 }
                                 else
                                 {
-                                    <td>@row?.GetType().GetProperty(column.Value.ToString() ?? string.Empty)?.GetValue(row, null)</td>
+                                    <span>@column.Name</span>
+                                }
+                            </div>
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (!_filteredData.IsNullOrEmpty())
+                {
+                    @foreach (TData row in _filteredData ?? new List<TData>())
+                    {
+                        <tr>
+                            @foreach (var column in Columns.Where(c => c.IsSelected))
+                            {
+                                if (column.Name == "#" && MapSelection != null)
+                                {
+                                    var selectionItem = MapSelection.Invoke(row);
+                                    var isChecked = SelectedItems.Contains(selectionItem);
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" checked="@isChecked"
+                                                id="flexCheckDefault"
+                                                @onchange="() => OnToggleSelectedItem(row: row)">
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    if (!CellContents.IsNullOrEmpty() && CellContents.TryGetValue(column.Value.ToString() ?? string.Empty,
+                                        out RenderFragment<TData>? template))
+                                    {
+                                        <td>@template.Invoke(row)</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@row?.GetType().GetProperty(column.Value.ToString() ?? string.Empty)?.GetValue(row, null)</td>
+                                    }
                                 }
                             }
-                        }
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr class="text-secondary text-center">
+                        <td colspan="@Columns.Where(c => c.IsSelected).Count()">No items available to show.</td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr class="text-secondary text-center">
-                    <td colspan="@Columns.Where(c => c.IsSelected).Count()">No items available to show.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 
-    <div class="d-flex justify-content-end mt-3">
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="FirstPage"
-            IsDisabled="@(!CanNavigateFirst)" Icon="bi bi-chevron-double-left"
-            IconPosition="CIconPositionType.Center" />
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="PreviousPage"
-            IsDisabled="@(!CanNavigatePrevious)" Icon="bi bi-chevron-left" IconPosition="CIconPositionType.Center" />
-
-        <div class="d-flex align-items-center">
-            @foreach (var page in GetPagingNumbers())
-            {
-                string className = "btn btn-sm btn" + (_currentPage == page ? string.Empty : "-outline") + "-primary me-1";
-                <ButtonAmam7078 Class="@className" Text="@(page.ToString())"
-                    OnClick="EventCallback.Factory.Create(this, () => GoToPage(page))"
-                    IsDisabled="@(_currentPage == page)" />
-            }
+    <div class="d-flex justify-content-between align-items-center mt-1">
+        <div class="d-flex justify-content-start" style="max-width: 60px; font-size: 0.6rem;">
+            <ComboboxList T="int" Mode="CComboboxModeType.Select"
+                PlaceHolderName="Chọn số trang"
+                Items="InitPageNumbers()"
+                SelectedOptions="InitSelectedItems()"
+                OnValueChanged="(value => HandlePageChange(value))"
+                @bind-BindValue="_itemsPerPage"
+            />
         </div>
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="NextPage"
-            IsDisabled="@(!CanNavigateNext)" Icon="bi bi-chevron-right" IconPosition="CIconPositionType.Center" />
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="LastPage"
-            IsDisabled="@(!CanNavigateLast)" Icon="bi bi-chevron-double-right"
-            IconPosition="CIconPositionType.Center" />
+
+        <div class="d-flex justify-content-end">
+            <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="FirstPage"
+                IsDisabled="@(!CanNavigateFirst)" Icon="bi bi-chevron-double-left"
+                IconPosition="CIconPositionType.Center" />
+            <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="PreviousPage"
+                IsDisabled="@(!CanNavigatePrevious)" Icon="bi bi-chevron-left"
+                IconPosition="CIconPositionType.Center" />
+
+            <div class="d-flex align-items-center">
+                @foreach (var page in GetPagingNumbers())
+                {
+                    string className = "btn btn-sm btn" + (_currentPage == page ? string.Empty : "-outline") + "-primary me-1";
+                    <ButtonAmam7078 Class="@className" Text="@(page.ToString())"
+                        OnClick="EventCallback.Factory.Create(this, () => GoToPage(page))"
+                        IsDisabled="@(_currentPage == page)" />
+                }
+            </div>
+
+            <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="NextPage"
+                IsDisabled="@(!CanNavigateNext)" Icon="bi bi-chevron-right"
+                IconPosition="CIconPositionType.Center" />
+            <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-1" OnClick="LastPage"
+                IsDisabled="@(!CanNavigateLast)" Icon="bi bi-chevron-double-right"
+                IconPosition="CIconPositionType.Center" />
+        </div>
     </div>
 </div>
+
+
+@code
+{
+    private List<CComboboxModel> InitSelectedItems()
+    {
+        return new List<CComboboxModel>()
+        {
+            new CComboboxModel()
+            {
+                Name = _itemsPerPage.ToString(),
+                Value = _itemsPerPage,
+                Checked = true
+            }
+        };
+    }
+    private List<CComboboxModel> InitPageNumbers()
+    {
+        var result = new List<CComboboxModel>()
+        {
+            new CComboboxModel()
+            {
+                Name = $"{_itemsPerPage}",
+                Value = _itemsPerPage,
+                Checked = true
+            },
+            new CComboboxModel()
+            {
+                Name = "25",
+                Value = 25,
+                Checked = false
+            },
+            new CComboboxModel()
+            {
+                Name = "50",
+                Value = 50,
+                Checked = false
+            },
+            new CComboboxModel()
+            {
+                Name = "75",
+                Value = 75,
+                Checked = false
+            },
+            new CComboboxModel()
+            {
+                Name = "100",
+                Value = 100,
+                Checked = false
+            }
+        };
+
+        result = result.DistinctBy(s => s.Value).OrderBy(s => s.Value).ToList();
+        return result;
+    }
+}

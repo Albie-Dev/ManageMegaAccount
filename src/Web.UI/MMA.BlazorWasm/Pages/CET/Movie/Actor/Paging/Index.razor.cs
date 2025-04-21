@@ -1,3 +1,4 @@
+using Microsoft.JSInterop;
 using MMA.Domain;
 
 namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Paging
@@ -20,7 +21,7 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Paging
                 data: _requestDto, requestType: CHttpClientType.Private, portalType: CPortalType.CET);
                 if (apiResponse == null)
                 {
-                    _toastService.ShowError($"An error occured while call to get actors.");
+                    _toastService.ShowError($"Không thể kết nối đến server. Host: {CPortalType.CET.ToDescription()}");
                 }
                 else if (!apiResponse.Errors.IsNullOrEmpty())
                 {
@@ -28,7 +29,7 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Paging
                 }
                 else if (apiResponse.Data == null)
                 {
-                    _toastService.ShowError(message: "không thể get data");
+                    _toastService.ShowError(message: "Đã có lỗi xảy ra trong quá trình lấy thông diễn viên.");
                 }
                 else
                 {
@@ -50,11 +51,13 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Paging
 
         #region variable
         private bool _isShowImage { get; set; } = false;
+        private bool _isShowFilterPanel { get; set; } = false;
         private bool _isLoading { get; set; } = false;
         private bool _isShowColumns { get; set; } = false;
 
 
         private TableParam<ActorFilterProperty> _requestDto { get; set; } = new TableParam<ActorFilterProperty>();
+        private ActorFilterProperty FilterProperty = new ActorFilterProperty();
         private List<ErrorDetailDto> _errors { get; set; } = new List<ErrorDetailDto>();
         private NotificationResponse? _notificationResponse { get; set; } = null;
         private BasePagedResult<ActorDetailDto> _result = new BasePagedResult<ActorDetailDto>();
@@ -117,10 +120,24 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Paging
             if (_selectedActorIds.Contains(actorId))
             {
                 _selectedActorIds.Remove(item: actorId);
+                if (_requestDto.Filter == null)
+                {
+                    _requestDto.Filter = new();
+                }
+                _requestDto.Filter.ActorIds.Remove(item: actorId);
             }
             else
             {
                 _selectedActorIds.Add(item: actorId);
+                if (_requestDto.Filter == null)
+                {
+                    _requestDto.Filter = new();
+                }
+                if (!_requestDto.Filter.ActorIds.Contains(item: actorId))
+                {
+                    _requestDto.Filter.ActorIds.Add(item: actorId);
+                    _toastService.ShowInfo(_requestDto.Filter.ActorIds.ToJson());
+                }
             }
         }
         #region view detail
@@ -134,6 +151,11 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Paging
         {
             currentImageUrl = imageUrl;
             _isShowImage = true;
+        }
+
+        private void ShowFilterPanel()
+        {
+            _isShowFilterPanel = true;
         }
 
         private void CloseImageViewer()
@@ -154,7 +176,51 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Paging
         #endregion update
 
         #region delete
-
+        private async Task DeleteActorsAsync()
+        {
+            try
+            {
+                _isLoading = true;
+                var apiResponse = await _httpClientHelper.PostAsync<DeleteActorRequestDto, NotificationResponse>(
+                    endpoint: Path.Combine(EndpointConstant.Movie_Base_Url, EndpointConstant.Movie_Actor_Delete),
+                    data: new DeleteActorRequestDto()
+                    {
+                        ActorId = _selectedActorIds.First()
+                    },
+                    requestType: CHttpClientType.Private,
+                    portalType: CPortalType.CET
+                );
+                if (apiResponse == null)
+                {
+                    _toastService.ShowError($"Không thể kết nối đến server. Host: {CPortalType.CET.ToDescription()}");
+                }
+                else
+                {
+                    if (!apiResponse.Errors.IsNullOrEmpty())
+                    {
+                        _errors = apiResponse.Errors;
+                    }
+                    else if (apiResponse.Data == null)
+                    {
+                        _toastService.ShowError($"Đã có lỗi xảy ra trong quá trình xóa diễn viên.");
+                    }
+                    else
+                    {
+                        _notificationResponse = apiResponse.Data;
+                        await FetchDataAsync();
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                _toastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                _isLoading = false;
+                StateHasChanged();
+            }
+        }
         #endregion delete
 
         #region deactive
@@ -210,7 +276,7 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Paging
         private async Task CreateActorAsync()
         {
             await Task.CompletedTask;
-            _navigationManager.NavigateTo(uri: "/movie/actor/create", forceLoad: true);
+            _navigationManager.NavigateTo(uri: "/movie/actor/create");
         }
         #endregion create
 
@@ -219,30 +285,46 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Paging
         #endregion import
 
         #region export
-        private async Task ExportActorAsync()
+        private async Task ExportActorsAsync()
         {
             try
             {
-                var apiResonse = await _httpClientHelper.PostAsync<TableParam<ActorFilterProperty>, byte[]>(
-                    endpoint: EndpointConstant.Movie_Actor_Export,
-                    data: _requestDto, requestType: CHttpClientType.Private, portalType: CPortalType.CET);
-                if (apiResonse == null)
-                {
+                _isLoading = true;
 
+                var apiResponse = await _httpClientHelper.BaseAPICallAsync<TableParam<ActorFilterProperty>>(
+                    endpoint: Path.Combine(EndpointConstant.Movie_Base_Url, EndpointConstant.Movie_Actor_Export),
+                    data: _requestDto,
+                    methodType: CRequestType.Post,
+                    requestType: CHttpClientType.Private,
+                    portalType: CPortalType.CET);
+
+                if (apiResponse == null)
+                {
+                    _toastService.ShowError($"Không thể kết nối đến server. Host: {CPortalType.CET.ToDescription()}");
                 }
                 else
                 {
-                    if (apiResonse.)
+                    if (apiResponse.IsSuccessStatusCode)
+                    {
+                        string exportFileName = apiResponse.Content.Headers.ContentDisposition?.FileName ?? string.Empty;
+                        byte[] fileBytes = await apiResponse.Content.ReadAsByteArrayAsync();
+                        var base64 = Convert.ToBase64String(fileBytes);
+                        await _jsRuntime.InvokeVoidAsync("downloadFile", exportFileName, base64);
+                    }
+                    else
+                    {
+                        _toastService.ShowError(message: $"");
+                    }
+                    
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                _toastService.ShowError($"An error occurred: {ex.Message}");
+                _toastService.ShowError(message: ex.Message);
             }
             finally
             {
                 _isLoading = false;
-                StateHasChanged();
             }
         }
         #endregion export

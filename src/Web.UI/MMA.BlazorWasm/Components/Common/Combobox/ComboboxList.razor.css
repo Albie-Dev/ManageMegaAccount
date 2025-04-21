@@ -1,8 +1,9 @@
 /* Container for the complete component */
 .dropdown-wrapper {
     position: relative;
-    width: 300px;
+    width: 100%;
     font-family: Arial, sans-serif;
+    font-size: inherit;
 }
 
 /* Main input container styled to look like a search input with tags */
@@ -81,4 +82,10 @@
 
 .options-list label:hover {
     background: #f1f1f1;
+}
+
+.input-container,
+.input-container input,
+.tag {
+    font-size: inherit;
 }

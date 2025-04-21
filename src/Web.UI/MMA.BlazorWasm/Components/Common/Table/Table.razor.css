@@ -1,4 +1,22 @@
+.table-responsive-wrapper {
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.table th,
+.table td {
+    white-space: nowrap;
+    min-width: 120px;
+}
+
 .filter-table
 {
     z-index: 99;
+}
+
+@media (max-width: 576px) {
+    .form-control {
+        width: 100% !important;
+    }
 }

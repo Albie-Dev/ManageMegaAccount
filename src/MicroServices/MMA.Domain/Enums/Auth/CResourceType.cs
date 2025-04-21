@@ -5,5 +5,6 @@ namespace MMA.Domain
         None = 0,
         User = 1,
         AdminUserManagement = 2,
+        Actor = 3
     }
 }
