@@ -42,5 +42,10 @@ namespace MMA.Domain
         public const string Cloud_Base_Url = "api/v1/cloud";
         public const string Cloud_ImageKitIO_GenerateToken = "imagekit/generatetoken";
         public const string Cloud_ImageKitIO = "imagekit";
+
+
+        #region User role
+        public const string CET_UserRole_Update = "userrole/update";
+        #endregion User role
     }
 }

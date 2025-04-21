@@ -74,13 +74,16 @@ namespace MMA.Service
                 throw new MMAException(statusCode: StatusCodes.Status400BadRequest, errors: modelState.GetErrors());
             }
 
+            requestDto.UserRoles.RemoveAll(s => !s.HasRole);
+            requestDto.UserRoles.ForEach(role => role.Resources.ForEach(resource => resource.PermissionTypes.RemoveAll(s => !s.HasPermission)));
+
             var requestRoleIds = requestDto.UserRoles.Select(s => s.RoleId).ToList();
             var userRoles = await _repository.GetAsync<UserRoleEntity>(s => s.UserId == requestDto.UserId);
 
             var deletedUserRoles = userRoles.Where(s => !requestRoleIds.Contains(s.RoleId)).ToList();
             if (!deletedUserRoles.IsNullOrEmpty())
             {
-                await _repository.DeleteRangeAsync<UserRoleEntity>(deletedUserRoles);
+                await _repository.DeleteRangeAsync<UserRoleEntity>(deletedUserRoles, clearTracker: true);
                 _logger.LogInformation($@"{nameof(UserRoleService)} {nameof(AddUserRoleResourcePermissionsAsync)}:
             deleted. Count = {deletedUserRoles.Count}, RoleIds = {string.Join(",", deletedUserRoles.Select(s => s.RoleId))}");
             }
@@ -98,7 +101,7 @@ namespace MMA.Service
 
             if (!newUserRoles.IsNullOrEmpty())
             {
-                await _repository.AddRangeAsync<UserRoleEntity>(newUserRoles);
+                await _repository.AddRangeAsync<UserRoleEntity>(newUserRoles, clearTracker: true);
                 _logger.LogInformation($@"{nameof(UserRoleService)} {nameof(AddUserRoleResourcePermissionsAsync)}:
             added. Count = {newUserRoles.Count}, RoleIds = {string.Join(",", newUserRoles.Select(s => s.RoleId))}");
             }
@@ -115,7 +118,7 @@ namespace MMA.Service
                     }
                 }
 
-                await _repository.UpdateRangeAsync<UserRoleEntity>(updateUserRoles);
+                await _repository.UpdateRangeAsync<UserRoleEntity>(updateUserRoles, clearTracker: true);
                 _logger.LogInformation($@"{nameof(UserRoleService)} {nameof(AddUserRoleResourcePermissionsAsync)}:
             updated. Count = {updateUserRoles.Count}, RoleIds = {string.Join(",", updateUserRoles.Select(s => s.RoleId))}");
             }

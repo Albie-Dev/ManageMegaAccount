@@ -7,60 +7,6 @@
 
 <PageTitle>Trang chủ</PageTitle>
 
-<h1>Welcome to User Sign In ASP.NET Core Blazor WebAssembly</h1>
-<ButtonAmam7078 Class="btn btn-sm btn-outline-info" Icon="bi bi-person" Id="@Guid.NewGuid().ToString()"
-  IconPosition="@CIconPositionType.Left" Text="Button" OnClick="TestAuthAsync" />
-
-
-<Table TData="RoleDetailResponseDto" TFilter="RoleFilterProperty" TSelection="Guid"
-  ApiEndpoint="@Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Role_Paging)"
-  HttpClientType="CHttpClientType.Public" PortalType="CPortalType.CET"
-  Columns="InitColumns()"
-  @bind-FilterProperty="FilterProperty"
-  @bind-SelectedItems="RoleIds"
-  MapSelection="s => s.RoleId"
-  IsEnableSelection="true"
-  SearchPlaceHolder="Tìm kiếm vai trò theo tên..."
-  >
-  <FilterContent>
-    <label for="Roles">Chọn quyền: </label>
-    <ComboboxList T="@(CRoleType)" Items="CRoleType.None.ToComboboxModels()" Mode="CComboboxModeType.Checkbox"
-      @bind-BindValues="FilterProperty.RoleTypes" PlaceHolderName="Chọn quyền" />
-    <label for="FromDate">Ngày tạo: </label>
-    <InputDate id="FromDate" class="form-control" @bind-Value="FilterProperty.FromDate" />
-    <label for="ToDate">Đến ngày:</label>
-    <InputDate id="ToDate" class="form-control" @bind-Value="FilterProperty.ToDate" />
-  </FilterContent>
-
-  <ActionContent>
-    <ButtonAmam7078 Class="btn btn-sm btn-outline-primary me-2" Icon="bi bi-cloud-plus"
-        IconPosition="CIconPositionType.Right"
-        Text="Create"
-    />
-    <ButtonAmam7078 Class="btn btn-sm btn-outline-success me-2" Icon="bi bi-pencil-square"
-        IconPosition="CIconPositionType.Right"
-        Text="Update"
-    />
-    <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2" Icon="bi-toggle-off"
-        IconPosition="CIconPositionType.Right"
-        Text="Deactive"
-    />
-    <ButtonAmam7078 Class="btn btn-sm btn-outline-info me-2" Icon="bi bi-cloud-upload"
-        IconPosition="CIconPositionType.Right"
-        Text="Import"
-    />
-    <ButtonAmam7078 Class="btn btn-sm btn-outline-success me-2" Icon="bi bi-file-earmark-excel"
-        IconPosition="CIconPositionType.Right"
-        Text="Export"
-    />
-    <ButtonAmam7078 Class="btn btn-sm btn-outline-danger" Icon="bi bi-trash"
-        IconPosition="CIconPositionType.Right"
-        Text="Delete"
-        OnClick="DeleteSelectedRoles" IsDisabled="@(RoleIds.Count == 0)"
-    />
-  </ActionContent>
-</Table>
-
 @if (Roles != null && Roles.Count > 0)
 {
     <ul class="nav nav-tabs">
@@ -102,10 +48,12 @@
                             @foreach (var perm in resource.PermissionTypes)
                             {
                                 <li class="d-flex align-items-center me-3">
-                                    <input type="checkbox" class="form-check-input me-2"
-                                          @bind="perm.HasPermission" />
-                                    <i class="bi bi-shield-check text-primary me-2"></i>
-                                    @perm.PermissionName
+                                  <input type="checkbox"
+                                        class="form-check-input me-2"
+                                        checked="@perm.HasPermission"
+                                        @onchange="(e) => OnPermissionChange(selectedRole, resource, perm, e.Value)" />
+                                  <i class="bi bi-shield-check text-primary me-2"></i>
+                                  @perm.PermissionName
                                 </li>
                             }
                           </div>
@@ -122,25 +70,89 @@
     </div>
 </div>
 
+<ButtonAmam7078
+  Class="btn btn-sm btn-primary mt-3"
+  Icon="bi bi-check"
+  IconPosition="CIconPositionType.Right"
+  Text="Xác nhận"
+  Type="button"
+  OnClick="UpdateUserRoleAsync"
+  />
+
+
+@if (_notificationResponse != null)
+{
+  <NotificationElement  Notification="_notificationResponse" />
+  _notificationResponse = null;
+}
 
 @code {
-  private RoleFilterProperty FilterProperty { get; set; } = new RoleFilterProperty();
-  private List<Guid> RoleIds { get; set; } = new List<Guid>();
   private List<UserRoleProperty> Roles { get; set; } = new List<UserRoleProperty>();
+  private NotificationResponse? _notificationResponse { get; set; }
   private UserRoleProperty? selectedRole;
   HashSet<ResourceProperty> expandedResources = new();
   private int selectedTabIndex = 0;
-  private async Task TestAuthAsync()
+
+  private async Task UpdateUserRoleAsync()
   {
-    _toastService.ShowError("OK");
-    var response = await _httpClientHelper.GetAsync<string>(endpoint: "api/v1/cet/auth/protected",
-    requestType: CHttpClientType.Private, portalType: CPortalType.CET);
-    if (response != null && response.Success)
+    try
     {
-      Console.WriteLine("");
+      var apiResponse = await _httpClientHelper.PostAsync<AddUserRoleRequestDto, NotificationResponse>(
+        endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_UserRole_Update),
+        data: new AddUserRoleRequestDto()
+        {
+          UserId = new Guid("7604fd9c-2739-4e59-b765-6b225bb7ebf5"),
+          UserRoles = Roles
+        },
+        requestType: CHttpClientType.Private,
+        portalType: CPortalType.CET);
+      
+      if (apiResponse != null && apiResponse.Data != null)
+      {
+        _notificationResponse = apiResponse.Data;
+      }
+    }
+    catch(Exception ex)
+    {
+      _toastService.ShowError(ex.Message);
+    }
+    finally
+    {
+
     }
   }
-
+  private void OnPermissionChange(UserRoleProperty roleSelected, ResourceProperty resource, PermissionProperty permission, object? newValue)
+  {
+      if (bool.TryParse(newValue?.ToString(), out bool isChecked))
+      {
+          permission.HasPermission = isChecked;
+          int permissionCount = 0;
+          foreach(var role in Roles)
+          {
+            if (role.RoleId == roleSelected.RoleId)
+            {
+              foreach(var rs in role.Resources)
+              {
+                  if (rs.ResourceType == resource.ResourceType)
+                  {
+                    foreach(var pt in rs.PermissionTypes)
+                    {
+                      if (pt == permission)
+                      {
+                        pt.HasPermission = isChecked;
+                      }
+                      if (isChecked || pt.HasPermission)
+                      {
+                        permissionCount++;
+                      }
+                    }
+                  }
+              }
+              role.HasRole = permissionCount > 0;
+            }
+          };        
+      }
+  }
 
   protected override async Task OnInitializedAsync()
   {
@@ -176,59 +188,5 @@
   {
     if (!expandedResources.Add(resource))
         expandedResources.Remove(resource);
-  }
-  private async Task DeleteSelectedRoles()
-  {
-    _toastService.ShowInfo(RoleIds.ToJson());
-    await Task.CompletedTask;
-  }
-
-  private List<DropdownItemModel> InitColumns()
-  {
-    return new List<DropdownItemModel>()
-    {
-      new DropdownItemModel()
-      {
-        Name = "#",
-        Value = "#",
-        IsSelected = true,
-        IsSort = false
-      },
-      new DropdownItemModel()
-      {
-        Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.RoleId)}_Entry"),
-        Value = nameof(RoleDetailResponseDto.RoleId),
-        IsSelected = true,
-        IsSort = false
-      },
-      new DropdownItemModel()
-      {
-        Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.RoleName)}_Entry"),
-        Value = nameof(RoleDetailResponseDto.RoleName),
-        IsSelected = true,
-        IsSort = true
-      },
-      new DropdownItemModel()
-      {
-        Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.RoleType)}_Entry"),
-        Value = nameof(RoleDetailResponseDto.RoleType),
-        IsSelected = true,
-        IsSort = true
-      },
-      new DropdownItemModel()
-      {
-        Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.CreatedDate)}_Entry"),
-        Value = nameof(RoleDetailResponseDto.CreatedDate),
-        IsSelected = true,
-        IsSort = true
-      },
-      new DropdownItemModel()
-      {
-        Name = I18NHelper.GetString(key: $"Column_Title_Role_{nameof(RoleDetailResponseDto.ModifiedDate)}_Entry"),
-        Value = nameof(RoleDetailResponseDto.ModifiedDate),
-        IsSelected = true,
-        IsSort = true
-      }
-    };
   }
 }
