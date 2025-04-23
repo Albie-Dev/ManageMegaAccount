@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components;
 
 
-namespace MMA.BlazorWasm.Components.FileUploader
+namespace MMA.BlazorWasm.Components.Upload
 {
     public partial class ImageUploader
     {

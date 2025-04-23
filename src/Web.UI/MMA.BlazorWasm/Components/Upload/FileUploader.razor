@@ -1,0 +1,58 @@
+@if (IsOpen)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Title</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>
+                        <a href="template.xlsx" download>Download the template file</a> first, fill in information in the file,
+                        and then upload the updated file.
+                    </p>
+
+                    <div class="custom-file-upload">
+                        <InputFile id="hiddenFileInput" class="file-hidden" OnChange="HandleFileSelected" style="display: none;"/>
+                        <label for="hiddenFileInput" class="upload-label">
+                            <div class="upload-icon"><i class="bi bi-cloud-arrow-up-fill"></i></div>
+                            <div>
+                                Drag a file here, or <span class="browse-link">browse</span>
+                            </div>
+                            <small class="text-muted">Up to @Math.Round(MaxFileSize / 1024.0 / 1024.0) MB (@string.Join(".", FileTypes.Select(s => s.ToString())))</small>
+                        </label>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <span class="text-danger">@_errorMessage</span>
+                    }
+
+                    @if (_selectedFile != null)
+                    {
+                        <div class="uploaded-file-info d-flex align-items-center justify-content-between border rounded px-3 py-2 mt-3">
+                            <div class="d-flex align-items-center">
+                                <img src="excel-icon.png" alt="Excel Icon" width="24" class="me-2" />
+                                <div>
+                                    <div>@_selectedFile.Name</div>
+                                    <small class="text-muted">@Math.Round(_selectedFile.Size / 1024.0, 1) KB</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-link text-danger p-0" @onclick="() => _selectedFile = null" title="Remove file">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </div>
+                    }
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
+                    <button class="btn btn-success" @onclick="UploadFile" disabled="@(!_isSelected)">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

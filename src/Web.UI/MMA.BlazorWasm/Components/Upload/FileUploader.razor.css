@@ -1,0 +1,66 @@
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+}
+
+.modal {
+    z-index: 1050;
+}
+
+.file-hidden {
+    display: none !important;
+}
+
+.custom-file-upload {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.upload-label {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s;
+}
+
+.upload-label:hover {
+    background-color: #f1f1f1;
+}
+
+.upload-icon {
+    font-size: 24px;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.browse-link {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+.uploaded-file-info {
+    background-color: #f8f9fa;
+}
+
+.uploaded-file-info img {
+    margin-right: 8px;
+}
+
+.uploaded-file-info button {
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    cursor: pointer;
+}

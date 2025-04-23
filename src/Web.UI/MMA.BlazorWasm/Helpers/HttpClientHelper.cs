@@ -4,6 +4,7 @@ using System.Text;
 using Blazored.LocalStorage;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace MMA.BlazorWasm
 {
@@ -134,6 +135,31 @@ namespace MMA.BlazorWasm
             var responseData = await response.Content.ReadAsStringAsync();
             var result = responseData.FromJson<ResponseResult<TResponse>>();
             return result;
+        }
+
+
+        public async Task<HttpResponseMessage> UploadFileAsync(IBrowserFile file, string endpoint, 
+            CHttpClientType clientType = CHttpClientType.Private,
+            CPortalType portalType = CPortalType.CET)
+        {
+            var httpClient = await GetHttpClientAsync(clientType, portalType);
+
+            var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(file.OpenReadStream(15 * 1024 * 1024));
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+            content.Add(fileContent, "file", file.Name);
+
+            var response = await httpClient.PostAsync(endpoint, content);
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                await ProcessRefreshTokenAsync(httpClient, endpoint, CRequestType.Post, response, content);
+            }
+
+            await ProcessAPIStatusResponseAsync(response.StatusCode);
+
+            return response;
         }
 
         public async Task<ResponseResult<TResponse>?> GetAsync<TResponse>(

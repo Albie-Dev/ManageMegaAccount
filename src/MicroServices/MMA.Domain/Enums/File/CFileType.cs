@@ -9,7 +9,11 @@ namespace MMA.Domain
         Excel = 4,
         PowerPoint = 5,
         TXT = 6,
-        Video = 7
+        Video = 7,
+        Database = 8,
+        Audio = 9,
+        PDF = 10,
+        Other = 11
     }
 
     public enum CFileStatus

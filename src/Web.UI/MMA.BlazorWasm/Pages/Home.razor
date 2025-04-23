@@ -79,6 +79,16 @@
   OnClick="UpdateUserRoleAsync"
   />
 
+<div>
+    <button class="btn btn-primary" @onclick="ShowModal">Import</button>
+</div>
+
+<FileUploader Title="Import Test"
+    IsOpen="IsOpen"
+    MaxFileSize="@(1*1024*1024)"
+    FileTypes="FileTypes"
+    OnFileUploaded="HandleUploadFromModal" />
+
 
 @if (_notificationResponse != null)
 {
@@ -92,6 +102,28 @@
   private UserRoleProperty? selectedRole;
   HashSet<ResourceProperty> expandedResources = new();
   private int selectedTabIndex = 0;
+
+  public bool IsOpen { get; set; } = false;
+
+  public List<CFileType> FileTypes = new List<CFileType> { CFileType.Excel };
+
+  private void ShowModal()
+  {
+    IsOpen = true;
+  }
+
+  private async Task HandleUploadFromModal(IBrowserFile file)
+  {
+      var response = await _httpClientHelper.UploadFileAsync(file, "api/FileUpload/upload");
+      if (response.IsSuccessStatusCode)
+      {
+        
+      }
+      else
+      {
+        
+      }
+  }
 
   private async Task UpdateUserRoleAsync()
   {

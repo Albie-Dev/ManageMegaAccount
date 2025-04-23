@@ -1,0 +1,63 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using MMA.Domain;
+
+namespace MMA.BlazorWasm.Components.Upload
+{
+    public partial class FileUploader
+    {
+        [Parameter]
+        public bool IsOpen { get; set; } = false;
+        [Parameter]
+        public string Title { get; set; } = "Import";
+        [Parameter]
+        public int MaxFileSize { get; set; } = 1024 * 1024 * 15;
+        [Parameter]
+        public List<CFileType> FileTypes { get; set; } = new List<CFileType>();
+
+
+        private string _errorMessage { get; set; } = string.Empty;
+        private IBrowserFile? _selectedFile { get; set; } = null;
+        private bool _isSelected => _selectedFile != null;
+
+        [Parameter]
+        public EventCallback<IBrowserFile> OnFileUploaded { get; set; }
+
+        private void CloseModal()
+        {
+            IsOpen = false;
+            _errorMessage = string.Empty;
+            _selectedFile = null;
+        }
+
+        private void HandleFileSelected(InputFileChangeEventArgs inputFileChangeEvent)
+        {
+            var file = inputFileChangeEvent.File;
+            if (file.Size > MaxFileSize)
+            {
+                _errorMessage = $"File size exceeds the maximum allowed size of {MaxFileSize / 1024 / 1024} MB.";
+                _selectedFile = null;
+                return;
+            }
+            string fileMimeType = file.ContentType;
+            var fileType = FileHelper.GetFileTypeFromMimeType(mimeType: fileMimeType);
+            if (FileTypes != null && FileTypes.Count > 0 && !FileTypes.Contains(fileType))
+            {
+                _errorMessage = $"File type is not allowed. Allowed file types are: {string.Join(", ", FileTypes)}";
+                _selectedFile = null;
+                return;
+            }
+
+            _selectedFile = file;
+            _errorMessage = string.Empty;
+        }
+
+        private async Task UploadFile()
+        {
+            if (_selectedFile != null)
+            {
+                await OnFileUploaded.InvokeAsync(_selectedFile);
+            }
+        }
+    }
+}

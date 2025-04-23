@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Forms;
 using MMA.Domain;
 
 namespace MMA.BlazorWasm
@@ -22,6 +23,10 @@ namespace MMA.BlazorWasm
         Task<ResponseResult<TResponse>?> PostAsync<TResponse>(
             string endpoint,
             CHttpClientType requestType = CHttpClientType.Private,
+            CPortalType portalType = CPortalType.CET);
+
+        Task<HttpResponseMessage> UploadFileAsync(IBrowserFile file, string endpoint, 
+            CHttpClientType clientType = CHttpClientType.Private,
             CPortalType portalType = CPortalType.CET);
         
         Task<ResponseResult<TResponse>?> DeleteAsync<TResponse>(
