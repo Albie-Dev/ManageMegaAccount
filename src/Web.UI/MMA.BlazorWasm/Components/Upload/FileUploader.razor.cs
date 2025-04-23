@@ -19,6 +19,7 @@ namespace MMA.BlazorWasm.Components.Upload
         private string _errorMessage { get; set; } = string.Empty;
         private IBrowserFile? _selectedFile { get; set; } = null;
         private bool _isSelected => _selectedFile != null;
+        private CFileType _fileType { get; set; } = CFileType.None;
 
         [Parameter]
         public EventCallback<IBrowserFile> OnFileUploaded { get; set; }
@@ -40,8 +41,8 @@ namespace MMA.BlazorWasm.Components.Upload
                 return;
             }
             string fileMimeType = file.ContentType;
-            var fileType = FileHelper.GetFileTypeFromMimeType(mimeType: fileMimeType);
-            if (FileTypes != null && FileTypes.Count > 0 && !FileTypes.Contains(fileType))
+            _fileType = FileHelper.GetFileTypeFromMimeType(mimeType: fileMimeType);
+            if (FileTypes != null && FileTypes.Count > 0 && !FileTypes.Contains(_fileType))
             {
                 _errorMessage = $"File type is not allowed. Allowed file types are: {string.Join(", ", FileTypes)}";
                 _selectedFile = null;

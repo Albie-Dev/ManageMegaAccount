@@ -34,7 +34,7 @@
                     {
                         <div class="uploaded-file-info d-flex align-items-center justify-content-between border rounded px-3 py-2 mt-3">
                             <div class="d-flex align-items-center">
-                                <img src="excel-icon.png" alt="Excel Icon" width="24" class="me-2" />
+                                <img src="@(_fileType.ToDescription())" alt="Icon" width="24" class="me-2" />
                                 <div>
                                     <div>@_selectedFile.Name</div>
                                     <small class="text-muted">@Math.Round(_selectedFile.Size / 1024.0, 1) KB</small>
