@@ -13,6 +13,7 @@ namespace MMA.Service
         Task<NotificationResponse> RegisterAsync(RegisterRequestDto requestDto);
         Task<NotificationResponse> ConfirmRegisterAsync(ConfirmRegisterRequestDto requestDto);
         Task<LoginResponseDto> ConfirmTwoFactorAuthenticationAsync(ConfirmTwoFactorAuthenticationRequestDto requestDto);
+        Task<bool> TwoFactorAuthVerifyTokenAsync(string token);
 
         Task SendEmailConfirmAsync(UserEntity userEntity);
         Task<RedirectResponseDto> LogoutAsync(LogoutRequestDto requestDto);

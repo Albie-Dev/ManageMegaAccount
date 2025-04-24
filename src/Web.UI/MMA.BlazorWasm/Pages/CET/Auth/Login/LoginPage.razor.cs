@@ -2,11 +2,12 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using MMA.Domain;
 
-namespace MMA.BlazorWasm.Pages.CET.Auth
+namespace MMA.BlazorWasm.Pages.CET.Auth.Login
 {
     public partial class LoginPage
     {
         [Inject] private ILocalStorageService _localStorageService { get; set; } = default!;
+        [Inject] private ApiAuthenticationStateProvider _authProvider { get; set; } = default!;
 
         private List<ErrorDetailDto> Errors { get; set; } = new();
         private LoginRequestDto LoginRequestDto = new();
@@ -85,10 +86,17 @@ namespace MMA.BlazorWasm.Pages.CET.Auth
                     }
                     else
                     {
-                        await _localStorageService.SetItemAsStringAsync(key: ApiClientConstant.LocalStorage_Key, data: response.Data.ToJson());
-                        _authProvider.MarkUserAsAuthenticated(tokenData: response.Data);
-                        StateHasChanged();
-                        _navigationManager.NavigateTo(uri: "/", forceLoad: true);
+                        if (response.Data.TwoFactorEnable)
+                        {
+                            _navigationManager.NavigateTo(uri: $"/twofactorauthentication/{Uri.EscapeDataString(LoginRequestDto.Email)}?token={Uri.EscapeDataString(response.Data.TokenUrlSecret)}", forceLoad: true);
+                        }
+                        else
+                        {
+                            await _localStorageService.SetItemAsStringAsync(key: ApiClientConstant.LocalStorage_Key, data: response.Data.ToJson());
+                            _authProvider.MarkUserAsAuthenticated(tokenData: response.Data);
+                            StateHasChanged();
+                            _navigationManager.NavigateTo(uri: "/", forceLoad: true);
+                        }
                     }
                 }
             }

@@ -2,48 +2,53 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using MMA.Domain;
 
-namespace MMA.BlazorWasm.Pages.CET.Auth
+namespace MMA.BlazorWasm.Pages.CET.Auth.Login
 {
-    public partial class GoogleLoginCallback
+    public partial class LoginCallBack
     {
         [Inject] private ILocalStorageService _localStorageService { get; set; } = default!;
-        [Inject] private ApiAuthenticationStateProvider _authProvider { get; set; } = default!;
 
-        private string Code { get; set; } = string.Empty;
+        private string IdToken { get; set; } = string.Empty;
         private string State { get; set; } = string.Empty;
         private bool IsLoading { get; set; }
 
         private List<ErrorDetailDto> _errors { get; set; } = new List<ErrorDetailDto>();
-
         private NotificationResponse? NotificationResponse { get; set; } = null;
 
         protected override async Task OnInitializedAsync()
         {
             IsLoading = true;
-            var url = new Uri(_navigationManager.Uri);
-            var queryParams = System.Web.HttpUtility.ParseQueryString(url.Query);
-            Code = queryParams["code"] ?? string.Empty;
-            State = queryParams["state"] ?? string.Empty;
-            var currentState = await _localStorageService.GetItemAsStringAsync(ApiClientConstant.LocalStorage_Key_Google_State);
+            var url = _navigationManager.Uri.ToString();
+            var currentState = await _localStorageService.GetItemAsStringAsync(ApiClientConstant.LocalStorage_Key_Microsoft_State);
 
-            if (string.IsNullOrEmpty(Code) || string.IsNullOrEmpty(State) || !string.Equals(State, currentState,
-            StringComparison.OrdinalIgnoreCase))
+            if (url.Contains('#'))
             {
-                ShowErrorAndRedirect("Thông tin xác thực không hợp lệ.");
-                return;
+                var queryParams = System.Web.HttpUtility.ParseQueryString(url.Split('#')[1]);
+                IdToken = queryParams["id_token"] ?? string.Empty;
+                State = queryParams["state"] ?? string.Empty;
+
+                if (!string.Equals(State, currentState, StringComparison.OrdinalIgnoreCase))
+                {
+                    ShowErrorAndRedirect("Thông tin xác thực không hợp lệ.");
+                }
+                else
+                {
+                    await HandleLogin();
+                }
             }
-
-            await HandleLogin();
+            else
+            {
+                ShowError("Thông tin xác thực không hợp lệ.");
+            }
         }
-
 
         private async Task HandleLogin()
         {
             try
             {
-                var response = await _httpClientHelper.PostAsync<LoginWithGoogleRequestDto, LoginResponseDto>(
-                    endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Auth_Google_Login),
-                    data: new LoginWithGoogleRequestDto { Code = Code, State = string.Empty },
+                var response = await _httpClientHelper.PostAsync<LoginWithMicrosoftRequestDto, LoginResponseDto>(
+                    endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Auth_Microsoft_Login),
+                    data: new LoginWithMicrosoftRequestDto { IdToken = IdToken, State = string.Empty },
                     requestType: CHttpClientType.Public, portalType: CPortalType.CET);
 
                 if (response == null)
@@ -52,13 +57,13 @@ namespace MMA.BlazorWasm.Pages.CET.Auth
                 }
                 else
                 {
-                    if (response.Errors.IsNullOrEmpty())
+                    if (!response.Errors.IsNullOrEmpty())
                     {
                         _errors = response.Errors;
                     }
                     else if (response.Data == null)
                     {
-                        _toastService.ShowError($"An error occured while fetch data from server no response data.");
+                        _toastService.ShowError($"An error occured while fetch data. Server no response data.");
                     }
                     else
                     {

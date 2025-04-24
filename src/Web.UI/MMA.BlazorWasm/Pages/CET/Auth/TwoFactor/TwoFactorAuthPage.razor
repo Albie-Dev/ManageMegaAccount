@@ -1,0 +1,54 @@
+@page "/twofactorauthentication/{email}"
+@layout AuthLayout
+<PageTitle>Xác minh hai bước</PageTitle>
+
+@if (_isLoading)
+{
+    <LoadingElement />
+}
+else
+{
+    <section id="main-site">
+        <div class="glass text-center">
+            <div class="title">
+                <h1 class="font-poppins fw-bold text-light">Xác minh hai bước</h1>
+                <img src="images/auth/2FA_1.png" class="img-fluid" alt="">
+
+                <p class="font-poppins text-light">We've sent a varification code to</p>
+                <p class="font-poppins text-light">@Email</p>
+            </div>
+
+            <EditForm id="form-2fa-id" Model="_requestDto" OnValidSubmit="ConfirmTwoFactorAuthenticationAsync" class="py-2">
+                <ErrorElement Errors="_errors" FormSummaryId="form-2fa-id" />
+                <h4 class="font-poppins text-light">Enter your OTP Code Here:</h4>
+
+                <div class="col ps-1 pe-1 py-1 d-flex gap-1 border border-2 border-secondary rounded">
+                    <InputText @bind-Value="_twoFactorModel.Digit1" name="digit1" maxlength="1" type="tel"
+                        class="form-control" @onpaste="HandlePaste" @oninput="@(e => MoveToNext(e, "Digit2"))"
+                        id="Digit1" />
+                    <InputText @bind-Value="_twoFactorModel.Digit2" maxlength="1" type="tel" class="form-control"
+                        @oninput="@(e => MoveToNext(e, "Digit3"))" id="Digit2" />
+                    <InputText @bind-Value="_twoFactorModel.Digit3" maxlength="1" type="tel" class="form-control"
+                        @oninput="@(e => MoveToNext(e, "Digit4"))" id="Digit3" />
+                    <InputText @bind-Value="_twoFactorModel.Digit4" maxlength="1" type="tel" class="form-control"
+                        @oninput="@(e => MoveToNext(e, "Digit5"))" id="Digit4" />
+                    <InputText @bind-Value="_twoFactorModel.Digit5" maxlength="1" type="tel" class="form-control"
+                        @oninput="@(e => MoveToNext(e, "Digit6"))" id="Digit5" />
+                    <InputText @bind-Value="_twoFactorModel.Digit6" maxlength="1" type="tel" class="form-control"
+                        id="Digit6" />
+                    <ErrorElement Errors="_errors" FieldName="@(nameof(_requestDto.Token))" />
+                </div>
+
+                <div class="col">
+                    <button type="submit" class="btn mt-2 mb-2">Verify</button>
+                </div>
+
+                <div class="py-1">
+                    <p class="font-poppins text-light">Not received your code?</p>
+                    <p class="font-poppins text-light"><a href="" class="link">Resend</a> OR <a href="#" class="link"> Call
+                        </a></p>
+                </div>
+            </EditForm>
+        </div>
+    </section>
+}

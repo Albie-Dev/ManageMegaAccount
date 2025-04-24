@@ -2,7 +2,7 @@ using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using MMA.Domain;
 
-namespace MMA.BlazorWasm.Pages.CET.Auth
+namespace MMA.BlazorWasm.Pages.CET.Auth.Element
 {
     public partial class AuthElement
     {

@@ -7,13 +7,13 @@ namespace MMA.BlazorWasm
         None = 0,
         [Description(description: "https://localhost:7200")]
         Core = 1,
-        [Description(description: "http://localhost:7201")]
+        [Description(description: "https://localhost:7201")]
         CET = 2,
         [Description(description: "https://localhost:7209")]
         Hub = 3,
-        [Description(description: "http://localhost:7220")]
+        [Description(description: "https://localhost:7220")]
         BlazorWasm = 4,
-        [Description(description: "http://localhost:7220")]
+        [Description(description: "https://localhost:7220")]
         Host = 5
     }
 

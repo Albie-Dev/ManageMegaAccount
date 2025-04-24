@@ -67,6 +67,8 @@ namespace MMA.Service
             if (userEntity.TwoFactorEnable)
             {
                 await SendEmailTwoFactorAuthenticationAsync(userEntity: userEntity);
+                var twoFactorAuthToken = await _tokenManager.GenerateUserTokenAsync(userEntity: userEntity, tokenType: CTokenType.Normal,
+                    expiredDate: DateTime.UtcNow.AddMinutes(5), maxUse: 1);
                 return new LoginResponseDto()
                 {
                     AccessToken = string.Empty,
@@ -74,7 +76,8 @@ namespace MMA.Service
                     EmailConfirmed = true,
                     RefreshToken = string.Empty,
                     Session = string.Empty,
-                    TwoFactorEnable = true
+                    TwoFactorEnable = true,
+                    TokenUrlSecret = twoFactorAuthToken
                 };
             }
             if (string.IsNullOrEmpty(userEntity.PasswordHash))
@@ -587,6 +590,19 @@ namespace MMA.Service
         #endregion confirm register
 
         #region confirm two-factor authentication
+
+        public async Task<bool> TwoFactorAuthVerifyTokenAsync(string token)
+        {
+            var userToken = await _repository.FindAsync<UserTokenEntity>(ut => ut.Token == token
+                && ut.TokenType == CTokenType.Normal && ut.Status == CMasterStatus.Active && ut.MaxUse > 0
+                && ut.ExpiredDate >= DateTimeOffset.UtcNow && !ut.IsRevoked);
+            if (userToken == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
         public async Task<LoginResponseDto> ConfirmTwoFactorAuthenticationAsync(ConfirmTwoFactorAuthenticationRequestDto requestDto)
         {
             var response = new LoginResponseDto();

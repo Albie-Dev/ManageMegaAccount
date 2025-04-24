@@ -120,11 +120,24 @@ namespace MMA.API
                     Success = true
                 });
         }
+
+
         [HttpPost("auth/twofactor/confirm")]
         public async Task<IActionResult> ConfirmTwoFactorAuthentication(ConfirmTwoFactorAuthenticationRequestDto requestDto)
         {
             var result = await _authService.ConfirmTwoFactorAuthenticationAsync(requestDto: requestDto);
             return StatusCode(statusCode: StatusCodes.Status200OK, value: new ResponseResult<LoginResponseDto>()
+            {
+                Data = result,
+                Success = true
+            });
+        }
+
+        [HttpPost("auth/twofactor/verifytoken")]
+        public async Task<IActionResult> TwoFactorAuthVerifyToken(string token)
+        {
+            bool result = await _authService.TwoFactorAuthVerifyTokenAsync(token: token);
+            return Ok(new ResponseResult<bool>()
             {
                 Data = result,
                 Success = true
