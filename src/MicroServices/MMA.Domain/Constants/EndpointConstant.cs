@@ -34,6 +34,7 @@ namespace MMA.Domain
         public const string Movie_Actor_Deactive = "actor/deactive";
         public const string Movie_Actor_Delete = "actor/delete";
         public const string Movie_Actor_Export = "actor/export";
+        public const string Movie_Actor_Template = "actor/template";
 
         #endregion movie
 

@@ -85,7 +85,7 @@
 
 <FileUploader Title="Import Test"
     IsOpen="IsOpen"
-    MaxFileSize="@(1*1024*1024)"
+    MaxFileSize="@(50*1024*1024)"
     FileTypes="FileTypes"
     OnFileUploaded="HandleUploadFromModal" />
 
@@ -105,7 +105,21 @@
 
   public bool IsOpen { get; set; } = false;
 
-  public List<CFileType> FileTypes = new List<CFileType> { CFileType.Excel };
+  public List<CFileType> FileTypes = new List<CFileType> { 
+    CFileType.Excel,
+    CFileType.Audio,
+    CFileType.Database,
+    CFileType.Image,
+    CFileType.TXT,
+    CFileType.Other,
+    CFileType.Video,
+    CFileType.PowerPoint,
+    CFileType.Word,
+    CFileType.Zip,
+    CFileType.PDF,
+    CFileType.Html,
+    CFileType.MicrosoftDownlod
+  };
 
   private void ShowModal()
   {

@@ -24,6 +24,9 @@ namespace MMA.BlazorWasm.Components.Upload
         [Parameter]
         public EventCallback<IBrowserFile> OnFileUploaded { get; set; }
 
+        [Parameter]
+        public EventCallback OnDownloadTemplateFile { get; set; }
+
         private void CloseModal()
         {
             IsOpen = false;
@@ -59,6 +62,11 @@ namespace MMA.BlazorWasm.Components.Upload
             {
                 await OnFileUploaded.InvokeAsync(_selectedFile);
             }
+        }
+
+        private async Task DownloadImporFileAsync()
+        {
+            await OnDownloadTemplateFile.InvokeAsync();
         }
     }
 }

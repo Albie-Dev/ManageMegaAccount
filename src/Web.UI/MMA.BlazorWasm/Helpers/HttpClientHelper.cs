@@ -49,7 +49,7 @@ namespace MMA.BlazorWasm
         }
 
         public async Task<HttpResponseMessage?> BaseAPICallAsync<TRequest>(string endpoint,
-            TRequest data,
+            TRequest? data,
             CRequestType methodType,
             CHttpClientType requestType = CHttpClientType.Private,
             CPortalType portalType = CPortalType.CET)

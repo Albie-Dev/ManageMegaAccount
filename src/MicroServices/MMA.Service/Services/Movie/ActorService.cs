@@ -468,6 +468,14 @@ namespace MMA.Service
                 fileName: "Excel.ActorExportTemplate.xlsx", assemblyName: "MMA.Service", sheetKey: "{{SheetKey}}", sheetName: "Actor details");
             return importResult;
         }
+
+        public async Task<byte[]> DownloadImportActorExcelTemplateAsync()
+        {
+            var result = new List<ActorDetailDto>();
+            var importResult = await _excelCoreService.ExportExcelByTemplateAsync<ActorDetailDto>(exportDataModels: result,
+                fileName: "Excel.ActorImportTemplate.xlsx", assemblyName: "MMA.Service", sheetKey: "{{SheetKey}}", sheetName: "Actors");
+            return importResult;;
+        }
         #endregion import and export
     }
 }

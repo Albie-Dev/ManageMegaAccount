@@ -6,7 +6,7 @@ namespace MMA.BlazorWasm
     public interface IHttpClientHelper
     {
         Task<HttpResponseMessage?> BaseAPICallAsync<TRequest>(string endpoint,
-            TRequest data,
+            TRequest? data,
             CRequestType methodType,
             CHttpClientType requestType = CHttpClientType.Private,
             CPortalType portalType = CPortalType.CET);

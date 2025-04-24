@@ -93,6 +93,18 @@ namespace MMA.API
             });
         }
 
+        [HttpPost("actor/template")]
+        public async Task<IActionResult> DownloadImportTemplate()
+        {
+            var currentUser = RuntimeContext.CurrentUser;
+            string ownerName = currentUser?.FullName ?? "System";
+            byte[] exportResult = await _actorService.DownloadImportActorExcelTemplateAsync();
+            return new FileContentResult(fileContents: exportResult, contentType: "application/octet-stream")
+            {
+                FileDownloadName = $"Import_Actor_Template_by_{ownerName}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx".Trim().Replace(" ", "_")
+            };
+        }
+
         [HttpPost("actor/export")]
         public async Task<IActionResult> ExportActor(TableParam<ActorFilterProperty> tableParam)
         {

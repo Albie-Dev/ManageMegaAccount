@@ -54,6 +54,7 @@ namespace MMA.Domain
             { "image/x-hasselblad-3fr", CFileType.Image },
             { "image/x-leica-rwl", CFileType.Image },
             { "application/zip", CFileType.Zip },
+            { "application/x-zip-compressed", CFileType.Zip },
             { "application/x-rar-compressed", CFileType.Zip },
             { "application/x-7z-compressed", CFileType.Zip },
             { "application/x-tar", CFileType.Zip },
@@ -68,6 +69,7 @@ namespace MMA.Domain
             { "application/x-compress", CFileType.Zip },
             { "application/pdf", CFileType.PDF },
             { "application/vnd.ms-excel", CFileType.Excel },
+            { "text/csv", CFileType.Excel },
             { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", CFileType.Excel },
             { "application/vnd.ms-powerpoint", CFileType.PowerPoint },
             { "application/vnd.openxmlformats-officedocument.presentationml.presentation", CFileType.PowerPoint },
@@ -112,7 +114,10 @@ namespace MMA.Domain
             { "audio/x-matroska", CFileType.Audio },
             { "audio/x-matroska-3gpp", CFileType.Audio },
             { "audio/x-matroska-ps", CFileType.Audio },
-            { "audio/x-matroska-ps-3gpp", CFileType.Audio }
+            { "audio/x-matroska-ps-3gpp", CFileType.Audio },
+            { "text/html", CFileType.Html },
+            { "application/x-msdownload", CFileType.MicrosoftDownlod },
+            
         };
     }
 }

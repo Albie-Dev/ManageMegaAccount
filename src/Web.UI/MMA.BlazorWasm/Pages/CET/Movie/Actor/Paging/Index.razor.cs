@@ -281,7 +281,58 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Paging
         #endregion create
 
         #region import
+        private bool _isUploadModalOpen { get; set; } = false;
+        public void HandleOpenUploadModal()
+        {
+            _isUploadModalOpen = true;
+        }
 
+        public async Task DownloadTemplateFileAsync()
+        {
+            try
+            {
+                var apiResponse = await _httpClientHelper.BaseAPICallAsync<TableParam<ActorFilterProperty>>(
+                    endpoint: Path.Combine(EndpointConstant.Movie_Base_Url, EndpointConstant.Movie_Actor_Template),
+                    data: null,
+                    methodType: CRequestType.Post,
+                    requestType: CHttpClientType.Private,
+                    portalType: CPortalType.CET);
+                if (apiResponse == null)
+                {
+                    _toastService.ShowError($"Không thể kết nối đến server. Host: {CPortalType.CET.ToDescription()}");
+                }
+                else
+                {
+                    if (apiResponse.IsSuccessStatusCode)
+                    {
+                        string exportFileName = apiResponse.Content.Headers.ContentDisposition?.FileName ?? string.Empty;
+                        byte[] fileBytes = await apiResponse.Content.ReadAsByteArrayAsync();
+                        var base64 = Convert.ToBase64String(fileBytes);
+                        await _jsRuntime.InvokeVoidAsync("downloadFile", exportFileName, base64);
+                    }
+                    else
+                    {
+                        _toastService.ShowError(message: $"");
+                    }
+                    
+                }
+                
+            }
+            catch(Exception ex)
+            {
+                _toastService.ShowError(ex.Message);
+            }
+            finally
+            {
+                _isUploadModalOpen = false;
+                _isLoading = false;
+            }
+        }
+
+        public async Task ImportActorsAsync()
+        {
+
+        }
         #endregion import
 
         #region export

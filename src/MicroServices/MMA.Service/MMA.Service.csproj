@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Templates\Excel\ActorExportTemplate.xlsx" />
+    <EmbeddedResource Include="Templates\Excel\ActorImportTemplate.xlsx" />
   </ItemGroup>
 
   <ItemGroup>
