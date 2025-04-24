@@ -8,83 +8,14 @@
         NotificationResponse="@NotificationResponse" />
 }
 
+<ErrorElement Errors="_errors" />
+
+
 @if (IsLoading)
 {
     <LoadingElement />
 }
 
 @code {
-    private string IdToken { get; set; } = string.Empty;
-    private string State { get; set; } = string.Empty;
-    private bool IsLoading { get; set; }
-    private string ErrorMessage { get; set; } = string.Empty;
-    private NotificationResponse? NotificationResponse { get; set; } = null;
-
-    protected override async Task OnInitializedAsync()
-    {
-        IsLoading = true;
-        var url = _navigationManager.Uri.ToString();
-        var currentState = await _localStorageService.GetItemAsStringAsync(ApiClientConstant.LocalStorage_Key_Microsoft_State);
-
-        if (url.Contains('#'))
-        {
-            var queryParams = System.Web.HttpUtility.ParseQueryString(url.Split('#')[1]);
-            IdToken = queryParams["id_token"] ?? string.Empty;
-            State = queryParams["state"] ?? string.Empty;
-
-            if (!string.Equals(State, currentState, StringComparison.OrdinalIgnoreCase))
-            {
-                ShowErrorAndRedirect("Thông tin xác thực không hợp lệ.");
-            }
-            else
-            {
-                await HandleLogin();
-            }
-        }
-        else
-        {
-            ShowError("Thông tin xác thực không hợp lệ.");
-        }
-    }
-
-    private async Task HandleLogin()
-    {
-        var response = await _httpClientHelper.PostAsync<LoginWithMicrosoftRequestDto, LoginResponseDto>(
-            endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Auth_Microsoft_Login),
-            data: new LoginWithMicrosoftRequestDto { IdToken = IdToken, State = string.Empty },
-            requestType: CHttpClientType.Public, portalType: CPortalType.CET);
-
-        if (response != null && response.Success && response.Data != null)
-        {
-            await _localStorageService.SetItemAsStringAsync(key: ApiClientConstant.LocalStorage_Key, data: response.Data.ToJson());
-            _authProvider.MarkUserAsAuthenticated(tokenData: response.Data);
-            StateHasChanged();
-            IsLoading = false;
-            _navigationManager.NavigateTo(uri: "/", forceLoad: true);
-        }
-        else
-        {
-            IsLoading = false;
-            ShowError("Thông tin xác thực không hợp lệ.");
-        }
-    }
-
-    private void ShowError(string message)
-    {
-        NotificationResponse = new NotificationResponse()
-        {
-            DisplayType = CNotificationDisplayType.Redirect,
-            Level = CNotificationLevel.Error,
-            Message = message,
-            Type = CNotificationType.Auth
-        };
-        _toastService.ShowError(message);
-    }
-
-    private void ShowErrorAndRedirect(string message)
-    {
-        ShowError(message);
-        IsLoading = false;
-        _navigationManager.NavigateTo("/login", forceLoad: true);
-    }
+    
 }

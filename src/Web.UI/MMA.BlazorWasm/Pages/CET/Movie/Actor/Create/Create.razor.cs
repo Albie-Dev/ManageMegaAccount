@@ -54,7 +54,7 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Create
             }
             catch (Exception ex)
             {
-                _toastService.ShowError(message: ex.Message);
+                _toastService.ShowError($"{ex.Message}. Host = {CPortalType.CET.ToDescription()}");
             }
             finally
             {

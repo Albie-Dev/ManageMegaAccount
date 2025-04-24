@@ -60,7 +60,7 @@ namespace MMA.BlazorWasm.Pages.CET.Movie.Actor.Update
             catch(Exception ex)
             {
                 _isLoading = false;
-                _toastService.ShowError(ex.Message);
+                _toastService.ShowError($"{ex.Message}. Host = {CPortalType.CET.ToDescription()}");
                 await Task.Delay(delay: TimeSpan.FromSeconds(5));
                 _navigationManager.NavigateTo("/movie/actor");
             }
