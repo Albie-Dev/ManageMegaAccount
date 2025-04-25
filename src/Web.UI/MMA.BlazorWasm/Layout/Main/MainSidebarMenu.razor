@@ -3,69 +3,101 @@
         <i id="sidebarToggleIcon" class="bi @(isSidebarCollapsed ? "bi-chevron-right" : "bi-chevron-left")"></i>
     </button>
 
-    <div id="sidebar" class="border border-1">
+    <div id="sidebar" class="border border-1 @(isSidebarCollapsed ? "collapsed" : "")">
         <div class="sidebar-header border-bottom">
             Sidebar
         </div>
-        <a href="#" class="sidebar-item">
-            <i class="bi bi-house-door sidebar-item-icon"></i>
-            <span class="sidebar-item-text">Home</span>
-        </a>
-        <a href="#" class="sidebar-item">
-            <i class="bi bi-file-earmark sidebar-item-icon"></i>
-            <span class="sidebar-item-text">Documents</span>
-        </a>
-        <a href="" class="sidebar-item d-flex justify-content-between" @onclick="ToggleSettings">
-            <div class="info">
-                <i class="bi bi-caret-down-fill sidebar-item-icon"></i>
-                <span class="sidebar-item-text">Settings</span>
-            </div>
-            <div class="enabledrop">
-                <i class="bi bi-caret-down-fill"></i>
-            </div>
-        </a>
-        <div class="collapse sidebar-item-children" id="submenu1">
-            <a href="#" class="sidebar-item">
-                <i class="bi bi-gear sidebar-item-icon"></i>
-                <span class="sidebar-item-text">General</span>
-            </a>
-            <a href="#" class="sidebar-item">
-                <i class="bi bi-shield-lock sidebar-item-icon"></i>
-                <span class="sidebar-item-text">Security</span>
-            </a>
-        </div>
-        <a href="#" class="sidebar-item">
-            <i class="bi bi-person sidebar-item-icon"></i>
-            <span class="sidebar-item-text">Profile</span>
-        </a>
+        @foreach(var item in NavItems)
+        {
+            if (item.SubItems.IsNullOrEmpty())
+            {
+                <a href="#" class="sidebar-item @(activeItem == item.Title ? "active" : "")" @onclick="() => SetActiveItem(item)">
+                    <i class="@item.Icon sidebar-item-icon"></i>
+                    <span class="sidebar-item-text">@item.Title</span>
+                </a>
+            }
+            else
+            {
+                <a href="#" class="sidebar-item d-flex justify-content-between" @onclick="() => ToggleSubMenu(item.Title)">
+                    <div class="info">
+                        <i class="@item.Icon sidebar-item-icon"></i>
+                        <span class="sidebar-item-text">@item.Title</span>
+                    </div>
+                    <div class="enabledrop">
+                        <i class="@(subMenuVisibility.ContainsKey(item.Title) && subMenuVisibility[item.Title] ? "bi bi-caret" : "bi bi-caret-down")"></i>
+                    </div>
+                </a>
+                <div class="collapse sidebar-item-children @(subMenuVisibility.ContainsKey(item.Title) && subMenuVisibility[item.Title] ? "show" : "")">
+                    @foreach(var subItem in item.SubItems)
+                    {
+                        <a href="#" class="sidebar-item @(activeItem == subItem.Title ? "active" : "")" @onclick="() => SetActiveItem(subItem)">
+                            <i class="@subItem.Icon sidebar-item-icon"></i>
+                            <span class="sidebar-item-text">@subItem.Title</span>
+                        </a>
+                    }
+                </div>
+            }
+        }
     </div>
 </div>
 
 @code {
-    private bool isSettingsVisible = false;
     private bool isSidebarCollapsed { get; set; } = false;
+    private string activeItem { get; set; } = string.Empty;
+    private Dictionary<string, bool> subMenuVisibility { get; set; } = new Dictionary<string, bool>();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public List<SidebarItemModel> NavItems = new List<SidebarItemModel>
     {
-        if (firstRender)
+        new SidebarItemModel
         {
-            await SetActiveItem();
-        }
-    }
+            Icon = "bi bi-house-door",
+            Route = "/",
+            Title = "Home"
+        },
+        new SidebarItemModel
+        {
+            Icon = "bi bi-caret-down-fill",
+            Route = "/test",
+            Title = "Actors",
+            SubItems = new List<SidebarItemModel>
+            {
+                new SidebarItemModel
+                {
+                    Icon = "bi bi-shield-lock",
+                    Route = "/actor/detail",
+                    Title = "Actor Detail"
+                },
+                new SidebarItemModel
+                {
+                    Icon = "bi bi-gear",
+                    Route = "/actor/index",
+                    Title = "Actors"
+                }
+            }
+        },
+    };
 
     private async Task ToggleSidebar()
     {
-        await _jsRuntime.InvokeVoidAsync("toggleSidebar");
+        isSidebarCollapsed = !isSidebarCollapsed;
+        await InvokeAsync(StateHasChanged);
     }
 
-    private async Task ToggleSettings()
+    private void ToggleSubMenu(string title)
     {
-        isSettingsVisible = !isSettingsVisible;
-        await _jsRuntime.InvokeVoidAsync("toggleSubMenu", "submenu1");
+        if (subMenuVisibility.ContainsKey(title))
+        {
+            subMenuVisibility[title] = !subMenuVisibility[title];
+        }
+        else
+        {
+            subMenuVisibility[title] = true;
+        }
     }
 
-    private async Task SetActiveItem()
+    private void SetActiveItem(SidebarItemModel item)
     {
-        await _jsRuntime.InvokeVoidAsync("setActiveSidebarItem");
+        activeItem = item.Title;
+        StateHasChanged();
     }
 }
