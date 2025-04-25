@@ -1,4 +1,4 @@
-.bsb-btn-xl {
+/* .bsb-btn-xl {
     --bs-btn-padding-y: 0.625rem;
     --bs-btn-padding-x: 1.25rem;
     --bs-btn-font-size: calc(1.26rem + 0.12vw);
@@ -22,7 +22,6 @@
 .box-card-body
 {
     background-color: #ffffff80 !important;
-    /* important property */
     backdrop-filter: blur(12px);
 }
 
@@ -70,4 +69,4 @@
     .bsb-btn-5xl {
         --bs-btn-font-size: 1.75rem
     }
-}
+} */

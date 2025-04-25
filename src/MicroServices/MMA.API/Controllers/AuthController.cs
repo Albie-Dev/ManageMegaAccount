@@ -134,9 +134,9 @@ namespace MMA.API
         }
 
         [HttpPost("auth/twofactor/verifytoken")]
-        public async Task<IActionResult> TwoFactorAuthVerifyToken(string token)
+        public async Task<IActionResult> TwoFactorAuthVerifyToken(TwoFactorVerifyTokenRequestDto requestDto)
         {
-            bool result = await _authService.TwoFactorAuthVerifyTokenAsync(token: token);
+            bool result = await _authService.TwoFactorAuthVerifyTokenAsync(token: requestDto.Token);
             return Ok(new ResponseResult<bool>()
             {
                 Data = result,

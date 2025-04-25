@@ -114,7 +114,7 @@ namespace MMA.BlazorWasm.Pages
             try
             {
                 var apiResponse = await _httpClientHelper.GetAsync<List<UserRoleProperty>>(
-                endpoint: "http://localhost:7201/api/v1/cet/userrole/7604fd9c-2739-4e59-b765-6b225bb7ebf5",
+                endpoint: "https://localhost:7201/api/v1/cet/userrole/7604fd9c-2739-4e59-b765-6b225bb7ebf5",
                 requestType: CHttpClientType.Private,
                 portalType: CPortalType.CET);
 

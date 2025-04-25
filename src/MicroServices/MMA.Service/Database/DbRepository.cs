@@ -58,19 +58,22 @@ namespace MMA.Service
 
         public async Task ActionInTransaction(Func<Task> action)
         {
-            try
+            var strategy = _dbContext.Database.CreateExecutionStrategy();
+            await strategy.ExecuteAsync(async () =>
             {
-                using (var trans = await _dbContext.Database.BeginTransactionAsync())
+                // Start the transaction inside the strategy block
+                await using var transaction = await _dbContext.Database.BeginTransactionAsync();
+                try
                 {
-                    await action();
-                    await trans.CommitAsync();
+                    await action(); // this includes your data access logic
+                    await transaction.CommitAsync();
                 }
-            }
-            catch
-            {
-                // Optionally, handle exceptions here, log them, etc.
-                throw;
-            }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
+            });
         }
 
         public async Task<T> AddAsync<T>(T entity, bool clearTracker = false,

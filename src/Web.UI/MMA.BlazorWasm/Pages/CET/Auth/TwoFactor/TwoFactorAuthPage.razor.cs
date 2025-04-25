@@ -16,8 +16,7 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.TwoFactor
         private List<ErrorDetailDto> _errors { get; set; } = new List<ErrorDetailDto>();
         private TwoFactorModel _twoFactorModel { get; set; } = new TwoFactorModel();
 
-        [Parameter]
-        public string Email { get; set; } = string.Empty;
+        private string _email { get; set; } = string.Empty;
         private string _token { get; set; } = string.Empty;
 
         private ConfirmTwoFactorAuthenticationRequestDto _requestDto = new ConfirmTwoFactorAuthenticationRequestDto();
@@ -30,7 +29,10 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.TwoFactor
                 _isLoading = true;
                 var uri = new Uri(_navigationManager.Uri);
                 _token = HttpUtility.ParseQueryString(uri.Query).Get("token") ?? string.Empty;
-                if (string.IsNullOrEmpty(_token))
+                _email = HttpUtility.ParseQueryString(uri.Query).Get("email") ?? string.Empty;
+                _requestDto.Email = _email;
+                _requestDto.TokenUrlSecret = _token;
+                if (string.IsNullOrEmpty(_token) || string.IsNullOrEmpty(_email))
                 {
                     _toastService.ShowError("Invalid two factor authentication secret token. You request access to denied.");
                     _navigationManager.NavigateTo("/");
@@ -38,9 +40,12 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.TwoFactor
                 else
                 {
                     // call to server check token
-                    var apiResonse = await _httpClientHelper.PostAsync<string, bool>(
+                    var apiResonse = await _httpClientHelper.PostAsync<TwoFactorVerifyTokenRequestDto, bool>(
                         endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Auth_TwoFactor_VerifyToken),
-                        data: _token,
+                        data: new TwoFactorVerifyTokenRequestDto()
+                        {
+                            Token = _token
+                        },
                         requestType: CHttpClientType.Private,
                         portalType: CPortalType.CET);
                     if (apiResonse == null)
@@ -82,6 +87,7 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.TwoFactor
             try
             {
                 _isLoading = true;
+                _requestDto.Token = _twoFactorModel.GetFullCode();
                 var apiResponse = await _httpClientHelper.PostAsync<ConfirmTwoFactorAuthenticationRequestDto, LoginResponseDto>(
                     endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Auth_TwoFactor_Confirm),
                     data: _requestDto,

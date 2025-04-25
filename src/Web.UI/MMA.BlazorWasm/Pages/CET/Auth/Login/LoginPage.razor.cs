@@ -66,6 +66,7 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.Login
             try
             {
                 IsLoading = true;
+                Errors.Clear();
                 var response = await _httpClientHelper.PostAsync<LoginRequestDto, LoginResponseDto>(
                     endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Auth_SystemLogin),
                     data: LoginRequestDto, requestType: CHttpClientType.Public, portalType: CPortalType.CET);
@@ -88,7 +89,7 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.Login
                     {
                         if (response.Data.TwoFactorEnable)
                         {
-                            _navigationManager.NavigateTo(uri: $"/twofactorauthentication/{Uri.EscapeDataString(LoginRequestDto.Email)}?token={Uri.EscapeDataString(response.Data.TokenUrlSecret)}", forceLoad: true);
+                            _navigationManager.NavigateTo(uri: $"/twofactorauthentication?email={Uri.EscapeDataString(LoginRequestDto.Email)}&token={Uri.EscapeDataString(response.Data.TokenUrlSecret)}", forceLoad: true);
                         }
                         else
                         {

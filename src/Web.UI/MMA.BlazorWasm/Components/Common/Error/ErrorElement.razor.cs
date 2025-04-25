@@ -7,57 +7,50 @@ namespace MMA.BlazorWasm.Components.Common.Error
     {
         [Parameter]
         public List<ErrorDetailDto> Errors { get; set; } = new List<ErrorDetailDto>();
+
         [Parameter]
         public string FieldName { get; set; } = string.Empty;
+
         [Parameter]
         public string FormSummaryId { get; set; } = string.Empty;
-        private string ErrorMessage { get; set; } = string.Empty;
-        private List<string> FormSummaryErrors { get; set; } = new();
 
-        protected override void OnAfterRender(bool firstRender)
+        private string ErrorMessage { get; set; } = string.Empty;
+        private List<string> FormSummaryErrors { get; set; } = new List<string>();
+
+        protected override async Task OnParametersSetAsync()
         {
-            HandleErrors();
+            await HandleErrorsAsync();
         }
 
-        private void HandleErrors()
+        private async Task HandleErrorsAsync()
         {
-            if (Errors.IsNullOrEmpty()) return;
+            ErrorMessage = string.Empty;
+            FormSummaryErrors.Clear();
 
-            foreach (var error in Errors)
+            if (Errors == null || !Errors.Any()) return;
+
+            var fieldErrors = Errors.Where(e => e.ErrorScope == CErrorScope.Field && $"{FieldName}_Error" == e.Field).Select(e => e.Error).ToList();
+
+            if (fieldErrors.Any())
             {
-                switch (error.ErrorScope)
-                {
-                    case CErrorScope.Field:
-                        // Display field-specific error
-                        if ($"{FieldName}_Error" == error.Field)
-                        {
-                            ErrorMessage = error.Error;
-                        }
-                        break;
-                    case CErrorScope.FormSummary:
-                        // Display form summary error
-                        FormSummaryErrors.Add(item: error.Error);
-                        break;
-                    case CErrorScope.PageSumarry:
-                        // Display page summary error using toast service
-                        _toastService.ShowError(error.Error);
-                        break;
-                    case CErrorScope.RedirectPage:
-                        // Redirect to notification summary page
-                        _navigationManager.NavigateTo("/notificationsummary");
-                        break;
-                    case CErrorScope.Global:
-                        // Redirect to internal server error page
-                        _navigationManager.NavigateTo("/internalservererror");
-                        break;
-                    case CErrorScope.RedirectToLoginPage:
-                        // Redirect to login page
-                        _navigationManager.NavigateTo("/login");
-                        break;
-                    default:
-                        break;
-                }
+                ErrorMessage = string.Join("\n", fieldErrors);
             }
+
+            var formSummaryErrors = Errors.Where(e => e.ErrorScope == CErrorScope.FormSummary).Select(e => e.Error).ToList();
+
+            if (formSummaryErrors.Any())
+            {
+                FormSummaryErrors.AddRange(formSummaryErrors);
+            }
+
+            await InvokeAsync(StateHasChanged);
+
+            await Task.Delay(8000);
+
+            ErrorMessage = string.Empty;
+            FormSummaryErrors.Clear();
+
+            await InvokeAsync(StateHasChanged);
         }
     }
 }

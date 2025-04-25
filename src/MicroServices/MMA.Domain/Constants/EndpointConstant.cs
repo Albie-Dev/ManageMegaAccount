@@ -12,8 +12,8 @@ namespace MMA.Domain
         public const string CET_Auth_RefreshToken = "auth/refreshtoken";
         public const string CET_Auth_Register = "auth/register";
         public const string CET_Auth_Register_Confirm = "auth/register/confirm";
-        public const string CET_Auth_TwoFactor_Confirm = "auth/towfactor/confirm";
-        public const string CET_Auth_TwoFactor_VerifyToken = "auth/towfactor/verifytoken";
+        public const string CET_Auth_TwoFactor_Confirm = "auth/twofactor/confirm";
+        public const string CET_Auth_TwoFactor_VerifyToken = "auth/twofactor/verifytoken";
         public const string CET_Auth_Logout = "auth/logout";
 
         #region mega account

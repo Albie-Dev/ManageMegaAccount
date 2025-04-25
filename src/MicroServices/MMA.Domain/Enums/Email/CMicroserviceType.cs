@@ -5,5 +5,6 @@ namespace MMA.Domain
         None = 0,
         Core = 1,
         CET = 2,
+        MMA = 3
     }
 }

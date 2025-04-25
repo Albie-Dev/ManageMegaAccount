@@ -6,3 +6,11 @@ window.downloadFile = (fileName, base64Data) => {
     console.log(link.download);
     link.click();
 };
+
+
+function moveToNext(elementId) {
+    var nextElement = document.getElementById(elementId);
+    if (nextElement) {
+        nextElement.focus();
+    }
+}

@@ -15,6 +15,7 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.Register
             try
             {
                 _isLoading = true;
+                _errors.Clear();
                 var apiResponse = await _httpClientHelper.PostAsync<RegisterRequestDto, NotificationResponse>(
                     endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Auth_Register),
                     data: _requestDto,

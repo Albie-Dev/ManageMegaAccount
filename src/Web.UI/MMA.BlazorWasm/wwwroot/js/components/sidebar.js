@@ -38,11 +38,3 @@ window.addStar = () => {
     });
     myModal.show();
 };
-
-$(document).ready(function () {
-    setTimeout(function () {
-        $(".error-message-display").fadeOut("slow", function () {
-            $(this).remove();
-        });
-    }, 8000);
-});

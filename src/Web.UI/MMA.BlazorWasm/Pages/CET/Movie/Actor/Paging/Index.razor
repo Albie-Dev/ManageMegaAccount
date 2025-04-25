@@ -51,7 +51,7 @@
     </Filter>
 }
 
-<FileUploader IsOpen="_isUploadModalOpen"
+<FileUploader @bind-IsOpen="_isUploadModalOpen"
     Title="Import Actors"
     MaxFileSize="5*1024*1024"
     FileTypes="new List<CFileType>(){ CFileType.Excel }"

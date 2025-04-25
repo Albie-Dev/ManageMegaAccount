@@ -84,7 +84,7 @@
 </div>
 
 <FileUploader Title="Import Test"
-    IsOpen="IsOpen"
+    @bind-IsOpen="IsOpen"
     MaxFileSize="@(50*1024*1024)"
     FileTypes="FileTypes"
     OnFileUploaded="HandleUploadFromModal" />

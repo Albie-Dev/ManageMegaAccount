@@ -1,19 +1,14 @@
-
-
 @if (!string.IsNullOrEmpty(ErrorMessage))
 {
     <span class="text-danger error-message-display">@ErrorMessage</span>
-
 }
 
-@if (!string.IsNullOrEmpty(FormSummaryId) && !FormSummaryErrors.IsNullOrEmpty())
+@if (!string.IsNullOrEmpty(FormSummaryId) && FormSummaryErrors?.Count > 0)
 {
-    <ul class="alert alert-danger" >
-        @foreach(string errorMessage in FormSummaryErrors)
+    <ul class="alert alert-danger">
+        @foreach (string errorMessage in FormSummaryErrors)
         {
-            <li>
-                @errorMessage
-            </li>
+            <li>@errorMessage</li>
         }
     </ul>
 }

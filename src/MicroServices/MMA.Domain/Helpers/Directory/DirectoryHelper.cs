@@ -16,7 +16,7 @@ namespace MMA.Domain
 
         public static string GetHtmlTemplatePath(string templateFileName, CMicroserviceType serviceType)
         {
-            return Path.Combine(GetSolutionBasePath(), @$"src\Microservices\{serviceType.ToString()}\{serviceType.ToString()}.Service\Templates\Email\Html\{templateFileName}");
+            return Path.Combine(GetSolutionBasePath(), @$"src\Microservices\MMA.Service\Templates\Email\Html\{templateFileName}");
         }
     }
 }

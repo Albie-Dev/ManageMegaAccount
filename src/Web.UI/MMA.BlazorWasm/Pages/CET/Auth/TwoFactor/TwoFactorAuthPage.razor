@@ -1,4 +1,4 @@
-@page "/twofactorauthentication/{email}"
+@page "/twofactorauthentication"
 @layout AuthLayout
 <PageTitle>Xác minh hai bước</PageTitle>
 
@@ -15,7 +15,7 @@ else
                 <img src="images/auth/2FA_1.png" class="img-fluid" alt="">
 
                 <p class="font-poppins text-light">We've sent a varification code to</p>
-                <p class="font-poppins text-light">@Email</p>
+                <p class="font-poppins text-light">@_email</p>
             </div>
 
             <EditForm id="form-2fa-id" Model="_requestDto" OnValidSubmit="ConfirmTwoFactorAuthenticationAsync" class="py-2">

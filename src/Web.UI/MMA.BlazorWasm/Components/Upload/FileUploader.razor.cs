@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MMA.Domain;
@@ -27,11 +28,15 @@ namespace MMA.BlazorWasm.Components.Upload
         [Parameter]
         public EventCallback OnDownloadTemplateFile { get; set; }
 
-        private void CloseModal()
+        [Parameter]
+        public EventCallback<bool> IsOpenChanged { get; set; }
+
+        private async Task CloseModal()
         {
             IsOpen = false;
             _errorMessage = string.Empty;
             _selectedFile = null;
+            await ChangeOpenModal(IsOpen);
         }
 
         private void HandleFileSelected(InputFileChangeEventArgs inputFileChangeEvent)
@@ -67,6 +72,12 @@ namespace MMA.BlazorWasm.Components.Upload
         private async Task DownloadImporFileAsync()
         {
             await OnDownloadTemplateFile.InvokeAsync();
+        }
+
+        private async Task ChangeOpenModal(bool isOpen)
+        {
+            IsOpen = isOpen;
+            await IsOpenChanged.InvokeAsync(isOpen);
         }
     }
 }
