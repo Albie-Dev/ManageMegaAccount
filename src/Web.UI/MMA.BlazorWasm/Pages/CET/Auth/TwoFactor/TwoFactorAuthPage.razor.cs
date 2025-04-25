@@ -1,8 +1,6 @@
 using System.Web;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.JSInterop;
 using MMA.Domain;
 
 namespace MMA.BlazorWasm.Pages.CET.Auth.TwoFactor
@@ -14,7 +12,7 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.TwoFactor
 
         private bool _isLoading { get; set; } = false;
         private List<ErrorDetailDto> _errors { get; set; } = new List<ErrorDetailDto>();
-        private TwoFactorModel _twoFactorModel { get; set; } = new TwoFactorModel();
+        private NotificationResponse? _notificationResponse { get; set; } = null;
 
         private string _email { get; set; } = string.Empty;
         private string _token { get; set; } = string.Empty;
@@ -60,7 +58,7 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.TwoFactor
                         }
                         else if (!apiResonse.Data)
                         {
-                            _toastService.ShowError("Invalid two factor authentication secret token. You request access to denied.");
+                            _toastService.ShowError("Invalid two factor authentication secret token. Your request access to denied.");
                             _navigationManager.NavigateTo("/");
                         }
                         else
@@ -82,12 +80,51 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.TwoFactor
             }
         }
 
+        private async Task ResendRequestVerifyTwoFactorAuthAsync()
+        {
+            try
+            {
+                _isLoading = true;
+                var apiResponse = await _httpClientHelper.PostAsync<ConfirmTwoFactorAuthenticationRequestDto, NotificationResponse>(
+                    endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Auth_TwoFactor_Resend),
+                    data: _requestDto,
+                    requestType: CHttpClientType.Private,
+                    portalType: CPortalType.CET);
+                if (apiResponse == null)
+                {
+                    _toastService.ShowError(message: $"Cannot connect to server. Host = {CPortalType.CET.ToDescription()}");
+                }
+                else
+                {
+                    if (!apiResponse.Errors.IsNullOrEmpty())
+                    {
+                        _errors = apiResponse.Errors;
+                    }
+                    else if (apiResponse.Data == null)
+                    {
+                        _toastService.ShowError($"An error occured while fetch data. Server no response data.");
+                    }
+                    else
+                    {
+                        _notificationResponse = apiResponse.Data;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                _toastService.ShowError($"{ex.Message}. Host = {CPortalType.CET}");
+            }
+            finally
+            {
+                _isLoading = false;
+            }
+        }
+
         private async Task ConfirmTwoFactorAuthenticationAsync()
         {
             try
             {
                 _isLoading = true;
-                _requestDto.Token = _twoFactorModel.GetFullCode();
                 var apiResponse = await _httpClientHelper.PostAsync<ConfirmTwoFactorAuthenticationRequestDto, LoginResponseDto>(
                     endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_Auth_TwoFactor_Confirm),
                     data: _requestDto,
@@ -126,31 +163,21 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.TwoFactor
             }
         }
 
-        private async Task HandlePaste(ClipboardEventArgs e)
+        private string GetDigit(int index)
         {
-            var clipboardText = await GetClipboardTextAsync();
-            if (clipboardText.Length == 6)
-            {
-                _twoFactorModel.Digit1 = clipboardText[0].ToString();
-                _twoFactorModel.Digit2 = clipboardText[1].ToString();
-                _twoFactorModel.Digit3 = clipboardText[2].ToString();
-                _twoFactorModel.Digit4 = clipboardText[3].ToString();
-                _twoFactorModel.Digit5 = clipboardText[4].ToString();
-                _twoFactorModel.Digit6 = clipboardText[5].ToString();
-            }
-        }
-        private async Task<string> GetClipboardTextAsync()
-        {
-            var clipboardText = await _jsRuntime.InvokeAsync<string>("navigator.clipboard.readText");
-            return clipboardText;
+            return index < _requestDto.Token?.Length ? _requestDto.Token[index].ToString() : string.Empty;
         }
 
-        private async Task MoveToNext(ChangeEventArgs e, string nextElementId)
+        private bool IsCodeValid => _requestDto.Token?.Length == 6;
+
+        private void HandleInput(ChangeEventArgs e)
         {
-            if (!string.IsNullOrEmpty(e.Value?.ToString()))
-            {
-                await _jsRuntime.InvokeVoidAsync("moveToNext", nextElementId);
-            }
+            var input = e?.Value?.ToString() ?? "";
+            input = new string(input.Where(char.IsDigit).ToArray());
+
+            if (input.Length > 6)
+                input = input.Substring(0, 6);
+            _requestDto.Token = input;
         }
     }
 }

@@ -603,6 +603,32 @@ namespace MMA.Service
             return true;
         }
 
+        public async Task<NotificationResponse> ResendRequestVerifyTwoFactorTokenAsync(
+            ConfirmTwoFactorAuthenticationRequestDto requestDto)
+        {
+            var notifcationResponse = new NotificationResponse();
+            var modelState = requestDto.ModelStateValidate();
+            if (!modelState.GetErrors().IsNullOrEmpty())
+            {
+                throw new MMAException(statusCode: StatusCodes.Status400BadRequest, errors: modelState.GetErrors());
+            }
+            var userEntity = await _repository.FindAsync<UserEntity>(us => us.Email == requestDto.Email);
+            if (userEntity == null)
+            {
+                notifcationResponse.DisplayType = CNotificationDisplayType.Page;
+                notifcationResponse.Level = CNotificationLevel.Error;
+                notifcationResponse.Message = $"Cannot found any user with email = {requestDto.Email}";
+                notifcationResponse.Type = CNotificationType.Email;
+                return notifcationResponse;
+            }
+            await SendEmailTwoFactorAuthenticationAsync(userEntity: userEntity, isResend: true);
+            notifcationResponse.DisplayType = CNotificationDisplayType.Page;
+            notifcationResponse.Level = CNotificationLevel.Success;
+            notifcationResponse.Type = CNotificationType.Email;
+            notifcationResponse.Message = $"Mã mới đã được gửi đến email của bạn. Vui lòng truy cập hòm thư để xem chi tiết.";
+            return notifcationResponse;
+        }
+
         public async Task<LoginResponseDto> ConfirmTwoFactorAuthenticationAsync(ConfirmTwoFactorAuthenticationRequestDto requestDto)
         {
             var response = new LoginResponseDto();
@@ -718,13 +744,15 @@ namespace MMA.Service
         #endregion logout
 
         #region send email
-        public async Task SendEmailTwoFactorAuthenticationAsync(UserEntity userEntity)
+        private async Task SendEmailTwoFactorAuthenticationAsync(UserEntity userEntity, bool isResend = false)
         {
             var userTokens = await _repository.GetAsync<UserTokenEntity>(s => s.UserId == userEntity.Id
-                && s.ExpiredDate >= DateTimeOffset.UtcNow && !s.IsRevoked && s.MaxUse > 0
+                && s.ExpiredDate >= DateTimeOffset.UtcNow && !s.IsRevoked
                 && s.TokenType == CTokenType.TwoFactorEnable);
             var userTokenExist = userTokens.OrderByDescending(s => s.ExpiredDate).FirstOrDefault();
-            if (userTokenExist != null)
+            string token = string.Empty;
+            DateTimeOffset expireTime = DateTimeOffset.UtcNow;
+            if (userTokenExist != null && userTokenExist.MaxUse > 0 && !isResend)
             {
                 throw new MMAException(statusCode: StatusCodes.Status409Conflict,
                 errors: new List<ErrorDetailDto>()
@@ -737,9 +765,35 @@ namespace MMA.Service
                     }
                 });
             }
-            var expireTime = DateTimeOffset.UtcNow.AddMinutes(5);
-            var token = await _tokenManager.GenerateUserTokenAsync(userEntity: userEntity, tokenType: CTokenType.TwoFactorEnable,
-                expiredDate: expireTime, maxUse: 1);
+            else if (userTokenExist != null && isResend)
+            {
+                if (userTokenExist.MaxUse < 1)
+                {
+                    throw new MMAException(statusCode: StatusCodes.Status409Conflict,
+                    errors: new List<ErrorDetailDto>()
+                    {
+                        new ErrorDetailDto()
+                        {
+                            Error = $"Bạn đã yêu cầu gửi lại mã vượt quá số lượt cho phép. Vui lòng quay lại sau : {userTokenExist.ExpiredDate.ToLocalTime()}",
+                            ErrorScope = CErrorScope.FormSummary,
+                            Field = string.Empty
+                        }
+                    });
+                }
+                else
+                {
+                    token = userTokenExist.Token;
+                    expireTime = userTokenExist.ExpiredDate;
+                    userTokenExist.MaxUse -= 1;
+                    await _repository.UpdateAsync<UserTokenEntity>(entity: userTokenExist);
+                }
+            }
+            else
+            {
+                expireTime = DateTimeOffset.UtcNow.AddMinutes(isResend ? 3 : 5);
+                token = await _tokenManager.GenerateUserTokenAsync(userEntity: userEntity, tokenType: CTokenType.TwoFactorEnable,
+                    expiredDate: expireTime, maxUse: isResend ? 1 : 3);
+            }
             var clientInfo = RuntimeContext.AppSettings.ClientApp;
             var replaceModel = new TwoFactorAuthenticationTemplateModel()
             {

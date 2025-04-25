@@ -14,51 +14,56 @@
 {
     <LoadingElement />
 }
-
-<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center">
-    <div class="row shadow-lg rounded-4 overflow-hidden" style="max-width: 960px; width: 100%;
+<div class="position-relative min-vh-100">
+    <div class="container d-flex align-items-center justify-content-center min-vh-100">
+        <div class="row shadow-lg rounded-4 overflow-hidden" style="max-width: 960px; width: 100%;
                 background-color: rgba(255, 255, 255, 0.49);">
-        <div class="col-lg-6 p-5">
-            <h2 class="fw-bold mb-4">Sign up</h2>
-            <EditForm id="register-form-id" Model="_requestDto" OnValidSubmit="RegisterAsync">
-                <ErrorElement FormSummaryId="register-form-id" Errors="_errors" />
-                <div class="mb-3">
-                    <label class="form-label">Full Name <span class="text-danger">*</span></label>
-                    <InputText @bind-Value="_requestDto.FullName" class="form-control" name="fullname" id="fullname"
-                        placeholder="Enter your full name" />
-                    <ErrorElement Errors="_errors" FieldName="@nameof(_requestDto.FullName)" />
-                </div>
+            <div class="col-lg-6 p-5">
+                <h2 class="fw-bold mb-4">@I18NHelper.GetString("Button_Title_Auth_Register_Entry")</h2>
+                <EditForm id="register-form-id" Model="_requestDto" OnValidSubmit="RegisterAsync">
+                    <ErrorElement FormSummaryId="register-form-id" Errors="_errors" />
+                    <div class="mb-3">
+                        <label class="form-label">@I18NHelper.GetString(key: "Column_Title_Auth_FullName_Entry") <span class="text-danger">*</span></label>
+                        <InputText @bind-Value="_requestDto.FullName" class="form-control" name="fullname" id="fullname"
+                            placeholder="@(I18NHelper.GetString(key: "Column_Title_Auth_FullName_PlaceHolder_Entry"))" />
+                        <ErrorElement Errors="_errors" FieldName="@nameof(_requestDto.FullName)" />
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Email <span class="text-danger">*</span></label>
-                    <InputText @bind-Value="_requestDto.Email" class="form-control" name="email" id="email"
-                        placeholder="name@example.com" />
-                    <ErrorElement Errors="_errors" FieldName="@nameof(_requestDto.Email)" />
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">@I18NHelper.GetString(key: "Column_Title_Auth_Email_Entry") <span class="text-danger">*</span></label>
+                        <InputText @bind-Value="_requestDto.Email" class="form-control" name="email" id="email"
+                            placeholder="@(I18NHelper.GetString(key: "Column_Title_Auth_Email_PlaceHolder_Entry"))" />
+                        <ErrorElement Errors="_errors" FieldName="@nameof(_requestDto.Email)" />
+                    </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Password <span class="text-danger">*</span></label>
-                    <InputText @bind-Value="_requestDto.Password" placeholder="Enter your password" type="password"
-                        class="form-control" name="password" id="password" />
-                    <ErrorElement Errors="_errors" FieldName="@nameof(_requestDto.Password)" />
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">@I18NHelper.GetString(key: "Column_Title_Auth_Password_Entry") <span class="text-danger">*</span></label>
+                        <InputText @bind-Value="_requestDto.Password" placeholder="@(I18NHelper.GetString(key: "Column_Title_Auth_Password_PlaceHolder_Entry"))" type="password"
+                            class="form-control" name="password" id="password" />
+                        <ErrorElement Errors="_errors" FieldName="@nameof(_requestDto.Password)" />
+                    </div>
 
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="terms" />
-                    <label class="form-check-label" for="terms">
-                        I agree all statements in <a href="#">Terms of service</a>
-                    </label>
-                </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="terms" />
+                        <label class="form-check-label" for="terms">
+                            @I18NHelper.GetString("Column_Title_Auth_Term_Description_Entry") <a href="#">@I18NHelper.GetString("Column_Title_Auth_Term_Link_Entry")</a>
+                        </label>
+                    </div>
 
-                <ButtonAmam7078 Class="btn btn-primary w-100" Text="Đăng ký" Type="submit" Id="btn-register-id" />
-            </EditForm>
-            <div class="text-center mt-3">
-                Already have an account? <a href="/login">Back to login</a>
+                    <ButtonAmam7078 Class="btn btn-primary w-100" 
+                        Text="@I18NHelper.GetString("Button_Title_Auth_Register_Entry")" 
+                        Type="submit" 
+                        Id="btn-register-id"
+                    />
+                </EditForm>
+                <div class="text-center mt-3">
+                    @I18NHelper.GetString("Column_Title_Auth_Question_Register_Entry") <a href="/login">@I18NHelper.GetString(key: "Link_Title_Auth_Back_Login_Entry")</a>
+                </div>
             </div>
-        </div>
 
-        <div class="col-lg-6 d-none d-lg-block p-0">
-            <img src="images/auth/Register.png" class="img-fluid h-100 w-100 object-fit-cover" />
+            <div class="col-lg-6 d-none d-lg-block p-0">
+                <img src="images/auth/Register.png" class="img-fluid h-100 w-100 object-fit-cover" />
+            </div>
         </div>
     </div>
 </div>

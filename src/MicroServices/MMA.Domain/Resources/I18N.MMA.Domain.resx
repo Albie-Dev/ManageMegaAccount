@@ -342,4 +342,54 @@
   </data>
 
 
+  <data name="Column_Title_Auth_FullName_Entry" xml:space="preserve">
+    <value>Họ và tên</value>
+  </data>
+  <data name="Column_Title_Auth_FullName_PlaceHolder_Entry" xml:space="preserve">
+    <value>Nhập họ và tên của bạn</value>
+  </data>
+  <data name="Column_Title_Auth_Email_Entry" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Column_Title_Auth_Email_PlaceHolder_Entry" xml:space="preserve">
+    <value>vidu@email.com</value>
+  </data>
+  <data name="Column_Title_Auth_Password_Entry" xml:space="preserve">
+    <value>Mật khẩu</value>
+  </data>
+  <data name="Column_Title_Auth_Password_PlaceHolder_Entry" xml:space="preserve">
+    <value>Nhập mật khẩu của bạn</value>
+  </data>
+  <data name="Column_Title_Auth_Term_Description_Entry" xml:space="preserve">
+    <value>Tôi đồng ý với tất cả các tuyên bố trong</value>
+  </data>
+  <data name="Column_Title_Auth_Term_Link_Entry" xml:space="preserve">
+    <value>Điều khoản dịch vụ</value>
+  </data>
+  <data name="Column_Title_Auth_Question_Register_Entry" xml:space="preserve">
+    <value>Bạn đã có tài khoản?</value>
+  </data>
+  <data name="Button_Title_Auth_Register_Entry" xml:space="preserve">
+    <value>Đăng ký</value>
+  </data>
+  <data name="Button_Title_Auth_Login_Entry" xml:space="preserve">
+    <value>Đăng nhập</value>
+  </data>
+  <data name="Link_Title_Auth_Back_Login_Entry" xml:space="preserve">
+    <value>Trở về đăng nhập</value>
+  </data>
+  <data name="Link_Title_Auth_New_Register_Entry" xml:space="preserve">
+    <value>Tạo tài khoản mới</value>
+  </data>
+  <data name="Label_Title_Auth_Or_Login_With_Entry" xml:space="preserve">
+    <value>Hoặc đăng nhập với</value>
+  </data>
+  <data name="Link_Title_Auth_Forgot_Password_Entry" xml:space="preserve">
+    <value>Quên mật khẩu</value>
+  </data>
+  <data name="Checkbox_Title_Auth_Keep_Login_Entry" xml:space="preserve">
+    <value>Giữ tôi đăng nhập</value>
+  </data>
+
+
 </root>

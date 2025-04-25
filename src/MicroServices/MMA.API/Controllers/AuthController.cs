@@ -144,6 +144,17 @@ namespace MMA.API
             });
         }
 
+        [HttpPost("auth/twofactor/resend")]
+        public async Task<IActionResult> ResendRequestVerifyTwoFactorToken(ConfirmTwoFactorAuthenticationRequestDto requestDto)
+        {
+            var result = await _authService.ResendRequestVerifyTwoFactorTokenAsync(requestDto: requestDto);
+            return Ok(new ResponseResult<NotificationResponse>()
+            {
+                Data = result,
+                Success = true
+            });
+        }
+
         [HttpGet("auth/protected")]
         [MMAAuthorized(CRoleType.Client, CResourceType.User, CPermissionType.Read)]
         public async Task<IActionResult> TestAuth()

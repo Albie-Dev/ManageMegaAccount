@@ -13,44 +13,44 @@
             </div>
 
             <div class="col-lg-6 p-5">
-                <h3 class="fw-bold mb-4">Đăng nhập</h3>
+                <h3 class="fw-bold mb-4">@I18NHelper.GetString(key: "Button_Title_Auth_Login_Entry")</h3>
                 <EditForm id="login-form-id" Model="LoginRequestDto" OnValidSubmit="HandleLogin">
                     <ErrorElement FormSummaryId="login-form-id" Errors="Errors" />
                 <div class="mb-3">
-                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                    <label class="form-label">@I18NHelper.GetString(key: "Column_Title_Auth_Email_Entry") <span class="text-danger">*</span></label>
                     <InputText @bind-Value="LoginRequestDto.Email" class="form-control" name="email"
-                        id="email" placeholder="name@example.com" />
+                        id="email" placeholder="@(I18NHelper.GetString(key: "Column_Title_Auth_Email_PlaceHolder_Entry"))" />
                     <ErrorElement Errors="Errors" FieldName="@nameof(LoginRequestDto.Email)" />
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Password <span class="text-danger">*</span></label>
-                    <InputText @bind-Value="LoginRequestDto.Password" placeholder="Enter your password" type="password" class="form-control"
+                    <label class="form-label">@I18NHelper.GetString(key: "Column_Title_Auth_Password_Entry") <span class="text-danger">*</span></label>
+                    <InputText @bind-Value="LoginRequestDto.Password" placeholder="@(I18NHelper.GetString(key: "Column_Title_Auth_Password_PlaceHolder_Entry"))" type="password" class="form-control"
                         name="password" id="password" />
                     <ErrorElement Errors="Errors" FieldName="@nameof(LoginRequestDto.Password)" />
                 </div>
 
                 <div class="form-check mb-4">
                     <input class="form-check-input" type="checkbox" id="rememberMe" />
-                    <label class="form-check-label" for="rememberMe">Keep me logged in</label>
+                    <label class="form-check-label" for="rememberMe">@I18NHelper.GetString(key: "Checkbox_Title_Auth_Keep_Login_Entry")</label>
                 </div>
 
                 <ButtonAmam7078 Class="btn btn-primary w-100"
-                    Text="Log in now"
+                    Text="@I18NHelper.GetString("Button_Title_Auth_Login_Entry")"
                     Type="submit"
                     Id="btn-login-id"
                 />
                     
 
                 <div class="d-flex justify-content-between mt-4 small">
-                    <a href="/register">Create new account</a>
-                    <a href="/forgot-password">Forgot password</a>
+                    <a href="/register">@I18NHelper.GetString(key: "Link_Title_Auth_New_Register_Entry")</a>
+                    <a href="/forgot-password">@I18NHelper.GetString(key: "Link_Title_Auth_Forgot_Password_Entry")</a>
                 </div>
                 </EditForm>
 
                 <hr class="my-4" />
 
-                <div class="text-center mb-2">Or sign in with</div>
+                <div class="text-center mb-2">@I18NHelper.GetString(key: "Label_Title_Auth_Or_Login_With_Entry")</div>
 
                 <div class="d-flex justify-content-between gap-2">
                     <ButtonAmam7078 Class="btn btn-outline-primary w-100"
