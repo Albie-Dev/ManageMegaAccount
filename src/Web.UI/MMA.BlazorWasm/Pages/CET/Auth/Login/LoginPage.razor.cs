@@ -1,3 +1,4 @@
+using System.Web;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using MMA.Domain;
@@ -12,6 +13,16 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.Login
         private List<ErrorDetailDto> Errors { get; set; } = new();
         private LoginRequestDto LoginRequestDto = new();
         private bool IsLoading { get; set; } = false;
+        private string _previousUrl { get; set; } = string.Empty;
+
+        protected override async Task OnInitializedAsync()
+        {
+            var uri = new Uri(_navigationManager.Uri);
+            _previousUrl = HttpUtility.ParseQueryString(uri.Query).Get("returnUrl") ?? string.Empty;
+            _toastService.ShowInfo(_previousUrl);
+            await Task.CompletedTask;
+        }
+
         private async Task MicrosoftGenerateLoginUrlAsyc()
         {
             try
@@ -96,7 +107,7 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.Login
                             await _localStorageService.SetItemAsStringAsync(key: ApiClientConstant.LocalStorage_Key, data: response.Data.ToJson());
                             _authProvider.MarkUserAsAuthenticated(tokenData: response.Data);
                             StateHasChanged();
-                            _navigationManager.NavigateTo(uri: "/", forceLoad: true);
+                            _navigationManager.NavigateTo(uri: _previousUrl ?? "/", forceLoad: true);
                         }
                     }
                 }

@@ -13,7 +13,7 @@ namespace MMA.BlazorWasm
             _user = user;
         }
 
-        public bool HasPermission(CRoleType role, CResourceType resource, CPermissionType permission)
+        public bool HasPermission(CRoleType? role, CResourceType? resource = null, CPermissionType? permission = null)
         {
             if (_user == null || _user.Identity == null || !_user.Identity.IsAuthenticated)
                 return false;
@@ -21,11 +21,32 @@ namespace MMA.BlazorWasm
             var roleClaims = _user.FindAll(ClaimTypes.Role)
                 .Select(rc => rc.Value.FromJson<RoleClaimDto>()).ToList();
 
-            return roleClaims.Any(rc =>
-                rc.RoleName == role.ToString() &&
-                rc.RolePermissions.Any(rp =>
-                    rp.ResourceType == resource &&
-                    rp.PermissionTypes.Contains(permission)));
+            var roleClaim = roleClaims.FirstOrDefault(rc => rc.RoleName == role.ToString());
+            if (roleClaim == null)
+                return false;
+
+            if (!resource.HasValue && !permission.HasValue)
+            {
+                return true;
+            }
+
+            if (resource.HasValue)
+            {
+                var resourcePermission = roleClaim.RolePermissions
+                    .FirstOrDefault(rp => rp.ResourceType == resource);
+
+                if (resourcePermission == null)
+                    return false;
+
+                if (permission.HasValue)
+                {
+                    return resourcePermission.PermissionTypes.Contains(permission.Value);
+                }
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

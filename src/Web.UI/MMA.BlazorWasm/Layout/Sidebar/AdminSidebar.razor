@@ -1,0 +1,55 @@
+<nav id="sidebar" class="sidebar d-flex flex-column">
+    <div class="d-flex justify-content-between align-items-center px-3 py-2">
+        <span class="fw-bold">SB Admin Pro</span>
+        <i class="bi bi-list toggle-btn" id="toggleSidebar"></i>
+    </div>
+
+    @foreach (var route in Routes)
+    {
+        <div class="sidebar-heading">@route.GroupName</div>
+        <ul class="nav flex-column">
+            @foreach (var item in route.Items)
+            {
+                if (item.SubItems.IsNullOrEmpty())
+                {
+                    <li>
+                        <NavLink class="nav-link px-3" href="@item.Route">
+                            @if (!string.IsNullOrEmpty(item.Icon))
+                            {
+                                <i class=" @item.Icon"></i>
+                            }
+                            <span class="ms-2">@item.Title</span>
+                        </NavLink>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="nav-link d-flex align-items-center collapsed" data-bs-toggle="collapse" href="#@item.CollapseId" role="button" aria-expanded="false">
+                            <i class="@item.Icon"></i>
+                            <span class="ms-2">@item.Title</span>
+                            <i class="bi bi-chevron-down toggle-icon ms-auto"></i>
+                        </a>
+                        <div class="collapse" id="@item.CollapseId">
+                            <ul class="nav flex-column ms-4">
+                                @foreach (var subItem in item.SubItems)
+                                {
+                                    <li>
+                                        <NavLink class="nav-link" href="@subItem.Route">
+                                            @if (!string.IsNullOrEmpty(subItem.Icon))
+                                            {
+                                                <i class="@subItem.Icon"></i>
+                                            }
+                                            <span class="ms-2">@subItem.Title</span>
+                                        </NavLink>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </li>
+                }
+            }
+        </ul>
+    }
+</nav>
+

@@ -1,18 +1,31 @@
 ﻿@using MMA.BlazorWasm.Layout.Base
 @using Microsoft.AspNetCore.Components.Authorization
-@inject NavigationManager Navigation
+@inject PermissionService _permissionService;
+
+
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
-                    @if (context.User.Identity?.IsAuthenticated != true)
-                    {
-                        Navigation.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
-                    }
-                    else
-                    {
-                        <p role="alert">You are not authorized to access this resource.</p>
+                    @{
+                        var attribute = routeData.PageType.GetCustomAttributes(typeof(AuthorizePageAttribute), false)
+                            .FirstOrDefault() as AuthorizePageAttribute;
+                        @if (context.User.Identity?.IsAuthenticated != true)
+                        {
+                            _navigationManager.NavigateTo($"login?returnUrl={Uri.EscapeDataString(_navigationManager.Uri)}");
+                        }
+                        else
+                        {
+                            
+                            if (attribute != null)
+                            {
+                                if (!_permissionService.HasPermission(attribute.Role, attribute.Resource, attribute.Permission))
+                                {
+                                    _navigationManager.NavigateTo($"/forbiden/403?returnUrl={Uri.EscapeDataString(_navigationManager.Uri)}");
+                                }
+                            }
+                        }
                     }
                 </NotAuthorized>
             </AuthorizeRouteView>

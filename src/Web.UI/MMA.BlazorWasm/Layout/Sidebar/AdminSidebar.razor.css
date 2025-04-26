@@ -1,0 +1,85 @@
+.sidebar {
+    width: 260px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    transition: width 0.3s;
+    overflow-y: auto;
+}
+
+.sidebar.collapsed {
+    width: 80px;
+}
+
+.sidebar ::deep .nav-link {
+    color: #333;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+}
+
+.sidebar ::deep .nav-link i {
+    width: 30px;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.sidebar ::deep .nav-link span {
+    transition: opacity 0.3s;
+}
+
+.sidebar.collapsed .nav-link span,
+.sidebar.collapsed .sidebar-heading,
+.sidebar.collapsed .user-info {
+    display: none;
+}
+
+.sidebar ::deep .nav-link.active {
+    background-color: #e2e6ea;
+    font-weight: 600;
+    color: #0d6efd;
+}
+
+.sidebar ::deep .nav-link.active i {
+    color: #0d6efd;
+}
+
+.sidebar .sidebar-heading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6c757d;
+    text-transform: uppercase;
+    padding: 0.75rem 1rem 0.25rem;
+}
+
+.content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.toggle-btn {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    cursor: pointer;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 2px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #ced4da;
+    border-radius: 3px;
+}
+
+.nav-link .toggle-icon {
+    margin-left: auto;
+    transition: transform 0.3s;
+}
+
+.nav-link.collapsed .toggle-icon {
+    transform: rotate(-90deg);
+}
