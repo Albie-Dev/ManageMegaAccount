@@ -49,6 +49,7 @@ namespace MMA.Domain
 
         #region User role
         public const string CET_UserRole_Update = "userrole/update";
+        public const string CET_User_BaseInfo = "user/baseinfo";
         #endregion User role
     }
 }

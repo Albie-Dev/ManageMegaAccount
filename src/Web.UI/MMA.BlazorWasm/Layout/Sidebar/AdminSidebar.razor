@@ -1,9 +1,6 @@
 <nav id="sidebar" class="sidebar d-flex flex-column">
-    <div class="d-flex justify-content-between align-items-center px-3 py-2">
-        <span class="fw-bold">SB Admin Pro</span>
-        <i class="bi bi-list toggle-btn" id="toggleSidebar"></i>
-    </div>
-
+    <i class="btn btn-sm btn-outline-secondary bi bi-chevron-left toggle-btn"
+        id="toggleSidebar"></i>
     @foreach (var route in Routes)
     {
         <div class="sidebar-heading">@route.GroupName</div>
@@ -16,7 +13,7 @@
                         <NavLink class="nav-link px-3" href="@item.Route">
                             @if (!string.IsNullOrEmpty(item.Icon))
                             {
-                                <i class=" @item.Icon"></i>
+                                <i class="@item.Icon menu-side-icon"></i>
                             }
                             <span class="ms-2">@item.Title</span>
                         </NavLink>
@@ -26,9 +23,9 @@
                 {
                     <li>
                         <a class="nav-link d-flex align-items-center collapsed" data-bs-toggle="collapse" href="#@item.CollapseId" role="button" aria-expanded="false">
-                            <i class="@item.Icon"></i>
+                            <i class="@item.Icon menu-side-icon"></i>
                             <span class="ms-2">@item.Title</span>
-                            <i class="bi bi-chevron-down toggle-icon ms-auto"></i>
+                            <i class="bi bi-chevron-down toggle-icon"></i>
                         </a>
                         <div class="collapse" id="@item.CollapseId">
                             <ul class="nav flex-column ms-4">
@@ -38,7 +35,7 @@
                                         <NavLink class="nav-link" href="@subItem.Route">
                                             @if (!string.IsNullOrEmpty(subItem.Icon))
                                             {
-                                                <i class="@subItem.Icon"></i>
+                                                <i class="@subItem.Icon sub-icon"></i>
                                             }
                                             <span class="ms-2">@subItem.Title</span>
                                         </NavLink>

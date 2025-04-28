@@ -12,6 +12,24 @@ namespace MMA.Service
             _repository = repository;
         }
 
+
+        public async Task<UserBaseInfoDto> GetUserBaseInfoAsync()
+        {
+            var currentUser = RuntimeContext.CurrentUser;
+            if (currentUser == null)
+            {
+                throw new Exception();
+            }
+            await Task.CompletedTask;
+            return new UserBaseInfoDto()
+            {
+                Avatar = currentUser.Avatar,
+                Email = currentUser.Email,
+                FullName = currentUser.FullName,
+                UserId = currentUser.Id
+            };
+        }
+
         public async Task<BasePagedResult<UserBaseInfoDto>> GetUsersForFilterAsync(TableParam<BaseFilter> tableParam)
         {
             IQueryable<UserEntity> collection = _repository.Queryable<UserEntity>();

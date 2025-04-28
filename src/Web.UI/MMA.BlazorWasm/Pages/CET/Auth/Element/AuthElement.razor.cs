@@ -9,7 +9,40 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.Element
         [Inject] private ILocalStorageService _localStorageService { get; set; } = default!;
         [Inject] private ApiAuthenticationStateProvider _authProvider { get; set; } = default!;
 
+        private List<ErrorDetailDto> _errors { get; set; } = new List<ErrorDetailDto>();
+
+        private UserBaseInfoDto _userInfo { get; set; } = new UserBaseInfoDto();
+
         private bool IsLoad { get; set; } = false;
+
+        protected override async Task OnInitializedAsync()
+        {
+            var apiResponse = await _httpClientHelper.GetAsync<UserBaseInfoDto>(
+                endpoint: Path.Combine(EndpointConstant.CET_Base_Url, EndpointConstant.CET_User_BaseInfo),
+                requestType: CHttpClientType.Private,
+                portalType: CPortalType.CET);
+
+            if (apiResponse == null)
+            {
+                _toastService.ShowError("");
+            }
+            else
+            {
+                if (apiResponse.Errors.IsNullOrEmpty())
+                {
+                    _errors = apiResponse.Errors;
+                }
+                else if (apiResponse.Data == null)
+                {
+                    _toastService.ShowError(message: "");
+                }
+                else
+                {
+                    _userInfo = apiResponse.Data;
+                }
+            }
+        }
+
         private async Task LogoutAsync()
         {
             try

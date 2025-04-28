@@ -17,6 +17,18 @@ namespace MMA.API
             _userService = userService;
         }
 
+        [HttpGet("user/baseinfo")]
+        [MMAAuthorized]
+        public async Task<IActionResult> GetUserBaseInfo()
+        {
+            var result = await _userService.GetUserBaseInfoAsync();
+            return Ok(new ResponseResult<UserBaseInfoDto>()
+            {
+                Data = result,
+                Success = true
+            });
+        }
+
 
         [HttpPost("user/filter")]
         public async Task<IActionResult> GetUsersForFilter(TableParam<BaseFilter> tableParam)

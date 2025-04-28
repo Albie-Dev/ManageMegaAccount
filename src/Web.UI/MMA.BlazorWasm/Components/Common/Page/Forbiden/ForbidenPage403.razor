@@ -4,22 +4,18 @@
 
 <PageTitle>Forbiden</PageTitle>
 
-<div class="overlay shadow-lg">
-    <div class="forbidden-icon mb-3">
-        <i class="bi bi-shield-lock-fill"></i>
+<div class="forbidden-page d-flex justify-content-center align-items-center">
+    <div class="card shadow-lg p-5 text-center" style="max-width: 500px; background-color: rgba(255, 255, 255, 0.9); border-radius: 1rem;">
+        <div class="text-danger mb-4">
+            <i class="bi bi-shield-lock-fill" style="font-size: 5rem;"></i>
+        </div>
+        <h1 class="display-5 fw-bold">403 - Forbidden</h1>
+        <p class="lead text-muted mb-4">
+            Bạn không có quyền truy cập vào trang này.<br />
+            Nếu đây là lỗi, vui lòng liên hệ quản trị viên.
+        </p>
+        <button class="btn btn-primary btn-lg rounded-pill shadow-sm" @onclick="BackToHomePage">
+            <i class="bi bi-house-door-fill me-2"></i> Về Trang Chủ
+        </button>
     </div>
-    <h1 class="display-5 fw-bold text-warning">403 - KHU VỰC CẤM</h1>
-    <p class="lead mt-3 mb-4">
-        Bạn đã lạc vào một thế giới đầy <strong>sự huyền bí</strong> và <em> vô cùng kích thích</em>.<br>
-        Nhưng xin lỗi… <strong>bạn không có quyền truy cập</strong>!
-    </p>
-    <p class="text-light small mb-4">
-        Vui lòng quay lại trước khi bạn bị "đốt mắt" 🔥
-    </p>
-    <ButtonAmam7078 Class="btn btn-danger-pink px-4 py-2 rounded-pill"
-        Icon="bi bi-arrow-left-circle-fill me-2"
-        IconPosition="CIconPositionType.Left"
-        Text="Trở về an toàn"
-        Type="button"
-        OnClick="BackToHomePage" />
 </div>

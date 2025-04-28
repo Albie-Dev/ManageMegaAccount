@@ -19,7 +19,7 @@
     transition: background 0.2s, color 0.2s;
 }
 
-.sidebar ::deep .nav-link i {
+.sidebar ::deep .nav-link .menu-side-icon {
     width: 30px;
     font-size: 1.5rem;
     text-align: center;
@@ -59,13 +59,6 @@
     padding: 1rem;
 }
 
-.toggle-btn {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    cursor: pointer;
-}
-
 .sidebar::-webkit-scrollbar {
     width: 2px;
 }
@@ -75,11 +68,18 @@
     border-radius: 3px;
 }
 
-.nav-link .toggle-icon {
+.sidebar ::deep .nav-link .toggle-icon {
     margin-left: auto;
-    transition: transform 0.3s;
+    transition: transform 0.3s, color 0.3s, font-size 0.3s;
+    font-size: 0.8;
+    color: rgba(0, 0, 0, 0.5);
 }
 
-.nav-link.collapsed .toggle-icon {
+.sidebar ::deep .nav-link.collapsed .toggle-icon {
     transform: rotate(-90deg);
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.sidebar ::deep .nav-link:hover .toggle-icon {
+    color: rgba(210, 19, 19, 0.7);
 }

@@ -4,14 +4,34 @@ window.sidebarManager = {
         const toggleBtn = document.getElementById('toggleSidebar');
 
         toggleBtn?.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
+            const isCollapsed = sidebar.classList.toggle('collapsed');
 
-            if (sidebar.classList.contains('collapsed')) {
-                document.querySelectorAll('.collapse.show').forEach(c => new bootstrap.Collapse(c, { toggle: true }));
-                document.querySelectorAll('.nav-link[data-bs-toggle]').forEach(link => link.classList.add('collapsed'));
+            if (isCollapsed) {
+                toggleBtn.classList.remove('bi-chevron-left');
+                toggleBtn.classList.add('bi-chevron-right');
+
+                document.querySelectorAll('.collapse.show').forEach(c => {
+                    new bootstrap.Collapse(c, { toggle: true });
+                });
+
+                document.querySelectorAll('.nav-link[data-bs-toggle]').forEach(link => {
+                    link.classList.add('collapsed');
+                });
+
+                document.querySelectorAll('.toggle-icon').forEach(icon => {
+                    icon.classList.add('d-none');
+                });
+
+            } else {
+                toggleBtn.classList.remove('bi-chevron-right');
+                toggleBtn.classList.add('bi-chevron-left');
+
+                document.querySelectorAll('.toggle-icon').forEach(icon => {
+                    icon.classList.remove('d-none');
+                });
             }
         });
-        
+
         const navLinks = document.querySelectorAll('.nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', function (e) {
@@ -20,6 +40,11 @@ window.sidebarManager = {
 
                 if (sidebar.classList.contains('collapsed')) {
                     sidebar.classList.remove('collapsed');
+                    document.querySelectorAll('.toggle-icon').forEach(icon => {
+                        icon.classList.remove('d-none');
+                    });
+                    toggleBtn.classList.remove('bi-chevron-right');
+                    toggleBtn.classList.add('bi-chevron-left');
                 }
             });
         });

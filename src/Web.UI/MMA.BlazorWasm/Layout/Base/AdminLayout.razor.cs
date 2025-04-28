@@ -17,36 +17,72 @@ namespace MMA.BlazorWasm.Layout.Base
         {
             new MenuSideModel()
             {
-                GroupName = "Core",
+                GroupName = "Role Management",
                 Items = new List<SidebarItemModel>()
                 {
                     new SidebarItemModel()
                     {
                         Icon = "bi bi-speedometer2",
-                        Route = "/haibuoc",
-                        Title = "Dashboards",
-                        CollapseId = "dashCollapse",
-                        SubItems = new List<SidebarItemModel>()
-                        {
-                            new SidebarItemModel()
-                            {
-                                Icon = "",
-                                Title = "Default",
-                                Route = "/haibuoc/test",
-                            },
-                            new SidebarItemModel()
-                            {
-                                Icon = "",
-                                Title = "Multipurpose",
-                                Route = "/haibuoc",
-                            },
-                            new SidebarItemModel()
-                            {
-                                Icon = "",
-                                Title = "Affiliate",
-                                Route = "/haibuoc",
-                            }
-                        }
+                        Route = "/admin/role",
+                        Title = "Roles",
+                        CollapseId = "roleCollapse",
+                    //     SubItems = new List<SidebarItemModel>()
+                    //     {
+                    //         new SidebarItemModel()
+                    //         {
+                    //             Icon = "bi bi-badge-ar",
+                    //             Title = "Default",
+                    //             Route = "/admin/role",
+                    //         },
+                    //         new SidebarItemModel()
+                    //         {
+                    //             Icon = "bi bi-badge-ar",
+                    //             Title = "Multipurpose",
+                    //             Route = "/haibuoc",
+                    //         },
+                    //         new SidebarItemModel()
+                    //         {
+                    //             Icon = "bi bi-badge-ar",
+                    //             Title = "Affiliate",
+                    //             Route = "/haibuoc",
+                    //         }
+                    //     }
+                    }
+                }
+            },
+
+            new MenuSideModel()
+            {
+                GroupName = "Actor Management",
+                Items = new List<SidebarItemModel>()
+                {
+                    new SidebarItemModel()
+                    {
+                        Icon = "bi bi-person-video2",
+                        Route = "/movie/actor",
+                        Title = "Actors",
+                        CollapseId = "actorCollapse",
+                    //     SubItems = new List<SidebarItemModel>()
+                    //     {
+                    //         new SidebarItemModel()
+                    //         {
+                    //             Icon = "bi bi-badge-ar",
+                    //             Title = "Default",
+                    //             Route = "/admin/role",
+                    //         },
+                    //         new SidebarItemModel()
+                    //         {
+                    //             Icon = "bi bi-badge-ar",
+                    //             Title = "Multipurpose",
+                    //             Route = "/haibuoc",
+                    //         },
+                    //         new SidebarItemModel()
+                    //         {
+                    //             Icon = "bi bi-badge-ar",
+                    //             Title = "Affiliate",
+                    //             Route = "/haibuoc",
+                    //         }
+                    //     }
                     }
                 }
             }

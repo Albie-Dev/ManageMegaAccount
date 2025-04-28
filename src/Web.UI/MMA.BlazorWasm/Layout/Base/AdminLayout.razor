@@ -1,10 +1,18 @@
 @using MMA.BlazorWasm.Layout.Sidebar
+@using MMA.BlazorWasm.Pages.CET.Auth.Element
 @inherits LayoutComponentBase
-@attribute [AuthorizePage(role: CRoleType.Admin)]
-
 <div class="wrapper">
-    <AdminSidebar Routes="Routes" />
-    <div class="content">
-        @Body
+    <div class="topbar">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light px-3">
+            <a class="navbar-brand fw-bold" href="#">SB Admin Pro</a>
+            <AuthElement />
+        </nav>
+    </div>
+
+    <div class="main d-flex">
+        <AdminSidebar Routes="Routes" />
+        <div class="content">
+            @Body
+        </div>
     </div>
 </div>

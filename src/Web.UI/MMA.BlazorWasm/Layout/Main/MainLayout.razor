@@ -1,17 +1,13 @@
 ﻿@inherits LayoutComponentBase
+@using MMA.BlazorWasm.Layout.Sidebar
 @using MMA.BlazorWasm.Pages.CET.Auth.Element;
 
 
 <div class="page">
-    <MainSidebarMenu />
+    <AdminSidebar />
     <main id="contentMain">
         <nav class="navbar navbar-expand-lg navbar-light bg-light shadow">
             <div class="container-fluid">
-                <a class="navbar-brand" href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
