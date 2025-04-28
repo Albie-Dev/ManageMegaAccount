@@ -3,7 +3,7 @@ using MMA.Domain;
 
 namespace MMA.BlazorWasm.Components.Common.Notification
 {
-    public partial class NotificationElement
+    public partial class DisplayMessageElement
     {
         [Parameter] public NotificationResponse? Notification { get; set; }
 

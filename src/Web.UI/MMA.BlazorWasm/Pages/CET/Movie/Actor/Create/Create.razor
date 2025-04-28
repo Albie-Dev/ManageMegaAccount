@@ -6,7 +6,7 @@
 
     <div class="form-create-actor">
         <EditForm id="create-actor-id" Model="_requestDto" OnValidSubmit="CreateActorAsync">
-            <NotificationElement Notification="_notificationResponse" />
+            <DisplayMessageElement Notification="_notificationResponse" />
             <ErrorElement Errors="Errors" FormSummaryId="create-actor-id" />
             <div class="row">
                 <div class="col-md-6 mb-3">

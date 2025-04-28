@@ -3,7 +3,6 @@
 
 <AuthorizeView>
     <Authorized>
-        @* Hello, @context.User.Identity?.Name! *@
         <UserProfile UserInfo="_userInfo" />
         <button class="btn btn-sm btn-outline-secondary" @onclick="LogoutAsync">Đăng xuất</button>
     </Authorized>

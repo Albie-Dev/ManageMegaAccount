@@ -8,7 +8,7 @@
     @if (_requestDto != null)
     {
         <EditForm id="update-actor-id" Model="_requestDto" OnValidSubmit="UpdateActorAsync">
-            <NotificationElement Notification="_notificationResponse" />
+            <DisplayMessageElement Notification="_notificationResponse" />
             <ErrorElement Errors="Errors" FormSummaryId="update-actor-id" />
             <div class="row mb-3">
                 <div class="col-md-6">

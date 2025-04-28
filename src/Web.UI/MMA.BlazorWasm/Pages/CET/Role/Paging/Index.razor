@@ -7,7 +7,7 @@
 
 @if (_notificationResponse != null)
 {
-    <NotificationElement Notification="_notificationResponse" />
+    <DisplayMessageElement Notification="_notificationResponse" />
     _notificationResponse = null;
 }
 <Table TData="RoleDetailResponseDto" TFilter="RoleFilterProperty" TSelection="Guid"
