@@ -1,4 +1,4 @@
-<div class="dropdown p-3">
+<div class="dropdown">
     <button class="btn btn-light position-relative rounded-circle" type="button" id="@_notificationDropdownId"
             @onclick="ToggleViewNotificationAsync" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="@(_isToggle ? IconChanged : IconDefault) fs-5"></i>
@@ -21,7 +21,7 @@
         }
     </button>
 
-    <ul class="dropdown-menu dropdown-menu-start shadow p-2" style="width: 400px; max-height: 400px; overflow-y: auto;" aria-labelledby="notificationDropdownId">
+    <ul class="dropdown-menu dropdown-menu-end shadow p-2" style="max-width: 400px; max-height: 400px; overflow-y: auto;" aria-labelledby="notificationDropdownId">
         <li class="dropdown-header border-bottom pb-2 mb-2">
             <div class="d-flex justify-content-between align-items-center">
                 <h6 class="m-0">Thông báo</h6>

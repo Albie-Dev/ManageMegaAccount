@@ -3,19 +3,19 @@
 
 <AuthorizeView>
     <Authorized>
-        <NotificationElement @bind-NewNotificationCount="_newNotificationCount" />
-        <UserProfile UserInfo="_userInfo" />
-        <button class="btn btn-sm btn-outline-secondary" @onclick="LogoutAsync">Đăng xuất</button>
+        <div class="d-flex align-items-center gap-3">
+            <NotificationElement @bind-NewNotificationCount="_newNotificationCount" />
+            <ProfileElement UserInfo="_userInfo"/>
+        </div>
     </Authorized>
     <NotAuthorized>
-        <a class="btn btn-sm btn-outline-primary" href="/login">Đăng nhập</a>
+        <div class="d-flex align-items-center gap-3">
+            <a class="btn btn-sm btn-outline-primary" href="/login">Đăng nhập</a>
+        </div>
     </NotAuthorized>
 </AuthorizeView>
 
-@if(IsLoad)
+@if (IsLoad)
 {
     <LoadingElement />
-}
-
-@code{
 }
