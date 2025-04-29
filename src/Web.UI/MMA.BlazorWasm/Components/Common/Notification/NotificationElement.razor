@@ -1,0 +1,79 @@
+<div class="dropdown p-3">
+    <button class="btn btn-light position-relative rounded-circle" type="button" id="@_notificationDropdownId"
+            @onclick="ToggleViewNotificationAsync" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="@(_isToggle ? IconChanged : IconDefault) fs-5"></i>
+        @if (NewNotificationCount > 0)
+        {
+        <span class="position-absolute" style="top: 1px; left: 22px; font-size: 0.6rem; padding: 3px 5px;">
+            <span class="badge bg-danger rounded-circle">
+            @if (NewNotificationCount <= 99)
+            {
+                @NewNotificationCount
+            }
+            else
+            {
+                <span style="position: relative;">
+                    99<span style="font-size: 0.5em; position: absolute; top: -0.4em;">+</span>
+                </span>
+            }
+            </span>
+        </span>
+        }
+    </button>
+
+    <ul class="dropdown-menu dropdown-menu-start shadow p-2" style="width: 400px; max-height: 400px; overflow-y: auto;" aria-labelledby="notificationDropdownId">
+        <li class="dropdown-header border-bottom pb-2 mb-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="m-0">Thông báo</h6>
+                <i class="bi bi-gear"></i>
+            </div>
+        </li>
+        
+        @if (_isLoading)
+        {
+            @for (int i = 0; i < 5; i++)
+            {
+                <li class="skeleton-item mb-2">
+                    <div class="skeleton-avatar"></div>
+                    <div class="skeleton-content">
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-subtitle"></div>
+                    </div>
+                </li>
+            }
+        }
+        else
+        {
+            if (!_items.IsNullOrEmpty())
+            {
+                @foreach (var item in _items)
+                {
+                    <li>
+                        <a href="@item.Route" class="d-flex align-items-center mb-2 text-decoration-none position-relative">
+                            @if (item.OwnerProperty != null)
+                            {
+                                <UserProfile UserInfo="item.OwnerProperty" />
+                            }
+                            <div class="flex-grow-1">
+                                <div>@item.Title</div>
+                                <small class="text-muted">@DateTimeHelper.GetTimeAgo(item.CreatedDate)</small>
+                            </div>
+                            @if (!string.IsNullOrEmpty(item.Thumbnail))
+                            {
+                                <img src="@item.Thumbnail" class="ms-2 rounded" alt="Thumbnail">
+                            }
+                            @if (!item.IsRead)
+                            {
+                                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle" style="width: 8px; height: 8px;"></span>
+                            }
+                        </a>
+                    </li>
+                }
+            }
+            else
+            {
+                <li class="text-muted">No items available to show.</li>
+            }
+        }
+    </ul>
+</div>

@@ -51,5 +51,10 @@ namespace MMA.Domain
         public const string CET_UserRole_Update = "userrole/update";
         public const string CET_User_BaseInfo = "user/baseinfo";
         #endregion User role
+
+        #region notification
+        public const string CET_Notification_PagingItem = "notification/pagingitem";
+        public const string CET_Notification_CountNew = "notification/countnew";
+        #endregion notification
     }
 }

@@ -28,6 +28,8 @@ namespace MMA.Service
         public DbSet<ActorEntity> Actors { get; set; } = null!;
         #endregion Movie
 
+        public DbSet<NotificationEntity> Notifications { get; set; } = null!;
+
         public DbSet<LinkHelperEntity> Links { get; set; } = null!;
         #endregion dbset
 

@@ -4,6 +4,7 @@ using MMA.Service;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MMA.Service.Migrations
 {
     [DbContext(typeof(MMADbContext))]
-    partial class MMADbContextModelSnapshot : ModelSnapshot
+    [Migration("20250429002759_ThayDoiDoDaiToken")]
+    partial class ThayDoiDoDaiToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -19,7 +19,6 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.Login
         {
             var uri = new Uri(_navigationManager.Uri);
             _previousUrl = HttpUtility.ParseQueryString(uri.Query).Get("returnUrl") ?? string.Empty;
-            _toastService.ShowInfo(_previousUrl);
             await Task.CompletedTask;
         }
 

@@ -345,6 +345,7 @@ namespace MMA.Service
             // -- Generate Token
             string accessToken = await _authMethodService.GenerateAccessTokenAsync(user: userEntity);
             string refreshToken = await _authMethodService.GenerateRefreshTokenAsync(user: userEntity);
+            var userTokenExist = await _repository.FindAsync<UserTokenEntity>(s => s.Token == accessToken);
             var userTokenEntity = new UserTokenEntity()
             {
                 UserId = userEntity.Id,
@@ -353,7 +354,7 @@ namespace MMA.Service
                 Token = accessToken,
                 RefreshToken = refreshToken,
             };
-            await _repository.AddAsync<UserTokenEntity>(entity: userTokenEntity);
+            await _repository.AddAsync<UserTokenEntity>(entity: userTokenEntity, clearTracker: true);
             return new LoginResponseDto()
             {
                 AccessToken = accessToken,

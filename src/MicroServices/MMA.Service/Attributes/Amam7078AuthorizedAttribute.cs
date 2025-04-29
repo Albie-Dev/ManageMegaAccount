@@ -49,6 +49,11 @@ namespace MMA.Service
             {
                 try
                 {
+                    if (Role == CRoleType.None)
+                    {
+                        hasPermission = true;
+                        break;
+                    }
                     Enum.TryParse(roleClaim.RoleName, out CRoleType roleType);
                     if (roleType == Role)
                     {

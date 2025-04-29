@@ -58,5 +58,9 @@ namespace MMA.Service
         public virtual ICollection<UserRoleEntity> UserRoles { get; set; } = new List<UserRoleEntity>();
         [InverseProperty(nameof(UserTokenEntity.User))]
         public virtual ICollection<UserTokenEntity> UserTokens { get; set; } = new List<UserTokenEntity>();
+        [InverseProperty(nameof(NotificationEntity.Owner))]
+        public virtual ICollection<NotificationEntity> Notifications { get; set; } = new List<NotificationEntity>();
+        [InverseProperty(nameof(NotificationEntity.Sender))]
+        public virtual ICollection<NotificationEntity> SentNotifications { get; set; } = new List<NotificationEntity>();
     }
 }

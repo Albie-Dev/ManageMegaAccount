@@ -69,6 +69,7 @@ namespace MMA.Service
             services.AddScoped<IUserRoleService, UserRoleService>();
 
             services.AddScoped<IActorService, ActorService>();
+            services.AddScoped<INotificationService, NotificationService>();
             return services;
         }
 
