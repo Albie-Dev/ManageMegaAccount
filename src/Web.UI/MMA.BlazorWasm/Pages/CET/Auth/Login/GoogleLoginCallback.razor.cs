@@ -52,7 +52,7 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.Login
                 }
                 else
                 {
-                    if (response.Errors.IsNullOrEmpty())
+                    if (!response.Errors.IsNullOrEmpty())
                     {
                         _errors = response.Errors;
                     }
@@ -64,7 +64,6 @@ namespace MMA.BlazorWasm.Pages.CET.Auth.Login
                     {
                         await _localStorageService.SetItemAsStringAsync(key: ApiClientConstant.LocalStorage_Key, data: response.Data.ToJson());
                         _authProvider.MarkUserAsAuthenticated(tokenData: response.Data);
-                        StateHasChanged();
                         _navigationManager.NavigateTo(uri: "/", forceLoad: true);
                     }
                 }

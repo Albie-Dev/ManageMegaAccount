@@ -2,3 +2,26 @@
 {
     z-index: 99;
 }
+
+.filter-table::-webkit-scrollbar {
+    width: 2px;
+}
+
+.filter-table::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.filter-table::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.filter-table::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+}
+
+.filter-table {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
+}

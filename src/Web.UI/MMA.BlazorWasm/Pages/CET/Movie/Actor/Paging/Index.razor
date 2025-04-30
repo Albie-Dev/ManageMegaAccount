@@ -25,64 +25,107 @@
     FilterLabelName="@(I18NHelper.GetString(key: "Filter_Title_Actor_Entry"))">
 
     <FilterContent>
-        <div class="row g-2">
-            <!-- Bust -->
-            <div class="col-md-3">
-                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.FromBust" placeholder="From Bust" />
-            </div>
-            <div class="col-md-3">
-                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.ToBust" placeholder="To Bust" />
-            </div>
+        <div class="row g-3">
 
-            <!-- Waist -->
-            <div class="col-md-3">
-                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.FromWaist" placeholder="From Waist" />
-            </div>
-            <div class="col-md-3">
-                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.ToWaist" placeholder="To Waist" />
-            </div>
+            <fieldset class="col-12">
+                <legend class="fs-6 fw-semibold text-secondary">Thông số cơ thể</legend>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_FromBust_Entry")</label>
+                        <input type="number" class="form-control small-placeholder" @bind-value="_actorFilterProperty.FromBust" placeholder="Từ vòng ngực (cm)" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_ToBust_Entry")</label>
+                        <input type="number" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ToBust" placeholder="Đến vòng ngực (cm)" />
+                    </div>
 
-            <!-- Hips -->
-            <div class="col-md-3">
-                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.FromHips" placeholder="From Hips" />
-            </div>
-            <div class="col-md-3">
-                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.ToHips" placeholder="To Hips" />
-            </div>
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_FromWaist_Entry")</label>
+                        <input type="number" class="form-control small-placeholder" @bind-value="_actorFilterProperty.FromWaist" placeholder="Từ vòng eo (cm)" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_ToWaist_Entry")</label>
+                        <input type="number" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ToWaist" placeholder="Đến vòng eo (cm)" />
+                    </div>
 
-            <!-- Height -->
-            <div class="col-md-3">
-                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.FromHeight" placeholder="From Height" />
-            </div>
-            <div class="col-md-3">
-                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.ToHeight" placeholder="To Height" />
-            </div>
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_FromHips_Entry")</label>
+                        <input type="number" class="form-control small-placeholder" @bind-value="_actorFilterProperty.FromHips" placeholder="Từ vòng mông (cm)" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_ToHips_Entry")</label>
+                        <input type="number" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ToHips" placeholder="Đến vòng mông (cm)" />
+                    </div>
 
-            <!-- Cup Sizes -->
-            <label for="CupSizeTypes">@(I18NHelper.GetString(key: "Column_Title_Actor_CupSizeType_Entry")): </label>
-            <ComboboxList T="@(CCupSizeType)" Items="CCupSizeType.None.ToComboboxModels()" Mode="CComboboxModeType.Checkbox"
-                @bind-BindValues="_actorFilterProperty.CupSizeTypes" PlaceHolderName="@(I18NHelper.GetString(key: "Dropdown_PlaceHolder_Actor_CupSizeType_Entry"))" />
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_FromHeight_Entry")</label>
+                        <input type="number" class="form-control small-placeholder" @bind-value="_actorFilterProperty.FromHeight" placeholder="Từ chiều cao (cm)" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_ToHeight_Entry")</label>
+                        <input type="number" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ToHeight" placeholder="Đến chiều cao (cm)" />
+                    </div>
+                </div>
+            </fieldset>
 
-            <!-- Debut Date -->
-            <div class="col-md-3">
-                <InputDate class="form-control" @bind-Value="_actorFilterProperty.FromDebutDate" />
-            </div>
-            <div class="col-md-3">
-                <InputDate class="form-control" @bind-Value="_actorFilterProperty.ToDebutDate" />
-            </div>
+            <fieldset class="col-12">
+                <legend class="fs-6 fw-semibold text-secondary">Thông tin bổ sung</legend>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Column_Title_Actor_CupSizeType_Entry")</label>
+                        <ComboboxList T="@(CCupSizeType)" Items="CCupSizeType.None.ToComboboxModels()" Mode="CComboboxModeType.Checkbox"
+                            @bind-BindValues="_actorFilterProperty.CupSizeTypes"
+                            PlaceHolderName="@I18NHelper.GetString("Dropdown_PlaceHolder_Actor_CupSizeType_Entry")" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Column_Title_Actor_Status_Entry")</label>
+                        <ComboboxList T="@(CMasterStatus)" Items="CMasterStatus.None.ToComboboxModels()" Mode="CComboboxModeType.Checkbox"
+                            @bind-BindValues="_actorFilterProperty.Statuses"
+                            PlaceHolderName="@I18NHelper.GetString("Dropdown_PlaceHolder_MasterStatus_Entry")" />
+                    </div>
+                </div>
+            </fieldset>
 
-            <!-- Date of Birth -->
-            <div class="col-md-3">
-                <InputDate class="form-control" @bind-Value="_actorFilterProperty.FromDateOfBirth" />
-            </div>
-            <div class="col-md-3">
-                <InputDate class="form-control" @bind-Value="_actorFilterProperty.ToDateOfBirth" />
-            </div>
+            <fieldset class="col-12">
+                <legend class="fs-6 fw-semibold text-secondary">Ngày tháng</legend>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_FromDebutDate_Entry")</label>
+                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.FromDebutDate" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_ToDebutDate_Entry")</label>
+                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ToDebutDate" />
+                    </div>
 
-            <!-- Status -->
-            <label for="Statuses">@(I18NHelper.GetString(key: "Column_Title_Actor_Status_Entry")): </label>
-            <ComboboxList T="@(CMasterStatus)" Items="CMasterStatus.None.ToComboboxModels()" Mode="CComboboxModeType.Checkbox"
-                @bind-BindValues="_actorFilterProperty.Statuses" PlaceHolderName="@(I18NHelper.GetString(key: "Dropdown_PlaceHolder_MasterStatus_Entry"))" />
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_FromDateOfBirth_Entry")</label>
+                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.FromDateOfBirth" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_ToDateOfBirth_Entry")</label>
+                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ToDateOfBirth" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Common_CreatedFromDate_Entry")</label>
+                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.CreatedFromDate" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Common_CreatedToDate_Entry")</label>
+                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.CreatedToDate" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Common_ModifiedFromDate_Entry")</label>
+                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ModifiedFromDate" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Common_ModifiedToDate_Entry")</label>
+                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ModifiedToDate" />
+                    </div>
+                </div>
+            </fieldset>
         </div>
     </FilterContent>
 
@@ -218,7 +261,7 @@
                 IsSelected = true,
                 IsSort = false,
                 Value = nameof(ActorDetailDto.ModifiedByProperty),
-                TdClass="text-center"
+                @* TdClass="text-center" *@
             },
             new DropdownItemModel()
             {
@@ -233,7 +276,7 @@
                 IsSelected = true,
                 IsSort = false,
                 Value = nameof(ActorDetailDto.CreatedByProperty),
-                TdClass="text-center"
+                @* TdClass="text-center" *@
             },
             new DropdownItemModel()
             {
@@ -280,7 +323,7 @@
             {
                 nameof(ActorDetailDto.ModifiedByProperty),
                 row => @<text><UserProfile UserInfo="row.ModifiedByProperty" ShowFullName="true" Size="30" /></text>
-                },
+            },
             {
                 nameof(ActorDetailDto.CreatedDate),
                 row => @<text><span>@row.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span></text>

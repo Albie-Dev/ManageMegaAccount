@@ -180,6 +180,54 @@
   <data name="Filter_Title_Actor_Entry" xml:space="preserve">
     <value>Lọc diễn viên</value>
   </data>
+  <data name="Filter_Title_Actor_FromBust_Entry" xml:space="preserve">
+    <value>Kích cỡ vòng ngực từ :</value>
+  </data>
+  <data name="Filter_Title_Actor_ToBust_Entry" xml:space="preserve">
+    <value>Kích cỡ vòng ngực đến :</value>
+  </data>
+  <data name="Filter_Title_Actor_FromWaist_Entry" xml:space="preserve">
+    <value>Kích cỡ vòng eo từ :</value>
+  </data>
+  <data name="Filter_Title_Actor_ToWaist_Entry" xml:space="preserve">
+    <value>Kích cỡ vòng eo đến :</value>
+  </data>
+  <data name="Filter_Title_Actor_FromHips_Entry" xml:space="preserve">
+    <value>Kích cỡ vòng mông từ :</value>
+  </data>
+  <data name="Filter_Title_Actor_ToHips_Entry" xml:space="preserve">
+    <value>Kích cỡ vòng mông đến :</value>
+  </data>
+  <data name="Filter_Title_Actor_FromHeight_Entry" xml:space="preserve">
+    <value>Chiều cao từ :</value>
+  </data>
+  <data name="Filter_Title_Actor_ToHeight_Entry" xml:space="preserve">
+    <value>Chiều cao đến :</value>
+  </data>
+  <data name="Filter_Title_Actor_FromDebutDate_Entry" xml:space="preserve">
+    <value>Ngày ra mắt từ :</value>
+  </data>
+  <data name="Filter_Title_Actor_ToDebutDate_Entry" xml:space="preserve">
+    <value>Ngày ra mắt đến :</value>
+  </data>
+  <data name="Filter_Title_Actor_FromDateOfBirth_Entry" xml:space="preserve">
+    <value>Ngày sinh từ :</value>
+  </data>
+  <data name="Filter_Title_Actor_ToDateOfBirth_Entry" xml:space="preserve">
+    <value>Ngày sinh đến :</value>
+  </data>
+  <data name="Filter_Title_Common_CreatedFromDate_Entry" xml:space="preserve">
+    <value>Ngày tạo từ :</value>
+  </data>
+  <data name="Filter_Title_Common_CreatedToDate_Entry" xml:space="preserve">
+    <value>Ngày tạo đến :</value>
+  </data>
+  <data name="Filter_Title_Common_ModifiedFromDate_Entry" xml:space="preserve">
+    <value>Ngày chỉnh sửa từ :</value>
+  </data>
+  <data name="Filter_Title_Common_ModifiedToDate_Entry" xml:space="preserve">
+    <value>Ngày chỉnh sửa đến :</value>
+  </data>
   <data name="Dropdown_PlaceHolder_Actor_CupSizeType_Entry" xml:space="preserve">
     <value>Chọn loại kích cỡ cup</value>
   </data>
