@@ -10,7 +10,7 @@
 .input-container {
     border: 1px solid #ccc;
     padding: 5px;
-    min-height: 36px;
+    min-height: 30px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -27,8 +27,6 @@
 
 /* Tag/button style for each selected option */
 .tag {
-    background: #007BFF;
-    color: #fff;
     padding: 4px 8px;
     /* border-radius: 12px; */
     margin: 2px;
@@ -88,4 +86,8 @@
 .input-container input,
 .tag {
     font-size: inherit;
+}
+
+.small-placeholder::placeholder {
+    font-size: 0.75rem; /* Bootstrap dùng rem, 0.75rem ≈ 12px */
 }

@@ -159,8 +159,32 @@
   <data name="Column_Title_Actor_RegionType_Entry" xml:space="preserve">
     <value>Quốc tịch</value>
   </data>
+  <data name="Column_Title_Actor_CreatedDate_Entry" xml:space="preserve">
+    <value>Ngày tạo</value>
+  </data>
+  <data name="Column_Title_Actor_ModifiedDate_Entry" xml:space="preserve">
+    <value>Ngày sửa đổi</value>
+  </data>
+  <data name="Column_Title_Actor_CreatedByProperty_Entry" xml:space="preserve">
+    <value>Người tạo</value>
+  </data>
+  <data name="Column_Title_Actor_ModifiedByProperty_Entry" xml:space="preserve">
+    <value>Người sửa đổi</value>
+  </data>
   <data name="Column_Title_Actor_Status_Entry" xml:space="preserve">
     <value>Trạng thái</value>
+  </data>
+  <data name="Search_Title_Actor_Entry" xml:space="preserve">
+    <value>Tìm kiếm theo tên diễn viên ...</value>
+  </data>
+  <data name="Filter_Title_Actor_Entry" xml:space="preserve">
+    <value>Lọc diễn viên</value>
+  </data>
+  <data name="Dropdown_PlaceHolder_Actor_CupSizeType_Entry" xml:space="preserve">
+    <value>Chọn loại kích cỡ cup</value>
+  </data>
+  <data name="Dropdown_PlaceHolder_MasterStatus_Entry" xml:space="preserve">
+    <value>Chọn loại trạng thái</value>
   </data>
 
 

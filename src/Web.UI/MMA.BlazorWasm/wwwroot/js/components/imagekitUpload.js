@@ -18,7 +18,7 @@ window.uploadFile = function (fileBuffer, fileName, token, tags, dotNetHelper) {
         xhr.upload.onprogress = function (event) {
             if (event.lengthComputable) {
                 var progress = (event.loaded / event.total) * 100;
-                dotNetHelper.invokeMethodAsync("UpdateProgress", progress);
+                dotNetHelper.invokeMethodAsync(dotnetProgressMethodName, progress);
             }
         };
 

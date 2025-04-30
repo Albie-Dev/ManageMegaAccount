@@ -16,14 +16,14 @@
                 Icon="bi bi-funnel" IconPosition="CIconPositionType.Center" />
             <DropdownCheckboxList Items="Columns" OnApply="ApplyColumnSelection" OnCancel="CancelColumnSelection"
                 Title="" />
-            <input class="form-control w-auto" style="min-width: 100px;" type="text" placeholder="@SearchPlaceHolder"
+            <input class="form-control w-auto small-placeholder" style="min-width: 100px;" type="text" placeholder="@SearchPlaceHolder"
                 @oninput="OnSearchInputChange" @onkeydown="Search" />
         </div>
     </div>
 
     @if (_showFilterPanel)
     {
-        <Filter FilterLabelName="Test" @bind-FilterProperty="FilterProperty"
+        <Filter FilterLabelName="@FilterLabelName" @bind-FilterProperty="FilterProperty"
             OnApplyFilter="HandleFilterApplied"
             IsOpen="@_showFilterPanel" IsOpenChanged="(open) => _showFilterPanel = open">
             <CustomFilterContent>
@@ -43,9 +43,9 @@
                                 {
                                     <span style="cursor: pointer;" @onclick="EventCallback.Factory.Create(this, 
                                         () => SortAsync(propertyName: column.Value.ToString() ?? string.Empty))">@column.Name</span>
-                                    @if (_requestData.Sorter != null && _requestData.Sorter.KeyName == column.Value.ToString())
+                                    @if (RequestData.Sorter != null && RequestData.Sorter.KeyName == column.Value.ToString())
                                     {
-                                        if (_requestData.Sorter.IsASC)
+                                        if (RequestData.Sorter.IsASC)
                                         {
                                             <i class="bi bi-sort-alpha-down ms-1 text-danger"></i>
                                         }
@@ -76,7 +76,7 @@
                                 {
                                     var selectionItem = MapSelection.Invoke(row);
                                     var isChecked = SelectedItems.Contains(selectionItem);
-                                    <td>
+                                    <td class="align-middle text-center check-coloums">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" checked="@isChecked"
                                                 id="flexCheckDefault"
@@ -89,11 +89,11 @@
                                     if (!CellContents.IsNullOrEmpty() && CellContents.TryGetValue(column.Value.ToString() ?? string.Empty,
                                         out RenderFragment<TData>? template))
                                     {
-                                        <td>@template.Invoke(row)</td>
+                                        <td class="@column.TdClass align-middle" style="@column.TdStyle">@template.Invoke(row)</td>
                                     }
                                     else
                                     {
-                                        <td>@row?.GetType().GetProperty(column.Value.ToString() ?? string.Empty)?.GetValue(row, null)</td>
+                                        <td class="@column.TdClass align-middle" style="@column.TdStyle">@row?.GetType().GetProperty(column.Value.ToString() ?? string.Empty)?.GetValue(row, null)</td>
                                     }
                                 }
                             }
@@ -111,13 +111,14 @@
     </div>
 
     <div class="d-flex justify-content-between align-items-center mt-1">
-        <div class="d-flex justify-content-start" style="max-width: 60px; font-size: 0.6rem;">
+        <div class="d-flex justify-content-start" style="max-width: 100px; height: 30px; width: 80px; font-size: 0.8rem;">
             <ComboboxList T="int" Mode="CComboboxModeType.Select"
                 PlaceHolderName="Chọn số trang"
                 Items="InitPageNumbers()"
                 SelectedOptions="InitSelectedItems()"
                 OnValueChanged="(value => HandlePageChange(value))"
                 @bind-BindValue="_itemsPerPage"
+                TagClass="bg-transparent text-dark"
             />
         </div>
 

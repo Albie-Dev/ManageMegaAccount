@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using MMA.Service;
 using MMA.Domain;
 using Microsoft.AspNetCore.Authorization;

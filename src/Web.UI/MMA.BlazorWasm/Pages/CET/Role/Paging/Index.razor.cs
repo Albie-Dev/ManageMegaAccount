@@ -9,6 +9,7 @@ namespace MMA.BlazorWasm.Pages.CET.Role.Paging
         private List<Guid> _selectedRoleIds { get; set; } = new List<Guid>();
         private bool _isLoading { get; set; } = false;
         private NotificationResponse? _notificationResponse { get; set; }
+        private TableParam<RoleFilterProperty> _requestDto { get; set; } = new TableParam<RoleFilterProperty>();
 
         #region Sync new Role
         private async Task SyncNewRolesAsync()

@@ -2,174 +2,301 @@
 
 <PageTitle>Diễn viên</PageTitle>
 
-@if (_isLoading)
-{
-    <LoadingElement />
-}
+<ImageViewer ImageUrl="@currentImageUrl" IsOpen="@_isShowImage" IsOpenChanged="(open) => _isShowImage = open" />
+<FileUploader @bind-IsOpen="_isUploadModalOpen" Title="Import Actors" MaxFileSize="5 * 1024 * 1024"
+    FileTypes="new List<CFileType>() { CFileType.Excel }" OnFileUploaded="ImportActorsAsync"
+    OnDownloadTemplateFile="DownloadTemplateFileAsync" />
 
 @if (_notificationResponse != null)
 {
     <DisplayMessageElement Notification="_notificationResponse" />
     _notificationResponse = null;
 }
-<div class="d-flex justify-content-between">
-    <div class="div">
+<Table TData="ActorDetailDto" TFilter="ActorFilterProperty" TSelection="Guid"
+    ApiEndpoint="@(Path.Combine(EndpointConstant.Movie_Base_Url, EndpointConstant.Movie_Actor_Paging))"
+    HttpClientType="CHttpClientType.Private" PortalType="CPortalType.CET" Columns="InitColumns()"
+    @bind-Errors="_errors"
+    @bind-IsLoading="_isLoading"
+    @bind-FilterProperty="_actorFilterProperty"
+    @bind-SelectedItems="_selectedActorIds"
+    @bind-RequestData="_requestDto"
+    MapSelection="at => at.ActorId" IsEnableSelection="true" CellContents="GetCellContents()"
+    SearchPlaceHolder="@(I18NHelper.GetString(key: "Search_Title_Actor_Entry"))"
+    FilterLabelName="@(I18NHelper.GetString(key: "Filter_Title_Actor_Entry"))">
+
+    <FilterContent>
+        <div class="row g-2">
+            <!-- Bust -->
+            <div class="col-md-3">
+                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.FromBust" placeholder="From Bust" />
+            </div>
+            <div class="col-md-3">
+                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.ToBust" placeholder="To Bust" />
+            </div>
+
+            <!-- Waist -->
+            <div class="col-md-3">
+                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.FromWaist" placeholder="From Waist" />
+            </div>
+            <div class="col-md-3">
+                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.ToWaist" placeholder="To Waist" />
+            </div>
+
+            <!-- Hips -->
+            <div class="col-md-3">
+                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.FromHips" placeholder="From Hips" />
+            </div>
+            <div class="col-md-3">
+                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.ToHips" placeholder="To Hips" />
+            </div>
+
+            <!-- Height -->
+            <div class="col-md-3">
+                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.FromHeight" placeholder="From Height" />
+            </div>
+            <div class="col-md-3">
+                <InputNumber class="form-control" @bind-Value="_actorFilterProperty.ToHeight" placeholder="To Height" />
+            </div>
+
+            <!-- Cup Sizes -->
+            <label for="CupSizeTypes">@(I18NHelper.GetString(key: "Column_Title_Actor_CupSizeType_Entry")): </label>
+            <ComboboxList T="@(CCupSizeType)" Items="CCupSizeType.None.ToComboboxModels()" Mode="CComboboxModeType.Checkbox"
+                @bind-BindValues="_actorFilterProperty.CupSizeTypes" PlaceHolderName="@(I18NHelper.GetString(key: "Dropdown_PlaceHolder_Actor_CupSizeType_Entry"))" />
+
+            <!-- Debut Date -->
+            <div class="col-md-3">
+                <InputDate class="form-control" @bind-Value="_actorFilterProperty.FromDebutDate" />
+            </div>
+            <div class="col-md-3">
+                <InputDate class="form-control" @bind-Value="_actorFilterProperty.ToDebutDate" />
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="col-md-3">
+                <InputDate class="form-control" @bind-Value="_actorFilterProperty.FromDateOfBirth" />
+            </div>
+            <div class="col-md-3">
+                <InputDate class="form-control" @bind-Value="_actorFilterProperty.ToDateOfBirth" />
+            </div>
+
+            <!-- Status -->
+            <label for="Statuses">@(I18NHelper.GetString(key: "Column_Title_Actor_Status_Entry")): </label>
+            <ComboboxList T="@(CMasterStatus)" Items="CMasterStatus.None.ToComboboxModels()" Mode="CComboboxModeType.Checkbox"
+                @bind-BindValues="_actorFilterProperty.Statuses" PlaceHolderName="@(I18NHelper.GetString(key: "Dropdown_PlaceHolder_MasterStatus_Entry"))" />
+        </div>
+    </FilterContent>
+
+
+    <ActionContent>
         <ButtonAmam7078 Class="btn btn-sm btn-outline-primary" Icon="bi bi-cloud-plus"
             IconPosition="CIconPositionType.Right" Text="Create" OnClick="CreateActorAsync" />
         <ButtonAmam7078 Class="btn btn-sm btn-outline-success" Icon="bi bi-pencil-square"
-            IconPosition="CIconPositionType.Right" Text="Update" IsDisabled="!ShowUpdateActor" OnClick="UpdateActorAsync" />
+            IconPosition="CIconPositionType.Right" Text="Update" IsDisabled="!ShowUpdateActor"
+            OnClick="UpdateActorAsync" />
         <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi-toggle-off"
-            IconPosition="CIconPositionType.Right" Text="Deactive" IsDisabled="ShowDeactiveActor" OnClick="DeactiveActorsAsync" />
+            IconPosition="CIconPositionType.Right" Text="Deactive" IsDisabled="ShowDeactiveActor"
+            OnClick="DeactiveActorsAsync" />
         <ButtonAmam7078 Class="btn btn-sm btn-outline-info" Icon="bi bi-cloud-upload"
             IconPosition="CIconPositionType.Right" Text="Import" OnClick="HandleOpenUploadModal" />
         <ButtonAmam7078 Class="btn btn-sm btn-outline-success" Icon="bi bi-file-earmark-excel"
             IconPosition="CIconPositionType.Right" Text="Export" OnClick="ExportActorsAsync" />
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-danger" Icon="bi bi-trash"
-            IconPosition="CIconPositionType.Right" Text="Delete" IsDisabled="!ShowUpdateActor" OnClick="DeleteActorsAsync" />
-    </div>
-    
-    <div class="d-flex flex-row-reverse">
-        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary me-2" OnClick="ShowFilterPanel"
-            Icon="bi bi-funnel" IconPosition="CIconPositionType.Center" />
-        <DropdownCheckboxList Items="_displayColumns" OnApply="ApplyColumnSelection" OnCancel="CancelColumnSelection"
-            Class="mx-2" Title=""/>
-        @* <input class="form-control w-auto" type="text" placeholder="Search..." @oninput="OnSearchInputChange"
-            @onkeydown="Search" /> *@
-    </div>
-</div>
-<ImageViewer ImageUrl="@currentImageUrl" IsOpen="@_isShowImage" IsOpenChanged="(open) => _isShowImage = open" />
-@if(_isShowFilterPanel)
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-danger" Icon="bi bi-trash" IconPosition="CIconPositionType.Right"
+            Text="Delete" IsDisabled="!ShowUpdateActor" OnClick="DeleteActorsAsync" />
+    </ActionContent>
+
+</Table>
+
+@if (_isLoading)
 {
-    <Filter TFilter="ActorFilterProperty" IsOpen="@_isShowFilterPanel" IsOpenChanged="(open) => _isShowFilterPanel = open"
-        FilterLabelName="Lọc diễn viên">
-        <CustomFilterContent>
-            <label for="Hips">Loại kích cỡ ngực :</label>
-            <ComboboxList T="@(CCupSizeType)" Items="CCupSizeType.A.ToComboboxModels()"
-                Mode="CComboboxModeType.Checkbox" @bind-BindValues="FilterProperty.CupSizeTypes"
-                PlaceHolderName="Chọn loại kích thước ngực" />
-        </CustomFilterContent>
-    </Filter>
+    <LoadingElement />
 }
 
-<FileUploader @bind-IsOpen="_isUploadModalOpen"
-    Title="Import Actors"
-    MaxFileSize="5*1024*1024"
-    FileTypes="new List<CFileType>(){ CFileType.Excel }"
-    OnFileUploaded="ImportActorsAsync"
-    OnDownloadTemplateFile="DownloadTemplateFileAsync"
-/>
 
-<div class="table mt-2">
-    <table class="table table-striped table-bordered align-middle">
-        <thead>
-            <tr>
-                <th>#</th>
-                @foreach(var col in _displayColumns.Where(c => c.IsSelected))
-                {
-                    <th>
-                        <div class="d-flex">
-                            @if (col.IsSort)
-                            {
-                                <span style="cursor: pointer;" @onclick="EventCallback.Factory.Create(this, () => SortAsync(propertyName: col.Value.ToString() ?? string.Empty))">@col.Name</span>
-                                @if (_requestDto.Sorter != null && _requestDto.Sorter.KeyName == col.Value.ToString())
-                                {
-                                    if (_requestDto.Sorter.IsASC)
-                                    {
-                                        <i class="bi bi-sort-alpha-down"></i>
-                                    }
-                                    else
-                                    {
-                                        <i class="bi bi-sort-alpha-up-alt"></i>
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                <span>@col.Name</span>
-                            }
-                        </div>
-                    </th>
-                }
-            </tr>
-        </thead>
-        <tbody id="sortableTable">
-            @if (!_result.Items.IsNullOrEmpty())
+@code
+{
+    #region Init coloums title
+    private List<DropdownItemModel> InitColumns()
+    {
+        return new List<DropdownItemModel>()
+        {
+            new DropdownItemModel()
             {
-                foreach(var item in _result.Items)
-                {
-                    <tr>
-                        <td>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="@item.ActorId"
-                                    id="flexCheckDefault"
-                                    @onchange="() => SetSelectedActorId(actorId: item.ActorId)">
-                            </div>
-                        </td>
-                        @foreach (var col in _displayColumns.Where(c => c.IsSelected))
-                        {
-                            string styleName =  string.Empty;
-                            string className = string.Empty;
-                            @if (col.Value.ToString() == nameof(ActorDetailDto.Avatar))
-                            {
-                                styleName = "width: 100px; height: 100px; overflow: hidden;";
-                                className = "rounded";
-                            }
-                            <td class="@($"{className} cell-limit align-middlere")" style="@($"{styleName}")">
-                                @switch (col.Value)
-                                {
-                                    case nameof(ActorDetailDto.Name):
-                                        @item.Name
-                                        break;
-                                    case nameof(ActorDetailDto.DateOfBirth):
-                                        @item.DateOfBirth.ToString("yyyy-MM-dd")
-                                        break;
-                                    case nameof(ActorDetailDto.DebutDate):
-                                        @item.DebutDate.ToString("yyyy-MM-dd")
-                                        break;
-                                    case nameof(ActorDetailDto.Avatar):
-                                        <img src="@item.Avatar"
-                                            alt="Avatar"
-                                            class="img-fluid rounded"
-                                            style="width: 100%; height: 100%; object-fit:cover; cursor: pointer;"
-                                            @onclick="() => OpenImageViewer(item.Avatar)"
-                                        />
-                                        break;
-                                    case nameof(ActorDetailDto.Height):
-                                        @item.Height
-                                        break;
-                                    case nameof(ActorDetailDto.Waist):
-                                        @item.Waist
-                                        break;
-                                    case nameof(ActorDetailDto.Bust):
-                                        @item.Bust
-                                        break;
-                                    case nameof(ActorDetailDto.Hips):
-                                        @item.Hips
-                                        break;
-                                    case nameof(ActorDetailDto.CupSizeType):
-                                        @item.CupSizeType
-                                        break;
-                                    case nameof(ActorDetailDto.RegionType):
-                                        <RegionElement RegionType="@item.RegionType" />
-                                        break;
-                                    case nameof(ActorDetailDto.Status):
-                                        <MasterStatusElement Status="@item.Status" />
-                                        break;
-                                    default:
-                                        <span>--</span>
-                                        break;
-                                }
-                            </td>
-                        }
-                    </tr>
-                }
-            }
-            else
+                Name = "#",
+                Value = "#",
+                IsSelected = true,
+                IsSort = false,
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
             {
-                <tr class="text-secondary">
-                    <td colspan="@InitDisplayColumns().Count">No items available to show.</td>
-                </tr>
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Name)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.Name)
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.DateOfBirth)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.DateOfBirth)
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.DebutDate)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.DebutDate)
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Avatar)}_Entry"),
+                IsSelected = true,
+                IsSort = false,
+                Value = nameof(ActorDetailDto.Avatar),
+                TdStyle = "width: 50px; height: 100px; overflow: hidden;",
+                TdClass = "rounded"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Height)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.Height),
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Waist)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.Waist),
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Bust)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.Bust),
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Hips)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.Hips),
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.CupSizeType)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.CupSizeType),
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.RegionType)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.RegionType),
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Status)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.Status)
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.ModifiedByProperty)}_Entry"),
+                IsSelected = true,
+                IsSort = false,
+                Value = nameof(ActorDetailDto.ModifiedByProperty),
+                TdClass="text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.CreatedDate)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.CreatedDate),
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.CreatedByProperty)}_Entry"),
+                IsSelected = true,
+                IsSort = false,
+                Value = nameof(ActorDetailDto.CreatedByProperty),
+                TdClass="text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.ModifiedDate)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(ActorDetailDto.ModifiedDate)
             }
-        </tbody>
-    </table>
-</div>
+        };
+    }
+    #endregion Init coloums title
+
+    #region Cell format
+    public Dictionary<string, RenderFragment<ActorDetailDto>> GetCellContents()
+    {
+        
+        var contents = new Dictionary<string, RenderFragment<ActorDetailDto>>()
+        {
+            {
+                nameof(ActorDetailDto.Avatar),
+                row =>
+                @<text>
+                    <img src="@(string.IsNullOrEmpty(row.Avatar) ? CoreConstant.NO_IMAGE : row.Avatar)" alt="Avatar" class="img-fluid rounded"
+                        style="width: 100%; height: 100%; object-fit:cover; cursor: pointer;"
+                        @onclick="() => OpenImageViewer(string.IsNullOrEmpty(row.Avatar) ? CoreConstant.NO_IMAGE : row.Avatar)" />
+                </text>
+            },
+            {
+                nameof(ActorDetailDto.DateOfBirth),
+                row => @<text><span>@row.DateOfBirth.ToString("dd/MM/yyyy")</span></text>
+            },
+            {
+                nameof(ActorDetailDto.DebutDate),
+                row => @<text><span>@row.DebutDate.ToString("dd/MM/yyyy")</span></text>
+            },
+            {
+                nameof(ActorDetailDto.RegionType),
+                row => @<text><RegionElement RegionType="row.RegionType" /></text>
+            },
+            {
+                nameof(ActorDetailDto.ModifiedDate),
+                row => @<text><span>@row.ModifiedDate.ToString("dd/MM/yyyy HH:mm")</span></text>
+            },
+            {
+                nameof(ActorDetailDto.ModifiedByProperty),
+                row => @<text><UserProfile UserInfo="row.ModifiedByProperty" ShowFullName="true" Size="30" /></text>
+                },
+            {
+                nameof(ActorDetailDto.CreatedDate),
+                row => @<text><span>@row.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span></text>
+            },
+            {
+                nameof(ActorDetailDto.CreatedByProperty),
+                row => @<text><UserProfile UserInfo="row.CreatedByProperty" Size="30" /></text>
+            },
+            {
+                nameof(ActorDetailDto.Status),
+                row => @<text><MasterStatusElement Status="row.Status" /></text>
+            }
+        };
+
+        return contents;
+    }
+
+#endregion Cell format
+}

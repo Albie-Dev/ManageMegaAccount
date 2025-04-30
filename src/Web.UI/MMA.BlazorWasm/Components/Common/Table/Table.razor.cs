@@ -45,7 +45,10 @@ namespace MMA.BlazorWasm.Components.Common.Table
         [Parameter]
         public EventCallback<TFilter> FilterPropertyChanged { get; set; }
 
-        private TableParam<TFilter> _requestData { get; set; } = new TableParam<TFilter>();
+        [Parameter]
+        public TableParam<TFilter> RequestData { get; set; } = new TableParam<TFilter>();
+        [Parameter]
+        public EventCallback<TableParam<TFilter>> RequestDataChanged { get; set; }
 
         private bool _showFilterPanel { get; set; } = false;
 
@@ -65,6 +68,9 @@ namespace MMA.BlazorWasm.Components.Common.Table
         [Parameter]
         public string SearchPlaceHolder { get; set; } = "Search....";
 
+        [Parameter]
+        public string FilterLabelName { get; set; } = "Filter";
+
         protected override async Task OnInitializedAsync()
         {
             await FetchDataAsync();
@@ -77,12 +83,14 @@ namespace MMA.BlazorWasm.Components.Common.Table
                 IsLoading = true;
                 await IsLoadingChanged.InvokeAsync(IsLoading);
 
-                _requestData.PageNumber = _currentPage;
-                _requestData.PageSize = _itemsPerPage;
+                RequestData.PageNumber = _currentPage;
+                RequestData.PageSize = _itemsPerPage;
+
+                await RequestDataChanged.InvokeAsync(RequestData);
 
                 var apiResponse = await _httpClientHelper.PostAsync<TableParam<TFilter>, BasePagedResult<TData>>(
                     endpoint: ApiEndpoint,
-                    data: _requestData,
+                    data: RequestData,
                     requestType: HttpClientType,
                     portalType: PortalType);
 
@@ -163,7 +171,7 @@ namespace MMA.BlazorWasm.Components.Common.Table
 
         private void OnSearchInputChange(ChangeEventArgs e)
         {
-            _requestData.SearchQuery = e.Value?.ToString() ?? string.Empty;
+            RequestData.SearchQuery = e.Value?.ToString() ?? string.Empty;
             StateHasChanged();
         }
 
@@ -202,7 +210,7 @@ namespace MMA.BlazorWasm.Components.Common.Table
             if (CanNavigateNext)
             {
                 _currentPage++;
-                _requestData.PageNumber = _currentPage;
+                RequestData.PageNumber = _currentPage;
                 await FetchDataAsync();
             }
         }
@@ -212,7 +220,7 @@ namespace MMA.BlazorWasm.Components.Common.Table
             if (CanNavigatePrevious)
             {
                 _currentPage--;
-                _requestData.PageNumber = _currentPage;
+                RequestData.PageNumber = _currentPage;
                 await FetchDataAsync();
             }
         }
@@ -222,7 +230,7 @@ namespace MMA.BlazorWasm.Components.Common.Table
             if (CanNavigateFirst)
             {
                 _currentPage = 1;
-                _requestData.PageNumber = _currentPage;
+                RequestData.PageNumber = _currentPage;
                 await FetchDataAsync();
             }
         }
@@ -232,7 +240,7 @@ namespace MMA.BlazorWasm.Components.Common.Table
             if (CanNavigateLast)
             {
                 _currentPage = _totalPages;
-                _requestData.PageNumber = _currentPage;
+                RequestData.PageNumber = _currentPage;
                 await FetchDataAsync();
             }
         }
@@ -242,7 +250,7 @@ namespace MMA.BlazorWasm.Components.Common.Table
             if (page > 0 && page <= _totalPages)
             {
                 _currentPage = page;
-                _requestData.PageNumber = _currentPage;
+                RequestData.PageNumber = _currentPage;
                 await FetchDataAsync();
             }
         }
@@ -257,7 +265,7 @@ namespace MMA.BlazorWasm.Components.Common.Table
         #region Filter action
         private async Task HandleFilterApplied()
         {
-            _requestData.Filter = FilterProperty;
+            RequestData.Filter = FilterProperty;
             _currentPage = 1;
             await FetchDataAsync();
         }
@@ -283,12 +291,12 @@ namespace MMA.BlazorWasm.Components.Common.Table
 
         private async Task SortAsync(string propertyName)
         {
-            if (_requestData.Sorter == null)
+            if (RequestData.Sorter == null)
             {
-                _requestData.Sorter = new();
+                RequestData.Sorter = new();
             }
-            _requestData.Sorter.KeyName = propertyName;
-            _requestData.Sorter.IsASC = !_requestData.Sorter.IsASC;
+            RequestData.Sorter.KeyName = propertyName;
+            RequestData.Sorter.IsASC = !RequestData.Sorter.IsASC;
             await FetchDataAsync();
         }
 

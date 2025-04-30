@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MMA.Domain
 {
-    public class BaseActorInfoDto : IValidatableObject
+    public class BaseActorInfoDto
     {
         [Required(AllowEmptyStrings = false, ErrorMessage = "{0} không được để trống.")]
         [StringLength(50, MinimumLength = 4, ErrorMessage = "{0} phải có ít nhất {2} ký tự và nhiều nhất {1} ký tự.")]

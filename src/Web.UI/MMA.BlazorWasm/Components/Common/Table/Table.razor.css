@@ -7,12 +7,39 @@
 .table th,
 .table td {
     white-space: nowrap;
-    min-width: 120px;
+    min-width: 30px;
 }
 
-.filter-table
-{
+.filter-table {
     z-index: 99;
+}
+
+.table-responsive-wrapper::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+}
+
+.table-responsive-wrapper::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.table-responsive-wrapper::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.table-responsive-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+.table-responsive-wrapper {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+.small-placeholder::placeholder {
+    font-size: 0.75rem;
 }
 
 @media (max-width: 576px) {

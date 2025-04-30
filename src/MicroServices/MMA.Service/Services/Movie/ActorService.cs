@@ -116,7 +116,7 @@ namespace MMA.Service
             return data;
         }
 
-        private async Task<(List<ActorDetailDto> Actors, PagedList<ActorEntity> Paged)> GetActorDetailBasePagingAsync(TableParam<ActorFilterProperty> tableParam)
+        private async Task<(List<ActorDetailDto> Actors, PagedList<ActorDetailDto> Paged)> GetActorDetailBasePagingAsync(TableParam<ActorFilterProperty> tableParam)
         {
             var modelState = tableParam.ModelStateValidate();
             if (!modelState.GetErrors().IsNullOrEmpty())
@@ -127,148 +127,203 @@ namespace MMA.Service
 
             IQueryable<ActorEntity> collection = _dbRepository.Queryable<ActorEntity>()
                 .OrderByDescending(s => s.CreatedDate);
+            IQueryable<UserEntity> createByCollection = _dbRepository.Queryable<UserEntity>();
+            IQueryable<UserEntity> modifiedByCollection = _dbRepository.Queryable<UserEntity>();
+
+            var query = collection
+            .GroupJoin(createByCollection, ac => ac.CreatedBy, user => user.Id,
+                (ac, createdByGroup) => new { ac, createdByGroup })
+            .SelectMany(temp => temp.createdByGroup.DefaultIfEmpty(),
+                (temp, createdBy) => new { temp.ac, createdBy })
+            .GroupJoin(modifiedByCollection, temp => temp.ac.ModifiedBy, user => user.Id,
+                (temp, modifiedByGroup) => new { temp.ac, temp.createdBy, modifiedByGroup })
+            .SelectMany(temp => temp.modifiedByGroup.DefaultIfEmpty(),
+                (temp, modifiedBy) => new ActorDetailDto
+                {
+                    ActorId = temp.ac.Id,
+                    Name = temp.ac.Name,
+                    // Avatar = temp.ac.Avatar,
+                    Bust = temp.ac.Bust,
+                    Waist = temp.ac.Waist,
+                    Hips = temp.ac.Hips,
+                    Height = temp.ac.Height,
+                    DebutDate = temp.ac.DebutDate,
+                    Status = temp.ac.Status,
+                    CupSizeType = temp.ac.CupSizeType,
+                    RegionType = temp.ac.RegionType,
+                    DateOfBirth = temp.ac.DateOfBirth,
+                    CreatedDate = temp.ac.CreatedDate,
+                    ModifiedDate = temp.ac.ModifiedDate,
+                    CreatedByProperty = temp.createdBy != null ? new UserBaseInfoDto
+                    {
+                        Avatar = temp.createdBy.Avatar,
+                        Email = temp.createdBy.Email,
+                        FullName = temp.createdBy.FullName,
+                        UserId = temp.createdBy.Id
+                    } : new UserBaseInfoDto
+                    {
+                        FullName = CoreConstant.SYSTEM_NAME,
+                        Email = CoreConstant.SYSTEM_EMAIL,
+                        Avatar = CoreConstant.SYSTEM_AVATAR,
+                        UserId = CoreConstant.SYSTEM_ACCOUNT_ID
+                    },
+                    ModifiedByProperty = modifiedBy != null ? new UserBaseInfoDto
+                    {
+                        Avatar = modifiedBy.Avatar,
+                        Email = modifiedBy.Email,
+                        FullName = modifiedBy.FullName,
+                        UserId = modifiedBy.Id
+                    } : new UserBaseInfoDto
+                    {
+                        FullName = CoreConstant.SYSTEM_NAME,
+                        Email = CoreConstant.SYSTEM_EMAIL,
+                        Avatar = CoreConstant.SYSTEM_AVATAR,
+                        UserId = CoreConstant.SYSTEM_ACCOUNT_ID
+                    }
+                });
 
             if (!string.IsNullOrEmpty(tableParam.SearchQuery))
             {
                 var searchQuery = tableParam.SearchQuery.ToLower();
-                collection = collection.Where(ac => ac.Name.ToLower().Contains(searchQuery));
+                query = query.Where(ac => ac.Name.ToLower().Contains(searchQuery));
             }
 
             if (tableParam.Filter != null)
             {
                 if (!tableParam.Filter.ActorIds.IsNullOrEmpty())
                 {
-                    collection = collection.Where(s => tableParam.Filter.ActorIds.Contains(s.Id));
+                    query = query.Where(s => tableParam.Filter.ActorIds.Contains(s.ActorId));
                 }
                 if (tableParam.Filter.FromBust.HasValue)
                 {
-                    collection = collection.Where(ac => ac.Bust >= tableParam.Filter.FromBust.Value);
+                    query = query.Where(ac => ac.Bust >= tableParam.Filter.FromBust.Value);
                 }
                 if (tableParam.Filter.ToBust.HasValue)
                 {
-                    collection = collection.Where(ac => ac.Bust <= tableParam.Filter.ToBust.Value);
+                    query = query.Where(ac => ac.Bust <= tableParam.Filter.ToBust.Value);
                 }
                 if (tableParam.Filter.FromWaist.HasValue)
                 {
-                    collection = collection.Where(ac => ac.Waist >= tableParam.Filter.FromWaist.Value);
+                    query = query.Where(ac => ac.Waist >= tableParam.Filter.FromWaist.Value);
                 }
                 if (tableParam.Filter.ToWaist.HasValue)
                 {
-                    collection = collection.Where(ac => ac.Waist <= tableParam.Filter.ToWaist.Value);
+                    query = query.Where(ac => ac.Waist <= tableParam.Filter.ToWaist.Value);
                 }
                 if (tableParam.Filter.FromHips.HasValue)
                 {
-                    collection = collection.Where(ac => ac.Hips >= tableParam.Filter.FromHips.Value);
+                    query = query.Where(ac => ac.Hips >= tableParam.Filter.FromHips.Value);
                 }
                 if (tableParam.Filter.ToHips.HasValue)
                 {
-                    collection = collection.Where(ac => ac.Hips <= tableParam.Filter.ToHips.Value);
+                    query = query.Where(ac => ac.Hips <= tableParam.Filter.ToHips.Value);
                 }
                 if (tableParam.Filter.FromHeight.HasValue)
                 {
-                    collection = collection.Where(ac => ac.Height >= tableParam.Filter.FromHeight.Value);
+                    query = query.Where(ac => ac.Height >= tableParam.Filter.FromHeight.Value);
                 }
                 if (tableParam.Filter.ToHeight.HasValue)
                 {
-                    collection = collection.Where(ac => ac.Height <= tableParam.Filter.ToHeight.Value);
+                    query = query.Where(ac => ac.Height <= tableParam.Filter.ToHeight.Value);
                 }
 
                 if (!tableParam.Filter.CupSizeTypes.IsNullOrEmpty())
                 {
-                    collection = collection.Where(ac => tableParam.Filter.CupSizeTypes.Contains(ac.CupSizeType));
+                    query = query.Where(ac => tableParam.Filter.CupSizeTypes.Contains(ac.CupSizeType));
                 }
 
                 if (tableParam.Filter.FromDebutDate.HasValue)
                 {
-                    collection = collection.Where(ac => ac.DebutDate >= tableParam.Filter.FromDebutDate.Value);
+                    query = query.Where(ac => ac.DebutDate >= tableParam.Filter.FromDebutDate.Value);
                 }
                 if (tableParam.Filter.ToDebutDate.HasValue)
                 {
-                    collection = collection.Where(ac => ac.DebutDate <= tableParam.Filter.ToDebutDate.Value);
+                    query = query.Where(ac => ac.DebutDate <= tableParam.Filter.ToDebutDate.Value);
                 }
 
                 if (tableParam.Filter.FromDateOfBirth.HasValue)
                 {
-                    collection = collection.Where(ac => ac.DateOfBirth >= tableParam.Filter.FromDateOfBirth.Value);
+                    query = query.Where(ac => ac.DateOfBirth >= tableParam.Filter.FromDateOfBirth.Value);
                 }
                 if (tableParam.Filter.ToDateOfBirth.HasValue)
                 {
-                    collection = collection.Where(ac => ac.DebutDate <= tableParam.Filter.ToDateOfBirth.Value);
+                    query = query.Where(ac => ac.DebutDate <= tableParam.Filter.ToDateOfBirth.Value);
                 }
 
-                if (tableParam.Filter.Status.HasValue)
+                if (!tableParam.Filter.Statuses.IsNullOrEmpty())
                 {
-                    collection = collection.Where(ac => ac.Status == tableParam.Filter.Status.Value);
+                    query = query.Where(ac => tableParam.Filter.Statuses.Contains(ac.Status));
                 }
 
                 if (tableParam.Filter.CreatedFromDate.HasValue)
                 {
-                    collection = collection.Where(ac => ac.CreatedDate >= tableParam.Filter.CreatedFromDate.Value);
+                    query = query.Where(ac => ac.CreatedDate >= tableParam.Filter.CreatedFromDate.Value);
                 }
                 if (tableParam.Filter.CreatedToDate.HasValue)
                 {
-                    collection = collection.Where(ac => ac.CreatedDate <= tableParam.Filter.CreatedToDate.Value);
+                    query = query.Where(ac => ac.CreatedDate <= tableParam.Filter.CreatedToDate.Value);
                 }
             }
+            // else
+            // {
+            //     query = query.Where(ac => ac.Status == CMasterStatus.Active);
+            // }
 
             if (tableParam.Sorter != null)
             {
                 var sorter = tableParam.Sorter;
                 if (!string.IsNullOrEmpty(sorter.KeyName))
                 {
-                    collection = sorter.KeyName switch
+                    query = sorter.KeyName switch
                     {
                         nameof(ActorEntity.Name) => sorter.IsASC
-                            ? collection.OrderBy(ac => ac.Name)
-                            : collection.OrderByDescending(ac => ac.Name),
+                            ? query.OrderBy(ac => ac.Name)
+                            : query.OrderByDescending(ac => ac.Name),
                         nameof(ActorEntity.Bust) => sorter.IsASC
-                            ? collection.OrderBy(ac => ac.Bust)
-                            : collection.OrderByDescending(ac => ac.Bust),
+                            ? query.OrderBy(ac => ac.Bust)
+                            : query.OrderByDescending(ac => ac.Bust),
                         nameof(ActorEntity.Waist) => sorter.IsASC
-                            ? collection.OrderBy(ac => ac.Waist)
-                            : collection.OrderByDescending(ac => ac.Waist),
+                            ? query.OrderBy(ac => ac.Waist)
+                            : query.OrderByDescending(ac => ac.Waist),
                         nameof(ActorEntity.Hips) => sorter.IsASC
-                            ? collection.OrderBy(ac => ac.Hips)
-                            : collection.OrderByDescending(ac => ac.Hips),
+                            ? query.OrderBy(ac => ac.Hips)
+                            : query.OrderByDescending(ac => ac.Hips),
                         nameof(ActorEntity.Height) => sorter.IsASC
-                            ? collection.OrderBy(ac => ac.Height)
-                            : collection.OrderByDescending(ac => ac.Height),
+                            ? query.OrderBy(ac => ac.Height)
+                            : query.OrderByDescending(ac => ac.Height),
                         nameof(ActorEntity.DebutDate) => sorter.IsASC
-                            ? collection.OrderBy(ac => ac.DebutDate)
-                            : collection.OrderByDescending(ac => ac.DebutDate),
+                            ? query.OrderBy(ac => ac.DebutDate)
+                            : query.OrderByDescending(ac => ac.DebutDate),
                         nameof(ActorEntity.CupSizeType) => sorter.IsASC
-                            ? collection.OrderBy(ac => ac.CupSizeType)
-                            : collection.OrderByDescending(ac => ac.CupSizeType),
+                            ? query.OrderBy(ac => ac.CupSizeType)
+                            : query.OrderByDescending(ac => ac.CupSizeType),
                         nameof(ActorEntity.RegionType) => sorter.IsASC
-                            ? collection.OrderBy(ac => ac.RegionType)
-                            : collection.OrderByDescending(ac => ac.RegionType),
+                            ? query.OrderBy(ac => ac.RegionType)
+                            : query.OrderByDescending(ac => ac.RegionType),
                         nameof(ActorEntity.DateOfBirth) => sorter.IsASC
-                            ? collection.OrderBy(ac => ac.DateOfBirth)
-                            : collection.OrderByDescending(ac => ac.DateOfBirth),
+                            ? query.OrderBy(ac => ac.DateOfBirth)
+                            : query.OrderByDescending(ac => ac.DateOfBirth),
                         nameof(ActorEntity.CreatedDate) => sorter.IsASC
-                            ? collection.OrderBy(ac => ac.CreatedDate)
-                            : collection.OrderByDescending(ac => ac.CreatedDate),
-                        _ => collection
+                            ? query.OrderBy(ac => ac.CreatedDate)
+                            : query.OrderByDescending(ac => ac.CreatedDate),
+                        nameof(ActorEntity.ModifiedDate) => sorter.IsASC
+                            ? query.OrderBy(ac => ac.ModifiedDate)
+                            : query.OrderByDescending(ac => ac.ModifiedDate),
+                        _ => query
                     };
                 }
             }
 
-            var pagedList = await PagedList<ActorEntity>.ToPagedListAsync(
-                source: collection, pageNumber: tableParam.PageNumber,
+            var pagedList = await PagedList<ActorDetailDto>.ToPagedListAsync(
+                source: query, pageNumber: tableParam.PageNumber,
                 pageSize: tableParam.PageSize);
 
-            var selected = pagedList.Select(ac => {
-                var result = ac.Adapt<ActorDetailDto>();
-                result.ActorId = ac.Id;
-                return result;
-            }).ToList();
-
-            return (Actors: selected, Paged: pagedList);
+            return (Actors: pagedList, Paged: pagedList);
         }
 
         public async Task<ActorDetailDto> GetActorDetaiAsync(Guid actorId)
         {
-            var modelState = actorId.ModelStateValidate(); 
+            var modelState = actorId.ModelStateValidate();
             if (!modelState.GetErrors().IsNullOrEmpty())
             {
                 throw new MMAException(statusCode: StatusCodes.Status400BadRequest,
@@ -474,7 +529,7 @@ namespace MMA.Service
             var result = new List<ActorDetailDto>();
             var importResult = await _excelCoreService.ExportExcelByTemplateAsync<ActorDetailDto>(exportDataModels: result,
                 fileName: "Excel.ActorImportTemplate.xlsx", assemblyName: "MMA.Service", sheetKey: "{{SheetKey}}", sheetName: "Actors");
-            return importResult;;
+            return importResult; ;
         }
         #endregion import and export
     }

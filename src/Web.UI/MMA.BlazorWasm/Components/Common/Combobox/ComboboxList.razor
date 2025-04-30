@@ -1,35 +1,24 @@
 @typeparam T where T : notnull
 
 <div class="dropdown-wrapper rounded @ClassName">
-    <div class="input-container rounded" @onclick="ToggleDropdown">
+    <div class="input-container p-0 m-0 rounded" @onclick="ToggleDropdown">
         @if (SelectedOptions.Any())
         {
             @foreach (var opt in SelectedOptions)
             {
-                <span class="tag rounded" data-value="@opt.Value">
+                <span class="tag @TagClass rounded" data-value="@opt.Value">
                     @opt.Name
-                    <span class="close" @onclick="@(() => RemoveOption(opt))">&times;</span>
+                    <span class="close text-danger" @onclick="@(() => RemoveOption(opt))">&times;</span>
                 </span>
             }
         }
         else
         {
-            <input type="text" placeholder="@PlaceHolderName" readonly />
+            <input type="text" class="small-placeholder" placeholder="@PlaceHolderName" readonly />
         }
 
-        <span class="dropdown-arrow" style="position: absolute; right: 5px; pointer-events: none">
-            @if (ShowDropdown)
-            {
-                <svg viewBox="0 0 20 20">
-                    <polyline points="5,12 10,7 15,12" />
-                </svg>
-            }
-            else
-            {
-                <svg viewBox="0 0 20 20">
-                    <polyline points="5,7 10,12 15,7" />
-                </svg>
-            }
+        <span class="dropdown-arrow me-2" style="position: absolute; right: 5px; pointer-events: none">
+            <i class="bi @(ShowDropdown ? "bi-chevron-up" : "bi-chevron-down")"></i>
         </span>
     </div>
 
