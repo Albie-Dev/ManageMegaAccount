@@ -82,7 +82,7 @@ namespace MMA.API
         }
 
         [HttpPost("actor/delete")]
-        [MMAAuthorized(Permission = CPermissionType.Manage, Resource = CResourceType.AdminUserManagement, Role = CRoleType.Admin)]
+        [MMAAuthorized(Permission = CPermissionType.Delete, Resource = CResourceType.Actor, Role = CRoleType.Admin)]
         public async Task<IActionResult> DeleteActor(DeleteActorRequestDto actorRequestDto)
         {
             var result = await _actorService.DeleteActorAsync(actorRequestDto: actorRequestDto);

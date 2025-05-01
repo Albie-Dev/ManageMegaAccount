@@ -18,8 +18,19 @@ namespace MMA.BlazorWasm
             if (_user == null || _user.Identity == null || !_user.Identity.IsAuthenticated)
                 return false;
 
-            var roleClaims = _user.FindAll(ClaimTypes.Role)
-                .Select(rc => rc.Value.FromJson<RoleClaimDto>()).ToList();
+            var roleClaimValues = _user.FindAll(ClaimTypes.Role).Select(rcv => rcv.Value);
+            var roleClaims = new List<RoleClaimDto>();
+            foreach(var rc in roleClaimValues)
+            {
+                try
+                {
+                   roleClaims = rc.FromJson<List<string>>().Select(s => s.FromJson<RoleClaimDto>()).ToList();
+                }
+                catch
+                {
+                    roleClaims.Add(rc.FromJson<RoleClaimDto>());
+                }
+            }
 
             var roleClaim = roleClaims.FirstOrDefault(rc => rc.RoleName == role.ToString());
             if (roleClaim == null)
@@ -40,7 +51,7 @@ namespace MMA.BlazorWasm
 
                 if (permission.HasValue)
                 {
-                    return resourcePermission.PermissionTypes.Contains(permission.Value);
+                    return resourcePermission.PermissionTypes.Any(p => p == permission.Value || p == CPermissionType.Manage);
                 }
 
                 return true;

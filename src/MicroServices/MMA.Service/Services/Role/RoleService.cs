@@ -1,7 +1,6 @@
 using MMA.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Mapster;
 using Microsoft.EntityFrameworkCore;
 
 namespace MMA.Service

@@ -59,7 +59,7 @@ namespace MMA.Service
                     {
                         foreach (var rolePermission in roleClaim.RolePermissions)
                         {
-                            if (rolePermission.ResourceType == Resource && rolePermission.PermissionTypes.Contains(Permission))
+                            if (rolePermission.ResourceType == Resource && rolePermission.PermissionTypes.Any(p => p == Permission || p == CPermissionType.Manage))
                             {
                                 hasPermission = true;
                                 break;

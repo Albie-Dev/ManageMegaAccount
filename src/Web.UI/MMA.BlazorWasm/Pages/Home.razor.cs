@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using MMA.Domain;
 
@@ -5,6 +6,8 @@ namespace MMA.BlazorWasm.Pages
 {
     public partial class Home
     {
+        [Inject] private ApiAuthenticationStateProvider _authProvider { get; set; } = default!;
+
         private List<UserRoleProperty> Roles { get; set; } = new List<UserRoleProperty>();
         private NotificationResponse? _notificationResponse { get; set; }
         private UserRoleProperty? selectedRole;
@@ -113,8 +116,18 @@ namespace MMA.BlazorWasm.Pages
         {
             try
             {
+                Guid currentUserId = new Guid("7604fd9c-2739-4e59-b765-6b225bb7ebf5");
+                var authState = await _authProvider.GetAuthenticationStateAsync();
+                if (authState != null && authState.User != null)
+                {
+                    var currentUser = authState.User.ToUserClaim();
+                    if (currentUser.IsAuthenticated)
+                    {
+                        currentUserId = currentUser.UserId;
+                    }
+                }
                 var apiResponse = await _httpClientHelper.GetAsync<List<UserRoleProperty>>(
-                endpoint: "https://localhost:7201/api/v1/cet/userrole/7604fd9c-2739-4e59-b765-6b225bb7ebf5",
+                endpoint: $"https://localhost:7201/api/v1/cet/userrole/{currentUserId}",
                 requestType: CHttpClientType.Private,
                 portalType: CPortalType.CET);
 

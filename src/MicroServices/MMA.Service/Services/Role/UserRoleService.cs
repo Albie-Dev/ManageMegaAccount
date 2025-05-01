@@ -145,40 +145,71 @@ namespace MMA.Service
 
         public async Task<List<UserRoleProperty>> InitRoleResourcePermission()
         {
+            // Lấy tất cả các role từ database (hoặc API)
             var allRoles = await _roleService.GetAllRolesAsync();
-            var roles = Enum.GetValues(typeof(CRoleType)).Cast<CRoleType>();
-            var resourceTypes = Enum.GetValues(typeof(CResourceType)).Cast<CResourceType>();
-            var permissionTypes = Enum.GetValues(typeof(CPermissionType)).Cast<CPermissionType>();
 
+            // Danh sách kết quả
             var result = new List<UserRoleProperty>();
 
-            foreach (var role in roles)
+            // Duyệt qua tất cả các role trong _map
+            foreach (var roleEntry in RoleResourceTypeMapping.DefaultRoleResources)
             {
+                var role = roleEntry.Key; // CRoleType (Admin, Client...)
+
+                // Bỏ qua role "None" (không có quyền)
                 if (role != CRoleType.None)
                 {
+                    // Lấy thông tin role từ database (hoặc nguồn dữ liệu)
                     var roleInfo = allRoles.FirstOrDefault(s => s.RoleType == role);
+
+                    // Khởi tạo đối tượng UserRoleProperty cho role hiện tại
                     var dto = new UserRoleProperty
                     {
                         RoleId = roleInfo?.RoleId ?? Guid.Empty,
                         RoleName = roleInfo?.RoleName ?? string.Empty,
                         RoleType = role,
-                        HasRole = false,
-                        Resources = resourceTypes.Where(s => s != CResourceType.None).Select(resource => new ResourceProperty
+                        HasRole = false, // Mặc định là không có quyền
+                        Resources = new List<ResourceProperty>()
+                    };
+
+                    // Lấy dữ liệu phân quyền từ _map cho Role hiện tại
+                    var resourcePermissions = roleEntry.Value; // Dictionary<CResourceType, List<CPermissionType>>
+
+                    // Duyệt qua các resource của role
+                    foreach (var resourceEntry in resourcePermissions)
+                    {
+                        var resourceType = resourceEntry.Key; // ResourceType (User, Role, Actor...)
+                        var permissions = resourceEntry.Value; // List<CPermissionType> (Manage, Read, Update...)
+
+                        // Tạo một ResourceProperty tương ứng với ResourceType
+                        var resourceProperty = new ResourceProperty
                         {
-                            ResourceName = resource.ToString(),
-                            ResourceType = resource,
-                            PermissionTypes = permissionTypes.Where(s => s != CPermissionType.None).Select(permission => new PermissionProperty
+                            ResourceName = resourceType.ToString(),
+                            ResourceType = resourceType,
+                            PermissionTypes = new List<PermissionProperty>()
+                        };
+
+                        // Duyệt qua các permission của resource và gán vào resourceProperty
+                        foreach (var permission in permissions)
+                        {
+                            var permissionProperty = new PermissionProperty
                             {
                                 PermissionName = permission.ToString(),
                                 PermissionType = permission,
-                                HasPermission = false
-                            }).ToList()
-                        }).ToList()
-                    };
+                                HasPermission = false // Mặc định không có quyền
+                            };
+                            resourceProperty.PermissionTypes.Add(permissionProperty);
+                        }
 
+                        // Thêm resourceProperty vào Resources của dto
+                        dto.Resources.Add(resourceProperty);
+                    }
+
+                    // Thêm dto vào kết quả
                     result.Add(dto);
                 }
             }
+
             return result;
         }
     }

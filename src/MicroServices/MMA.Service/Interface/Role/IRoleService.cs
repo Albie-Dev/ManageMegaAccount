@@ -1,5 +1,4 @@
 using MMA.Domain;
-using MMA.Service;
 
 namespace MMA.Service
 {
