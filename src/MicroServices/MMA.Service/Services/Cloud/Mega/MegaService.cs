@@ -158,30 +158,53 @@ namespace MMA.Service
             return data;
         }
 
-        public async Task<NotificationResponse> ImportMegaAccountsAsync(Stream fileStream)
+        public async Task<(Dictionary<string, ImportResult<object>>, byte[])> ImportMegaAccountsAsync(Stream fileStream)
         {
-            var notificationResponse = new NotificationResponse();
-            var props = typeof(MegaAccountImportDto).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            Dictionary<string, string> columnTitles = new Dictionary<string, string>();
+            var megaAccountProps = typeof(MegaAccountImportDto).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            Dictionary<string, string> megaAccountColumnTitles = new Dictionary<string, string>();
+            var megaAccountFileProps = typeof(MegaAccountFileImportDto).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            Dictionary<string, string> megaAccountFileColumnTitles = new Dictionary<string, string>();
 
-            foreach (var prop in props)
+            foreach (var prop in megaAccountProps)
             {
                 var originalName = prop.Name;
                 string translateName = I18NHelper.GetString($"MegaAccount_Import_Column_Title_{originalName}_Entry");
-                columnTitles[translateName] = originalName;
+                megaAccountColumnTitles[translateName] = originalName;
             }
-            var megaAccountImportDtos = await _excelCoreService.ImportExcelByTemplateAsync<MegaAccountImportDto>(
-                excelStream: fileStream,
-                sheetKey: I18NHelper.GetString(key: "MegaAccount_Import_SheetName_Entry"),
-                columnTitles: columnTitles
-            );
 
-            if (!megaAccountImportDtos.IsNullOrEmpty())
+            foreach (var prop in megaAccountFileProps)
             {
-                
+                var originalName = prop.Name;
+                string translateName = I18NHelper.GetString($"MegaAccount_File_Import_Column_Title_{originalName}_Entry");
+                megaAccountFileColumnTitles[translateName] = originalName;
             }
             
-            return await Task.FromResult<NotificationResponse>(result: notificationResponse);
+            var sheetConfigs = new Dictionary<string, (Type DtoType, Dictionary<string, string> ColumnTitles)>
+            {
+                {
+                    I18NHelper.GetString(key: "MegaAccount_Import_SheetName_Entry"),
+                    (
+                        typeof(MegaAccountImportDto),
+                        megaAccountColumnTitles
+                    )
+                },
+                {
+                    I18NHelper.GetString(key: "MegaAccount_File_Import_SheetName_Entry"),
+                    (
+                        typeof(MegaAccountFileImportDto),
+                        megaAccountFileColumnTitles
+                    )
+                }
+            };
+
+            var enumMaps = EnumHelper.GetTranslations(values: new Dictionary<string, Type>()
+            {
+                { nameof(MegaAccountFileImportDto.NodeType), typeof(CNodeType) },
+                { nameof(MegaAccountFileImportDto.Status), typeof(CFileStatus) },
+            });
+
+            var result = await _excelCoreService.ImportExcelByTemplateAsync(fileStream, sheetConfigs, enumMaps);
+            return result;
         }
 
         public async Task MegaLoginAsync(LoginRequestDto requestDto)

@@ -464,7 +464,12 @@
   </data>
 
 
-
+  <data name="Core_Import_Column_Result_Entry" xml:space="preserve">
+    <value>Kết quả</value>
+  </data>
+  <data name="Core_Import_Column_Message_Entry" xml:space="preserve">
+    <value>Thông báo lỗi</value>
+  </data>
   <data name="MegaAccount_Import_SheetName_Entry" xml:space="preserve">
     <value>Tài khoản mega</value>
   </data>
@@ -478,4 +483,32 @@
     <value>Khóa khôi phục</value>
   </data>
 
+  <data name="MegaAccount_File_Import_SheetName_Entry" xml:space="preserve">
+    <value>Tệp tin của tài khoản mega</value>
+  </data>
+  <data name="MegaAccount_File_Import_Column_Title_OwnerAccount_Entry" xml:space="preserve">
+    <value>Tài khoản sở hữu</value>
+  </data>
+  <data name="MegaAccount_File_Import_Column_Title_Id_Entry" xml:space="preserve">
+    <value>Tệp Id</value>
+  </data>
+  <data name="MegaAccount_File_Import_Column_Title_Name_Entry" xml:space="preserve">
+    <value>Tên tệp</value>
+  </data>
+  <data name="MegaAccount_File_Import_Column_Title_NodeType_Entry" xml:space="preserve">
+    <value>Loại tệp</value>
+  </data>
+  <data name="MegaAccount_File_Import_Column_Title_Size_Entry" xml:space="preserve">
+    <value>Kích thước tệp</value>
+  </data>
+  <data name="MegaAccount_File_Import_Column_Title_CreatedDate_Entry" xml:space="preserve">
+    <value>Ngày tạo</value>
+  </data>
+  <data name="MegaAccount_File_Import_Column_Title_ModifiedDate_Entry" xml:space="preserve">
+    <value>Ngày cập nhật</value>
+  </data>
+  <data name="MegaAccount_File_Import_Column_Title_Status_Entry" xml:space="preserve">
+    <value>Trạng thái tệp</value>
+  </data>
+  
 </root>

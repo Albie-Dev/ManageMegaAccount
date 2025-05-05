@@ -42,12 +42,13 @@ namespace MMA.API
             }
 
             using var stream = file.OpenReadStream();
-            NotificationResponse result = await _megaService.ImportMegaAccountsAsync(fileStream: stream);
-            return Ok(new ResponseResult<NotificationResponse>()
+            var result = await _megaService.ImportMegaAccountsAsync(fileStream: stream);
+            var currentUser = RuntimeContext.CurrentUser;
+            string ownerName = currentUser?.FullName ?? "System";
+            return new FileContentResult(fileContents: result.Item2, contentType: "application/octet-stream")
             {
-                Data = result,
-                Success = true
-            });
+                FileDownloadName = $"Import_Actor_Template_by_{ownerName}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx".Trim().Replace(" ", "_")
+            };
         }
     }
 }

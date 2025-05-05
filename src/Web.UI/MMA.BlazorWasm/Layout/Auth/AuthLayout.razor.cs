@@ -11,7 +11,7 @@ namespace MMA.BlazorWasm.Layout.Auth
         {
             var authenticationState = await _authProvider.GetAuthenticationStateAsync();
             var currentUser = authenticationState.User.ToUserClaim();
-            if (currentUser != null)
+            if (currentUser != null && currentUser.IsAuthenticated)
             {
                 _navigationManager.NavigateTo("/");
             }

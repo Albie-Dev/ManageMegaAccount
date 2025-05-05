@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace MMA.Domain
 {
     public static class EnumHelper
@@ -47,6 +49,43 @@ namespace MMA.Domain
             }
 
             return comboboxModels;
+        }
+
+
+        public static Dictionary<Type, Dictionary<string, object>> GetTranslations(Dictionary<string, Type> values)
+        {
+            var translations = new Dictionary<Type, Dictionary<string, object>>();
+            foreach (var entry in values)
+            {
+                var enumType = entry.Value;
+                var enumValues = Enum.GetValues(enumType);
+                var enumDict = new Dictionary<string, object>();
+                foreach (Enum enumValue in enumValues)
+                {
+                    string translation = GetEnumDescription(enumValue);
+                    enumDict[enumValue.ToString()] = translation;
+                }
+                translations[enumType] = enumDict;
+            }
+            return translations;
+        }
+
+        public static string GetEnumDescription(Enum enumValue)
+        {
+            Type type = enumValue.GetType();
+            MemberInfo[] memInfo = type.GetMember(enumValue.ToString());
+
+            if (memInfo != null && memInfo.Length > 0)
+            {
+                var attrs = memInfo[0].GetCustomAttributes(typeof(I18NDescriptionAttribute), false);
+
+                if (attrs != null && attrs.Length > 0)
+                {
+                    var description = ((I18NDescriptionAttribute)attrs[0]).Description;
+                    return I18NHelper.GetString(description);
+                }
+            }
+            return enumValue.ToString();
         }
     }
 }
