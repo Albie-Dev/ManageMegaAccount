@@ -2,9 +2,13 @@ namespace MMA.Domain
 {
     public class BaseFilter
     {
-        public DateTimeOffset? CreatedFromDate { get; set; }
-        public DateTimeOffset? CreatedToDate { get; set; }
-        public DateTimeOffset? ModifiedFromDate { get; set; }
-        public DateTimeOffset? ModifiedToDate { get; set; }
+        public DateTimeRageFilterProperty<DateTimeOffset> CreatedDateRange { get; set; } = new DateTimeRageFilterProperty<DateTimeOffset>();
+        public DateTimeRageFilterProperty<DateTimeOffset> ModifiedDateRange { get; set; } = new DateTimeRageFilterProperty<DateTimeOffset>();
+    }
+
+    public class DateTimeRageFilterProperty<T> where T : struct
+    {
+        public T? Start { get; set; }
+        public T? End { get; set; }
     }
 }

@@ -1,118 +1,55 @@
-@switch(Type)
+@using System.Globalization
+@switch (Type)
 {
     case CDateTimePickerType.DateTime:
-    {
-        <div class="form-group date-time-range col-@((int)Width)">
-            <label class="form-label">@LabelName</label>
-            <div class="input-group">
-                <input type="text" class="form-control" id="dateTimeRange">
-                <button class="btn btn-outline-danger" type="button" @onclick="ClearDateTime">
-                    <i class="bi bi-x text-danger"></i>
-                </button>
+        {
+            <div class="form-group date-time-range col-@((int)Width)">
+                <label class="form-label">@LabelName</label>
+                <div class="input-group position-relative">
+                    <span class="input-group-text"><i class="bi bi-calendar2-range text-primary"></i></span>
+                    <input type="text" class="form-control pe-5" id="@_inputId" autocomplete="off" placeholder="dd/MM/yyyy HH:mm - dd/MM/yyyy HH:mm"
+                        style="font-size: @((0.85 / (int)CWidthType.Col12) * (int)Width)rem;">
+                    <i class="bi bi-x-circle text-danger position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer"
+                        style="z-index: 10;" @onclick="ClearDateTime"></i>
+                </div>
             </div>
-        </div>
-        break;
-    }
+            break;
+        }
 
     case CDateTimePickerType.DateOnly:
-    {
-        <div class="form-group date-time-range col-@((int)Width)">
-            <label class="form-label">@LabelName</label>
-            <div class="input-group">
-                <input type="text" class="form-control" id="dateRange">
-                <button class="btn btn-outline-danger" type="button" @onclick="ClearDate">
-                    <i class="bi bi-x text-danger"></i>
-                </button>
+        {
+            <div class="form-group date-time-range col-@((int)Width)">
+                <label class="form-label">@LabelName</label>
+                <div class="input-group position-relative">
+                    <span class="input-group-text"><i class="bi bi-calendar-date text-danger"></i></span>
+                    <input type="text" class="form-control pe-5" id="@_inputId" autocomplete="off" placeholder="dd/MM/yyyy - dd/MM/yyyy"
+                        style="font-size: @((0.85 / (int)CWidthType.Col12) * (int)Width)rem;">
+                    <i class="bi bi-x-circle text-danger position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer"
+                        style="z-index: 10;" @onclick="ClearDate"></i>
+                </div>
             </div>
-        </div>
-        break;
-    }
+            break;
+        }
 
     case CDateTimePickerType.TimeOnly:
-    {
-        <div class="form-group date-time-range col-@((int)Width)">
-            <label class="form-label">@LabelName</label>
-            <div class="input-group">
-                <input type="text" class="form-control" id="timeRange">
-                <button class="btn btn-outline-danger" type="button" @onclick="ClearTime">
-                    <i class="bi bi-x text-danger"></i>
-                </button>
+        {
+            <div class="form-group date-time-range col-@((int)Width)">
+                <label class="form-label">@LabelName</label>
+                <div class="input-group position-relative">
+                    <span class="input-group-text"><i class="bi bi-stopwatch text-warning"></i></span>
+                    <input type="text" class="form-control pe-5" id="@_inputId" autocomplete="off" placeholder="HH:mm:ss - HH:mm:ss"
+                        style="font-size: @((0.85 / (int)CWidthType.Col12) * (int)Width)rem;">
+                    <i class="bi bi-x-circle text-danger position-absolute top-50 end-0 translate-middle-y me-3 cursor-pointer"
+                        style="z-index: 10;" @onclick="ClearTime"></i>
+                </div>
             </div>
-        </div>
-        break;
-    }
+            break;
+        }
 
     default: break;
 }
 
 @code
 {
-    [Parameter] public string LabelName { get; set; } = string.Empty;
-    [Parameter] public CDateTimePickerType Type { get; set; }
-    [Parameter] public CWidthType Width { get; set; } = CWidthType.Col12;
-    [Parameter] public DateTimePickerModelData ModelData { get; set; } = new();
-    [Parameter] public EventCallback<DateTimePickerModelData> OnChange { get; set; }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await _jsRuntime.InvokeVoidAsync("initDateTimePicker", Type.ToString(), DotNetObjectReference.Create(this));
-            StateHasChanged();
-        }
-    }
-
-    [JSInvokable]
-    public async Task UpdateDate(string start, string end)
-    {
-        ModelData.StartDate = DateOnly.Parse(start);
-        ModelData.EndDate = DateOnly.Parse(end);
-        await OnChange.InvokeAsync(ModelData);
-        StateHasChanged();
-    }
-
-    [JSInvokable]
-    public async Task UpdateTime(string start, string end)
-    {
-        ModelData.StartTime = TimeOnly.ParseExact(start, "HH:mm");
-        ModelData.EndTime = TimeOnly.ParseExact(end, "HH:mm");
-        await OnChange.InvokeAsync(ModelData);
-        StateHasChanged();
-    }
-
-    [JSInvokable]
-    public async Task UpdateDateTime(string start, string end)
-    {
-        ModelData.StartDateTime = DateTimeOffset.Parse(start);
-        ModelData.EndDateTime = DateTimeOffset.Parse(end);
-        await OnChange.InvokeAsync(ModelData);
-        StateHasChanged();
-    }
-
-    private async Task ClearDate()
-    {
-        ModelData.StartDate = null;
-        ModelData.EndDate = null;
-        await OnChange.InvokeAsync(ModelData);
-        await _jsRuntime.InvokeVoidAsync("clearDatePicker");
-        StateHasChanged();
-    }
-
-    private async Task ClearTime()
-    {
-        ModelData.StartTime = null;
-        ModelData.EndTime = null;
-        await OnChange.InvokeAsync(ModelData);
-        await _jsRuntime.InvokeVoidAsync("clearTimePicker");
-        StateHasChanged();
-    }
-
-    private async Task ClearDateTime()
-    {
-        ModelData.StartDateTime = null;
-        ModelData.EndDateTime = null;
-        await OnChange.InvokeAsync(ModelData);
-        await _jsRuntime.InvokeVoidAsync("clearDateTimePicker");
-        StateHasChanged();
-    }
 }

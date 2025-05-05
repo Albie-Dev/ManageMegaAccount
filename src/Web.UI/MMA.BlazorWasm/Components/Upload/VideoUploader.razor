@@ -1,0 +1,61 @@
+<div class="upload-section">
+    <div class="ant-upload ant-upload-drag" onclick="document.getElementById('videoInput').click()">
+        <InputFile id="videoInput" OnChange="OnFileSelected" style="display: none;" multiple="true" />
+        <div class="ant-upload-drag-icon">
+            <i class="bi bi-upload"></i>
+        </div>
+        <p class="ant-upload-text">Click or drag video file to upload</p>
+        <p class="ant-upload-hint">Supported formats: MP4, WebM, MOV, etc.</p>
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <p class="text-danger">@_errorMessage</p>
+        }
+    </div>
+</div>
+
+@if (isUploading)
+{
+    <div class="global-progress">
+        <div class="progress-container">
+            <div class="progress-bar" style="width: @progress%">@(Math.Round(progress, MidpointRounding.AwayFromZero))%</div>
+        </div>
+    </div>
+}
+
+@if (UploadedFiles.Count > 0)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Index</th>
+                <th>Video Preview</th>
+                <th>File Detail</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        @for (int i = 0; i < UploadedFiles.Count; i++)
+        {
+            var file = UploadedFiles[i];
+            <tr>
+                <td>@(i + 1)</td>
+                <td>
+                    <video src="@file.Url" controls width="120" style="max-height: 80px;"></video>
+                </td>
+                <td>
+                    <div>@file.Name</div>
+                    <div><small>@file.FileId</small></div>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-danger" @onclick="()=>DeleteVideo(file.FileId)">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-info" @onclick="()=>ViewVideo(file.Url)">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

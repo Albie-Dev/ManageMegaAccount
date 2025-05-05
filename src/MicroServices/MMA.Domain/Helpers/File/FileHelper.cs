@@ -96,6 +96,7 @@ namespace MMA.Domain
             { "application/vnd.oasis.opendocument.text-master-template", CFileType.Word },
             { "application/vnd.oasis.opendocument.text-web-template", CFileType.Word },
             { "application/mp4", CFileType.Video },
+            { "video/mp4", CFileType.Video },
             { "text/plain", CFileType.TXT },
             { "audio/mpeg", CFileType.Audio },
             { "audio/wav", CFileType.Audio },
@@ -116,7 +117,7 @@ namespace MMA.Domain
             { "audio/x-matroska-ps", CFileType.Audio },
             { "audio/x-matroska-ps-3gpp", CFileType.Audio },
             { "text/html", CFileType.Html },
-            { "application/x-msdownload", CFileType.MicrosoftDownlod },
+            { "application/x-msdownload", CFileType.MicrosoftDownload },
             
         };
     }

@@ -25,6 +25,8 @@ namespace MMA.BlazorWasm.Components.Upload
 
         private DotNetObjectReference<ImageUploader>? _dotNetObjRef;
 
+        private string _errorMessage { get; set; } = string.Empty;
+
         private async Task OnFileSelected(InputFileChangeEventArgs e)
         {
             var files = e.GetMultipleFiles();
@@ -36,6 +38,12 @@ namespace MMA.BlazorWasm.Components.Upload
 
         private async Task UploadSingleFile(IBrowserFile file)
         {
+            var fileType = FileHelper.GetFileTypeFromMimeType(mimeType: file.ContentType);
+            if (fileType != CFileType.Image)
+            {
+                _errorMessage = $"File type is not allowed. Allowed file types are images.";
+                return;
+            }
             isUploading = true;
             progress = 0;
 
@@ -44,6 +52,7 @@ namespace MMA.BlazorWasm.Components.Upload
 
             try
             {
+                _errorMessage = string.Empty;
                 var apiResponse = await _httpClientHelper.PostAsync<ImageKitIOGenerateJWTRequestDto, string>(
                 endpoint: authenticationEndpoint,
                 data: new ImageKitIOGenerateJWTRequestDto
@@ -102,6 +111,31 @@ namespace MMA.BlazorWasm.Components.Upload
                 var result = jsonResponse?.FromJson<ImageKitIOFileResponseDto>() ?? new ImageKitIOFileResponseDto();
                 UploadedFiles.Add(result);
                 await UploadedFilesChanged.InvokeAsync(UploadedFiles);
+                isUploading = false;
+                try
+                {
+                    var apiResponse = await _httpClientHelper.PostAsync<CreateFileRequestDto, int>(
+                        endpoint: Path.Combine(EndpointConstant.Cloud_Base_Url, EndpointConstant.Cloud_File_Create),
+                        data: new CreateFileRequestDto()
+                        {
+                            CloudType = CCloudType.ImageKitIO,
+                            FileIds = UploadedFiles.Select(s => s.FileId).ToList()
+                        },
+                        requestType: CHttpClientType.Private,
+                        portalType: CPortalType.CET);
+                    if (apiResponse != null && apiResponse.Success)
+                    {
+                        Console.WriteLine($"Create files successful. Count = {apiResponse.Data}");
+                    }
+                }
+                catch(Exception ex)
+                {
+                    _toastService.ShowError(message: $"{ex.Message}. Host = {CPortalType.CET.ToDescription()}");
+                }
+                finally
+                {
+                    isUploading = false;
+                }
             }
             else
             {

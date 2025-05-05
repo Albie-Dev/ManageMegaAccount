@@ -1,0 +1,37 @@
+@using MMA.BlazorWasm.Layout.Base
+@layout BaseLayout
+
+<div class="video-wrapper" id="@_parentDivId">
+    <video id="@_playerPlyrVideoId" controls crossorigin playsinline>
+        <source
+            src="@VideoUrl"
+            type="@Type" />
+        @if (Tracks.IsNullOrEmpty())
+        {
+            <track kind="subtitles" srclang="en" label="Default" src="" default>
+        }
+        else
+        {
+            @foreach(var track in Tracks)
+            {
+                if (track.IsDefault)
+                {
+                    <track kind="@track.TrackKind" srclang="@track.TrackLanguageType.ToDescription()"
+                        label="@track.TrackName"
+                        src="@track.TrackSource"
+                        default>
+                }
+                else
+                {
+                    <track kind="@track.TrackKind" srclang="@track.TrackLanguageType.ToDescription()"
+                        label="@track.TrackName"
+                        src="@track.TrackSource">
+                }
+            }
+        }
+    </video>
+    <div class="resize-handle"></div>
+    <InputFile type="file" id="@_subtitleUploadInputId" hidden style="display: none;"
+        accept="@(string.Join(",", SubtitleFileFormatTypes.Select(s => $".{s.ToString().ToLower()}")))"
+        OnChange="UploadSubtitleAsync"/>
+</div>

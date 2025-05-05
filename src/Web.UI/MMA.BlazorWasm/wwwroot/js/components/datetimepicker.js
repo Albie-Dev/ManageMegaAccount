@@ -1,15 +1,51 @@
 $(document).ready(function () {
-    window.initDateTimePicker = (type, dotNetHelper) => {
+    window.initDateTimePicker = (type, start, end, parentElementClassName, _inputId, dotNetHelper) => {
         if (type === "DateOnly") {
-            $('#dateRange').daterangepicker({
-                opens: 'left',
-                locale: { format: 'YYYY/MM/DD' }
+            $(`#${_inputId}`).daterangepicker({
+                timePicker: false,
+                timePickerSeconds: false,
+                autoApply: false,
+                showDropdowns: true,
+                autoUpdateInput: (start && end) ? true : false,
+                locale: {
+                    format: 'DD/MM/YYYY',
+                    separator: ' - ',
+                    applyLabel: 'Apply',
+                    cancelLabel: 'Cancel',
+                    fromLabel: 'From',
+                    toLabel: 'To',
+                    customRangeLabel: 'Custom',
+                    weekLabel: 'W',
+                    daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                    firstDay: 1
+                },
+                linkedCalendars: false,
+                showCustomRangeLabel: false,
+                startDate: start ? moment(start, 'DD/MM/YYYY') : undefined,
+                endDate: end ? moment(end, 'DD/MM/YYYY') : undefined,
+                parentEl: parentElementClassName,
             }).on('apply.daterangepicker', function (ev, picker) {
-                dotNetHelper.invokeMethodAsync('UpdateDate', picker.startDate.format('YYYY/MM/DD'), picker.endDate.format('YYYY/MM/DD'));
+                $(`#${_inputId}`).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+                dotNetHelper.invokeMethodAsync('UpdateDate', picker.startDate.format('DD/MM/YYYY'), picker.endDate.format('DD/MM/YYYY'));
+            }).on('show.daterangepicker', function (ev, picker) {
+                picker.container.find('.drp-calendar.right').hide();
+
+                picker.container.find('.drp-calendar.left').css({
+                    'width': '100%',
+                    'max-width': '100%',
+                    'flex': '1',
+                });
+
+                const inputWidth = $(".date-time-range").outerWidth();
+                picker.container.css({
+                    'width': inputWidth * 0.9 + 'px',
+                    'min-width': inputWidth * 0.8 + 'px'
+                });
             });
         }
         else if (type === "TimeOnly") {
-            $('#timeRange').daterangepicker({
+            $(`#${_inputId}`).daterangepicker({
                 timePicker: true,
                 timePicker24Hour: true,
                 timePickerIncrement: 1,
@@ -24,62 +60,79 @@ $(document).ready(function () {
             });
         }
         else if (type === "DateTime") {
-            $('#dateTimeRange').daterangepicker({
+            $(`#${_inputId}`).daterangepicker({
                 timePicker: true,
-                timePicker24Hour: true,
-                timePickerIncrement: 1,
-                timePickerSeconds: false,
+                timePickerSeconds: true,
+                autoApply: false,
                 showDropdowns: true,
-                opens: 'left',
-                ranges: {
-                    'Today': [moment().startOf('day'), moment().endOf('day')],
-                    'Yesterday': [moment().subtract(1, 'days').startOf('day'), moment().subtract(1, 'days').endOf('day')],
-                    'Last 7 Days': [moment().subtract(6, 'days').startOf('day'), moment().endOf('day')],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-                },
+                autoUpdateInput: (start && end) ? true : false,
                 locale: {
-                    format: 'YYYY/MM/DD HH:mm',
+                    format: 'DD/MM/YYYY HH:mm',
                     separator: ' - ',
                     applyLabel: 'Apply',
                     cancelLabel: 'Cancel',
                     fromLabel: 'From',
                     toLabel: 'To',
-                    customRangeLabel: 'Custom Range',
+                    customRangeLabel: 'Custom',
                     weekLabel: 'W',
                     daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-                    monthNames: [
-                        'January', 'February', 'March', 'April', 'May', 'June',
-                        'July', 'August', 'September', 'October', 'November', 'December'
-                    ],
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
                     firstDay: 1
                 },
-                startDate: moment().startOf('day'),
-                endDate: moment().endOf('day'),
-                minDate: moment().subtract(2, 'years'),
-                maxDate: moment().add(2, 'years')
-            }).on('apply.daterangepicker', function (ev, picker) {
-                dotNetHelper.invokeMethodAsync('UpdateDateTime', picker.startDate.format('YYYY/MM/DD HH:mm'), picker.endDate.format('YYYY/MM/DD HH:mm'));
+                linkedCalendars: false,
+                showCustomRangeLabel: false,
+                startDate: start ? moment(start, 'DD/MM/YYYY HH:mm') : undefined,
+                endDate: end ? moment(end, 'DD/MM/YYYY HH:mm') : undefined,
+                parentEl: parentElementClassName,
+            }, function (start, end, label) {
+                $(`#${_inputId}`).val(start.format('DD/MM/YYYY HH:mm') + ' - ' + end.format('DD/MM/YYYY HH:mm'));
+                dotNetHelper.invokeMethodAsync('UpdateDateTime', start.format('DD/MM/YYYY HH:mm'), end.format('DD/MM/YYYY HH:mm'));
+            }).on('show.daterangepicker', function (ev, picker) {
+                const container = picker.container;
+                container.find('.drp-calendar.right .calendar-table').hide();
+
+                // Adjust the left calendar to take full width
+                picker.container.find('.drp-calendar.left').css({
+                    'width': '100%',
+                    'max-width': '100%',
+                    'flex': '1',
+                });
+
+                picker.container.find('.drp-calendar.right').css({
+                    'width': '100%',
+                    'max-width': '100%',
+                    'flex': '1',
+                });
+
+                // Ensure the time picker is centered and properly spaced
+                picker.container.find('.calendar-time').css({
+                    'display': 'flex',
+                    'justify-content': 'center',
+                    'align-items': 'center',
+                    'gap': '8px',
+                    'margin': '10px 0',
+                });
+
+                // Adjust the overall container width based on input
+                const inputWidth = $(".date-time-range").outerWidth();
+                picker.container.css({
+                    'width': inputWidth * 0.9 + 'px',
+                    'min-width': inputWidth * 0.8 + 'px'
+                });
             });
         }
     };
 
     // Các hàm clear
-    window.clearDatePicker = () => {
-        $('#dateRange').val('');
-        $('#dateRange').data('daterangepicker').setStartDate(moment().startOf('day'));
-        $('#dateRange').data('daterangepicker').setEndDate(moment().startOf('day'));
+    window.clearDatePicker = (_inputId) => {
+        $(`#${_inputId}`).val('');
     };
 
-    window.clearTimePicker = () => {
-        $('#timeRange').val('');
-        $('#timeRange').data('daterangepicker').setStartDate(moment().startOf('day'));
-        $('#timeRange').data('daterangepicker').setEndDate(moment().startOf('day'));
+    window.clearTimePicker = (_inputId) => {
+        $(`#${_inputId}`).val('');
     };
 
-    window.clearDateTimePicker = () => {
-        $('#dateTimeRange').val('');
-        $('#dateTimeRange').data('daterangepicker').setStartDate(moment().startOf('day'));
-        $('#dateTimeRange').data('daterangepicker').setEndDate(moment().startOf('day'));
+    window.clearDateTimePicker = (_inputId) => {
+        $(`#${_inputId}`).val('');
     };
 });

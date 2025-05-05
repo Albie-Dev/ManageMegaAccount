@@ -88,6 +88,89 @@ namespace MMA.Service
             return await Task.FromResult<byte[]>(ms.ToArray());
         }
 
+        public async Task<List<T>> ImportExcelByTemplateAsync<T>(
+            Stream excelStream,
+            string sheetKey,
+            Dictionary<string, string> columnTitles,
+            Dictionary<Type, Dictionary<string, object>>? translatedEnumValueMaps = null
+        ) where T : new()
+        {
+            var result = new List<T>();
+            using var workbook = new XLWorkbook(excelStream);
+            var sheet = workbook.Worksheet(sheetKey);
+
+            if (sheet == null)
+                throw new Exception($"Sheet '{sheetKey}' not found.");
+
+            var headerRow = sheet.Row(1);
+            var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            var columnMap = new Dictionary<int, PropertyInfo>();
+
+            for (int c = 1; c <= sheet.ColumnsUsed().Count(); c++)
+            {
+                var header = headerRow.Cell(c).GetString().Trim();
+
+                if (columnTitles.TryGetValue(header, out var propName))
+                {
+                    var prop = props.FirstOrDefault(p => p.Name.Equals(propName, StringComparison.OrdinalIgnoreCase));
+                    if (prop != null)
+                    {
+                        columnMap[c] = prop;
+                    }
+                }
+            }
+
+            int row = 2;
+            while (!sheet.Row(row).Cell(1).IsEmpty())
+            {
+                var item = new T();
+                foreach (var kvp in columnMap)
+                {
+                    int colIndex = kvp.Key;
+                    var prop = kvp.Value;
+                    var cell = sheet.Row(row).Cell(colIndex);
+
+                    try
+                    {
+                        var cellValue = cell.GetString();
+                        if (!string.IsNullOrWhiteSpace(cellValue))
+                        {
+                            var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                            object? value;
+
+                            if (targetType.IsEnum && translatedEnumValueMaps != null && translatedEnumValueMaps.TryGetValue(targetType, out var enumMap))
+                            {
+                                if (enumMap.TryGetValue(cellValue, out var enumValue))
+                                {
+                                    value = enumValue;
+                                }
+                                else
+                                {
+                                    _logger.LogWarning($"Không tìm thấy ánh xạ enum cho '{cellValue}' tại dòng {row}, cột {colIndex}");
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                value = Convert.ChangeType(cellValue, targetType);
+                            }
+
+                            prop.SetValue(item, value);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogWarning(ex, $"Lỗi ánh xạ tại dòng {row}, cột {colIndex}");
+                    }
+                }
+
+                result.Add(item);
+                row++;
+            }
+
+            return await Task.FromResult(result);
+        }
 
         private Stream GetTemplateStream(string fileName)
         {

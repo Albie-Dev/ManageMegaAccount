@@ -32,5 +32,22 @@ namespace MMA.API
                 Success = true
             });
         }
+
+        [HttpPost("megaaccount/import")]
+        public async Task<IActionResult> ImportMegaAccounts(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("File is empty or missing.");
+            }
+
+            using var stream = file.OpenReadStream();
+            NotificationResponse result = await _megaService.ImportMegaAccountsAsync(fileStream: stream);
+            return Ok(new ResponseResult<NotificationResponse>()
+            {
+                Data = result,
+                Success = true
+            });
+        }
     }
 }

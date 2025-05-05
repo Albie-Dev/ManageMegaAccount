@@ -28,7 +28,7 @@ namespace MMA.Domain
         [Description("https://cdn-icons-png.freepik.com/512/8422/8422139.png")]
         Html = 11,
         [Description("https://static-00.iconduck.com/assets.00/application-x-msdownload-icon-1577x2048-tann6c6m.png")]
-        MicrosoftDownlod = 12,
+        MicrosoftDownload = 12,
         [Description("https://images.icon-icons.com/3642/PNG/512/otherfile_filetype_icon_227885.png")]
         Other = 13
     }

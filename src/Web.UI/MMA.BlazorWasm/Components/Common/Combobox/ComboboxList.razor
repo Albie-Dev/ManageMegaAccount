@@ -1,7 +1,7 @@
 @typeparam T where T : notnull
 
 <div class="dropdown-wrapper rounded @ClassName">
-    <div class="input-container p-0 m-0 rounded" @onclick="ToggleDropdown">
+    <div class="input-container p-0 m-0 rounded" style="@InputStyle;" @onclick="ToggleDropdown">
         @if (SelectedOptions.Any())
         {
             @foreach (var opt in SelectedOptions)

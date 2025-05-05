@@ -12,10 +12,8 @@ namespace MMA.Domain
         public int? FromHeight { get; set; }
         public int? ToHeight { get; set; }
         public List<CCupSizeType> CupSizeTypes { get; set; } = new List<CCupSizeType>();
-        public DateOnly? FromDebutDate { get; set; }
-        public DateOnly? ToDebutDate { get; set; }
-        public DateOnly? FromDateOfBirth { get; set; }
-        public DateOnly? ToDateOfBirth { get; set; }
+        public DateTimeRageFilterProperty<DateOnly> DebutDateRange { get; set; } = new DateTimeRageFilterProperty<DateOnly>();
+        public DateTimeRageFilterProperty<DateOnly> DateOfBirthRange { get; set; } = new DateTimeRageFilterProperty<DateOnly>();
         public List<CMasterStatus> Statuses { get; set; } = new List<CMasterStatus>();
     }
 }

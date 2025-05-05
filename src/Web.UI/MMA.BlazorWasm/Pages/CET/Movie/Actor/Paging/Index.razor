@@ -28,7 +28,7 @@
         <div class="row g-3">
 
             <fieldset class="col-12">
-                <legend class="fs-6 fw-semibold text-secondary">Thông số cơ thể</legend>
+                <legend class="fs-6 fw-semibold text-info">Thông số cơ thể</legend>
                 <div class="row g-2">
                     <div class="col-md-6">
                         <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_FromBust_Entry")</label>
@@ -69,7 +69,7 @@
             </fieldset>
 
             <fieldset class="col-12">
-                <legend class="fs-6 fw-semibold text-secondary">Thông tin bổ sung</legend>
+                <legend class="fs-6 fw-semibold text-info">Thông tin bổ sung</legend>
                 <div class="row g-2">
                     <div class="col-md-6">
                         <label class="label-small-light">@I18NHelper.GetString("Column_Title_Actor_CupSizeType_Entry")</label>
@@ -87,43 +87,32 @@
             </fieldset>
 
             <fieldset class="col-12">
-                <legend class="fs-6 fw-semibold text-secondary">Ngày tháng</legend>
+                <legend class="fs-6 fw-semibold text-info">Ngày tháng</legend>
                 <div class="row g-2">
-                    <div class="col-md-6">
-                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_FromDebutDate_Entry")</label>
-                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.FromDebutDate" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_ToDebutDate_Entry")</label>
-                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ToDebutDate" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_FromDateOfBirth_Entry")</label>
-                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.FromDateOfBirth" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Actor_ToDateOfBirth_Entry")</label>
-                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ToDateOfBirth" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Common_CreatedFromDate_Entry")</label>
-                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.CreatedFromDate" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Common_CreatedToDate_Entry")</label>
-                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.CreatedToDate" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Common_ModifiedFromDate_Entry")</label>
-                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ModifiedFromDate" />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="label-small-light">@I18NHelper.GetString("Filter_Title_Common_ModifiedToDate_Entry")</label>
-                        <input type="date" class="form-control small-placeholder" @bind-value="_actorFilterProperty.ModifiedToDate" />
-                    </div>
+                    <DateTimePicker LabelName="Ngày tạo"
+                        @bind-DateTimeRange="_actorFilterProperty.CreatedDateRange"
+                        Type="CDateTimePickerType.DateTime"
+                        Width="CWidthType.Col12"
+                        ParentElementClassName="#filterTable"
+                    />
+                    <DateTimePicker LabelName="Ngày cập nhật"
+                        @bind-DateTimeRange="_actorFilterProperty.ModifiedDateRange"
+                        Type="CDateTimePickerType.DateTime"
+                        Width="CWidthType.Col12"
+                        ParentElementClassName="#filterTable"
+                    />
+                    <DateTimePicker LabelName="Ngày ra mắt"
+                        @bind-DateRange="_actorFilterProperty.DebutDateRange"
+                        Type="CDateTimePickerType.DateOnly"
+                        Width="CWidthType.Col12"
+                        ParentElementClassName="#filterTable"
+                    />
+                    <DateTimePicker LabelName="Ngày sinh"
+                        @bind-DateRange="_actorFilterProperty.DateOfBirthRange"
+                        Type="CDateTimePickerType.DateOnly"
+                        Width="CWidthType.Col12"
+                        ParentElementClassName="#filterTable"
+                    />
                 </div>
             </fieldset>
         </div>

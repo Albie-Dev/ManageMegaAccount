@@ -8,10 +8,9 @@ namespace MMA.BlazorWasm.Components.Common.Combobox
     {
         [Parameter] public string ClassName { get; set; } = string.Empty;
         [Parameter] public string PlaceHolderName { get; set; } = string.Empty;
-        [Parameter]
-        public string TagStyle { get; set; } = string.Empty;
-        [Parameter]
-        public string TagClass { get; set; } = "bg-primary text-white";
+        [Parameter] public string TagStyle { get; set; } = string.Empty;
+        [Parameter] public string TagClass { get; set; } = "bg-primary text-white";
+        [Parameter] public string InputStyle { get; set; } = "min-height: 38px;";
         [Parameter] public CComboboxModeType Mode { get; set; } = CComboboxModeType.Select;
 
         [Parameter] public List<CComboboxModel> Items { get; set; } = new();

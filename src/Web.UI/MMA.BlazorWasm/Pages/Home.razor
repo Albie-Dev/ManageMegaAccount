@@ -16,7 +16,7 @@
             var currentIndex = i;
             <li class="nav-item">
                 <a class="nav-link @(currentIndex == selectedTabIndex ? "active" : "")"
-                   @onclick="() => SelectTab(currentIndex)">
+                    @onclick="() => SelectTab(currentIndex)">
                     <i class="bi bi-person-badge me-1"></i>
                     @role.RoleName
                 </a>
@@ -35,7 +35,7 @@
                     <li class="list-group-item">
                         <div class="d-flex justify-content-between align-items-center">
                             <button class="btn btn-sm btn-link text-decoration-none"
-                                    @onclick="@(() => ToggleExpandResource(resource))">
+                                @onclick="@(() => ToggleExpandResource(resource))">
                                 <i class="bi @(isExpanded ? "bi-chevron-down" : "bi-chevron-right") me-1"></i>
                                 <i class="bi bi-folder2-open me-1 text-warning"></i>
                                 @resource.ResourceName
@@ -44,55 +44,49 @@
 
                         @if (isExpanded)
                         {
-                          <div class="ms-4 d-flex flex-wrap mt-2">
-                            @foreach (var perm in resource.PermissionTypes)
-                            {
-                                <li class="d-flex align-items-center me-3">
-                                  <input type="checkbox"
-                                        class="form-check-input me-2"
-                                        checked="@perm.HasPermission"
-                                        @onchange="(e) => OnPermissionChange(selectedRole, resource, perm, e.Value)" />
-                                  <i class="bi bi-shield-check text-primary me-2"></i>
-                                  @perm.PermissionName
-                                </li>
-                            }
-                          </div>
+                            <div class="ms-4 d-flex flex-wrap mt-2">
+                                @foreach (var perm in resource.PermissionTypes)
+                                {
+                            <li class="d-flex align-items-center me-3">
+                                <input type="checkbox" class="form-check-input me-2" checked="@perm.HasPermission"
+                                    @onchange="(e) => OnPermissionChange(selectedRole, resource, perm, e.Value)" />
+                                <i class="bi bi-shield-check text-primary me-2"></i>
+                                @perm.PermissionName
+                            </li>
                         }
-                    </li>
-                }
-            </ul>
+                </div>
+            }
+            </li>
         }
-    </div>
-
-    <div class="col">
-        <h5 class="mt-2">Selected Role: @selectedRole?.RoleName</h5>
-        <p class="text-muted">Pick a resource on the left to manage permissions.</p>
-    </div>
+        </ul>
+    }
 </div>
 
-<ButtonAmam7078
-  Class="btn btn-sm btn-primary mt-3"
-  Icon="bi bi-check"
-  IconPosition="CIconPositionType.Right"
-  Text="Xác nhận"
-  Type="button"
-  OnClick="UpdateUserRoleAsync"
-  />
+<div class="col">
+    <h5 class="mt-2">Selected Role: @selectedRole?.RoleName</h5>
+    <p class="text-muted">Pick a resource on the left to manage permissions.</p>
+</div>
+</div>
+
+<VideoUploader @bind-UploadedFiles="UploadedFiles" />
+
+<MMA.BlazorWasm.Components.Common.Player.Plyr.PlyrVideoPlayer SubtitleFileFormatTypes="new List<CSubtitleFileFormatType>() { CSubtitleFileFormatType.VTT }"
+    VideoUrl="https://ik.imagekit.io/qlptzvw00/Always%20Remember%20Us%20This%20Way%20-%20Lyrics%20-%20Lady%20Gaga%20_englishsongs%20_masonmusic%20_ballad%20_AI_Music_Daney_QojWVT0tp.mp4"/>
+
+<ButtonAmam7078 Class="btn btn-sm btn-primary mt-3" Icon="bi bi-check" IconPosition="CIconPositionType.Right"
+    Text="Xác nhận" Type="button" OnClick="UpdateUserRoleAsync" />
 
 <div>
     <button class="btn btn-primary" @onclick="ShowModal">Import</button>
 </div>
 
-<FileUploader Title="Import Test"
-    @bind-IsOpen="IsOpen"
-    MaxFileSize="@(50*1024*1024)"
-    FileTypes="FileTypes"
+<FileUploader Title="Import Test" @bind-IsOpen="IsOpen" MaxFileSize="@(50 * 1024 * 1024)" FileTypes="FileTypes"
     OnFileUploaded="HandleUploadFromModal" />
 
 @if (_notificationResponse != null)
 {
-  <DisplayMessageElement  Notification="_notificationResponse" />
-  _notificationResponse = null;
+    <DisplayMessageElement Notification="_notificationResponse" />
+    _notificationResponse = null;
 }
 
 @if (_isLoading)
@@ -101,5 +95,7 @@
 }
 
 @code {
-  
+
 }
+    using MMA.Domain.Helpers.File;
+    using MMA.Domain.Helpers.File;

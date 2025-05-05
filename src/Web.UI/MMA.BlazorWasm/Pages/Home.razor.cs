@@ -11,6 +11,8 @@ namespace MMA.BlazorWasm.Pages
         private List<UserRoleProperty> Roles { get; set; } = new List<UserRoleProperty>();
         private NotificationResponse? _notificationResponse { get; set; }
         private UserRoleProperty? selectedRole;
+        private DateTimePickerModelData _dateTimePickerData { get; set; } = new DateTimePickerModelData();
+        public List<ImageKitIOFileResponseDto> UploadedFiles { get; set; } = new List<ImageKitIOFileResponseDto>();
         HashSet<ResourceProperty> expandedResources = new();
         private int selectedTabIndex = 0;
         private bool _isLoading { get; set; } = false;
@@ -30,7 +32,7 @@ namespace MMA.BlazorWasm.Pages
             CFileType.Zip,
             CFileType.PDF,
             CFileType.Html,
-            CFileType.MicrosoftDownlod
+            CFileType.MicrosoftDownload
         };
 
         private void ShowModal()

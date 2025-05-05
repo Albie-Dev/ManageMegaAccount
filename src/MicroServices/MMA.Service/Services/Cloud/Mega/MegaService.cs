@@ -3,23 +3,28 @@ using MMA.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using static CG.Web.MegaApiClient.MegaApiClient;
+using System.Dynamic;
+using System.Reflection;
 
 namespace MMA.Service
 {
     public class MegaService : IMegaService
     {
         private readonly IMegaApiClient _megaClient;
+        private readonly IExcelCoreService _excelCoreService;
         private readonly ILogger<MegaService> _logger;
         private readonly IDbRepository _repository;
         public MegaService(
             ILogger<MegaService> logger,
             IDbRepository repository,
-            IMegaApiClient megaClient
+            IMegaApiClient megaClient,
+            IExcelCoreService excelCoreService
         )
         {
             _logger = logger;
             _repository = repository;
             _megaClient = megaClient;
+            _excelCoreService = excelCoreService;
         }
 
         public async Task<BasePagedResult<MegaAccountDetailDto>> GetMegaAccountWithPagingAsync(TableParam<MegaAccountFilterProperty> tableParam)
@@ -151,6 +156,32 @@ namespace MMA.Service
             };
 
             return data;
+        }
+
+        public async Task<NotificationResponse> ImportMegaAccountsAsync(Stream fileStream)
+        {
+            var notificationResponse = new NotificationResponse();
+            var props = typeof(MegaAccountImportDto).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            Dictionary<string, string> columnTitles = new Dictionary<string, string>();
+
+            foreach (var prop in props)
+            {
+                var originalName = prop.Name;
+                string translateName = I18NHelper.GetString($"MegaAccount_Import_Column_Title_{originalName}_Entry");
+                columnTitles[translateName] = originalName;
+            }
+            var megaAccountImportDtos = await _excelCoreService.ImportExcelByTemplateAsync<MegaAccountImportDto>(
+                excelStream: fileStream,
+                sheetKey: I18NHelper.GetString(key: "MegaAccount_Import_SheetName_Entry"),
+                columnTitles: columnTitles
+            );
+
+            if (!megaAccountImportDtos.IsNullOrEmpty())
+            {
+                
+            }
+            
+            return await Task.FromResult<NotificationResponse>(result: notificationResponse);
         }
 
         public async Task MegaLoginAsync(LoginRequestDto requestDto)

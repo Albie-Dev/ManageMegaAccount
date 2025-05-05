@@ -464,4 +464,18 @@
   </data>
 
 
+
+  <data name="MegaAccount_Import_SheetName_Entry" xml:space="preserve">
+    <value>Tài khoản mega</value>
+  </data>
+  <data name="MegaAccount_Import_Column_Title_AccountName_Entry" xml:space="preserve">
+    <value>Tên tài khoản</value>
+  </data>
+  <data name="MegaAccount_Import_Column_Title_Password_Entry" xml:space="preserve">
+    <value>Mật khẩu</value>
+  </data>
+  <data name="MegaAccount_Import_Column_Title_RecoveryKey_Entry" xml:space="preserve">
+    <value>Khóa khôi phục</value>
+  </data>
+
 </root>

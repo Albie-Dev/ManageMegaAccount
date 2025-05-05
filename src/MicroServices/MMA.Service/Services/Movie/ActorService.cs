@@ -232,22 +232,22 @@ namespace MMA.Service
                     query = query.Where(ac => tableParam.Filter.CupSizeTypes.Contains(ac.CupSizeType));
                 }
 
-                if (tableParam.Filter.FromDebutDate.HasValue)
+                if (tableParam.Filter.DebutDateRange.Start.HasValue)
                 {
-                    query = query.Where(ac => ac.DebutDate >= tableParam.Filter.FromDebutDate.Value);
+                    query = query.Where(ac => ac.DebutDate >= tableParam.Filter.DebutDateRange.Start.Value);
                 }
-                if (tableParam.Filter.ToDebutDate.HasValue)
+                if (tableParam.Filter.DebutDateRange.End.HasValue)
                 {
-                    query = query.Where(ac => ac.DebutDate <= tableParam.Filter.ToDebutDate.Value);
+                    query = query.Where(ac => ac.DebutDate <= tableParam.Filter.DebutDateRange.End.Value);
                 }
 
-                if (tableParam.Filter.FromDateOfBirth.HasValue)
+                if (tableParam.Filter.DateOfBirthRange.Start.HasValue)
                 {
-                    query = query.Where(ac => ac.DateOfBirth >= tableParam.Filter.FromDateOfBirth.Value);
+                    query = query.Where(ac => ac.DateOfBirth >= tableParam.Filter.DateOfBirthRange.Start.Value);
                 }
-                if (tableParam.Filter.ToDateOfBirth.HasValue)
+                if (tableParam.Filter.DateOfBirthRange.End.HasValue)
                 {
-                    query = query.Where(ac => ac.DebutDate <= tableParam.Filter.ToDateOfBirth.Value);
+                    query = query.Where(ac => ac.DateOfBirth <= tableParam.Filter.DateOfBirthRange.End.Value);
                 }
 
                 if (!tableParam.Filter.Statuses.IsNullOrEmpty())
@@ -255,13 +255,21 @@ namespace MMA.Service
                     query = query.Where(ac => tableParam.Filter.Statuses.Contains(ac.Status));
                 }
 
-                if (tableParam.Filter.CreatedFromDate.HasValue)
+                if (tableParam.Filter.CreatedDateRange.Start.HasValue)
                 {
-                    query = query.Where(ac => ac.CreatedDate >= tableParam.Filter.CreatedFromDate.Value);
+                    query = query.Where(ac => ac.CreatedDate >= tableParam.Filter.CreatedDateRange.Start.Value);
                 }
-                if (tableParam.Filter.CreatedToDate.HasValue)
+                if (tableParam.Filter.CreatedDateRange.End.HasValue)
                 {
-                    query = query.Where(ac => ac.CreatedDate <= tableParam.Filter.CreatedToDate.Value);
+                    query = query.Where(ac => ac.CreatedDate <= tableParam.Filter.CreatedDateRange.End.Value);
+                }
+                if (tableParam.Filter.ModifiedDateRange.Start.HasValue)
+                {
+                    query = query.Where(ac => ac.ModifiedDate >= tableParam.Filter.ModifiedDateRange.Start.Value);
+                }
+                if (tableParam.Filter.ModifiedDateRange.End.HasValue)
+                {
+                    query = query.Where(ac => ac.ModifiedDate <= tableParam.Filter.ModifiedDateRange.End.Value);
                 }
             }
             // else

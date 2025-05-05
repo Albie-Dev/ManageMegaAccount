@@ -61,6 +61,7 @@ namespace MMA.Service
                     urlEndPoint: RuntimeContext.AppSettings.CloudSetting.ImageKitIOConfig.UrlEndpoint
                 );
             });
+            services.AddScoped<IFileService, FileService>();
             services.AddScoped<IImageKitIOService, ImageKitIOService>();
             services.AddScoped<IExcelCoreService, ExcelCoreService>();
 
