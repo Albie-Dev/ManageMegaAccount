@@ -1,0 +1,219 @@
+@page "/cloud/mega"
+
+
+<FileUploader @bind-IsOpen="_isUploadModalOpen" Title="Import mega accounts" MaxFileSize="5 * 1024 * 1024"
+    FileTypes="new List<CFileType>() { CFileType.Excel }" OnFileUploaded="ImportMegaAccountsAsync"
+    OnDownloadTemplateFile="DownloadTemplateFileAsync" />
+
+@if (_notificationResponse != null)
+{
+    <DisplayMessageElement Notification="_notificationResponse" />
+    _notificationResponse = null;
+}
+<Table TData="MegaAccountDetailDto" TFilter="MegaAccountFilterProperty" TSelection="Guid"
+    ApiEndpoint="@(Path.Combine(EndpointConstant.Cloud_Base_Url, EndpointConstant.Cloud_Mega_Account_Paging))"
+    HttpClientType="CHttpClientType.Private" PortalType="CPortalType.CET" Columns="InitColumns()"
+    @bind-Errors="_errors"
+    @bind-IsLoading="_isLoading"
+    @bind-FilterProperty="_megaAccountFilterProperty"
+    @bind-SelectedItems="_megaAccountIds"
+    @bind-RequestData="_requestDto"
+    MapSelection="ma => ma.MegaAccountId" IsEnableSelection="true" CellContents="GetCellContents()"
+    SearchPlaceHolder="@(I18NHelper.GetString(key: "Search_Title_Mega_Account_Entry"))"
+    FilterLabelName="@(I18NHelper.GetString(key: "Filter_Title_Mega_Account_Entry"))">
+
+    <FilterContent>
+        <div class="row g-3">
+
+            <fieldset class="col-12">
+            </fieldset>
+
+            <fieldset class="col-12">
+            </fieldset>
+
+            <fieldset class="col-12">
+                <legend class="fs-6 fw-semibold text-info">Ngày tháng</legend>
+                <div class="row g-2">
+                    <DateTimePicker LabelName="Ngày tạo"
+                        @bind-DateTimeRange="_megaAccountFilterProperty.CreatedDateRange"
+                        Type="CDateTimePickerType.DateTime"
+                        Width="CWidthType.Col12"
+                        ParentElementClassName="#filterTable"
+                    />
+                    <DateTimePicker LabelName="Ngày cập nhật"
+                        @bind-DateTimeRange="_megaAccountFilterProperty.ModifiedDateRange"
+                        Type="CDateTimePickerType.DateTime"
+                        Width="CWidthType.Col12"
+                        ParentElementClassName="#filterTable"
+                    />
+                    <DateTimePicker LabelName="Lần đăng nhập cuối"
+                        @bind-DateTimeRange="_megaAccountFilterProperty.LastLoginRange"
+                        Type="CDateTimePickerType.DateTime"
+                        Width="CWidthType.Col12"
+                        ParentElementClassName="#filterTable"
+                    />
+                    <DateTimePicker LabelName="Ngày hết hạn đăng nhập"
+                        @bind-DateTimeRange="_megaAccountFilterProperty.ExpiredDateRange"
+                        Type="CDateTimePickerType.DateTime"
+                        Width="CWidthType.Col12"
+                        ParentElementClassName="#filterTable"
+                    />
+                </div>
+            </fieldset>
+        </div>
+    </FilterContent>
+
+
+    <ActionContent>
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-primary" Icon="bi bi-cloud-plus"
+            IconPosition="CIconPositionType.Right" Text="Create" OnClick="CreateMegaAccountAsync" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-success" Icon="bi bi-pencil-square"
+            IconPosition="CIconPositionType.Right" Text="Update" IsDisabled="!ShowUpdateMegaAccount"
+            OnClick="UpdateMegaAccountAsync" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-secondary" Icon="bi-toggle-off"
+            IconPosition="CIconPositionType.Right" Text="Deactive" IsDisabled="ShowDeactiveMegaAccount"
+            OnClick="DeactiveMegaAccountsAsync" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-info" Icon="bi bi-cloud-upload"
+            IconPosition="CIconPositionType.Right" Text="Import" OnClick="HandleOpenUploadModal" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-success" Icon="bi bi-file-earmark-excel"
+            IconPosition="CIconPositionType.Right" Text="Export" OnClick="ExportMegaAccountsAsync" />
+        <ButtonAmam7078 Class="btn btn-sm btn-outline-danger" Icon="bi bi-trash" IconPosition="CIconPositionType.Right"
+            Text="Delete" IsDisabled="!ShowUpdateMegaAccount" OnClick="DeleteMegaAccountsAsync" />
+    </ActionContent>
+
+</Table>
+
+@if (_isLoading)
+{
+    <LoadingElement />
+}
+
+@code
+{
+    private List<DropdownItemModel> InitColumns()
+    {
+        return new List<DropdownItemModel>()
+        {
+            new DropdownItemModel()
+            {
+                Name = "#",
+                Value = "#",
+                IsSelected = true,
+                IsSort = false,
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"MegaAccount_Import_Column_Title_{nameof(MegaAccountDetailDto.AccountName)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(MegaAccountDetailDto.AccountName)
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"MegaAccount_Import_Column_Title_{nameof(MegaAccountDetailDto.Password)}_Entry"),
+                IsSelected = false,
+                IsSort = false,
+                Value = nameof(MegaAccountDetailDto.Password),
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"MegaAccount_Import_Column_Title_{nameof(MegaAccountDetailDto.RecoveryKey)}_Entry"),
+                IsSelected = false,
+                IsSort = false,
+                Value = nameof(MegaAccountDetailDto.RecoveryKey),
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"MegaAccount_Import_Column_Title_{nameof(MegaAccountDetailDto.LastLogin)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(MegaAccountDetailDto.LastLogin),
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"MegaAccount_Import_Column_Title_{nameof(MegaAccountDetailDto.ExpiredDate)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(MegaAccountDetailDto.ExpiredDate),
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"MegaAccount_Import_Column_Title_{nameof(MegaAccountDetailDto.CreatedDate)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(MegaAccountDetailDto.CreatedDate),
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"MegaAccount_Import_Column_Title_{nameof(MegaAccountDetailDto.CreatedByProperty)}_Entry"),
+                IsSelected = true,
+                IsSort = false,
+                Value = nameof(MegaAccountDetailDto.CreatedByProperty),
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"MegaAccount_Import_Column_Title_{nameof(MegaAccountDetailDto.ModifiedDate)}_Entry"),
+                IsSelected = true,
+                IsSort = true,
+                Value = nameof(MegaAccountDetailDto.ModifiedDate),
+                TdClass = "text-center"
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"MegaAccount_Import_Column_Title_{nameof(MegaAccountDetailDto.ModifiedByProperty)}_Entry"),
+                IsSelected = true,
+                IsSort = false,
+                Value = nameof(MegaAccountDetailDto.ModifiedByProperty),
+            }
+        };
+    }
+
+    public Dictionary<string, RenderFragment<MegaAccountDetailDto>> GetCellContents()
+    {
+        var contents = new Dictionary<string, RenderFragment<MegaAccountDetailDto>>()
+        {
+            {
+                nameof(MegaAccountDetailDto.AccountName),
+                row => @<text><span>@row.AccountName</span></text>
+            },
+            {
+                nameof(MegaAccountDetailDto.Password),
+                row => @<text><span>********</span></text>
+            },
+            {
+                nameof(MegaAccountDetailDto.RecoveryKey),
+                row => @<text><span>********</span></text>
+            },
+            {
+                nameof(MegaAccountDetailDto.LastLogin),
+                row => @<text><span>@row.LastLogin.ToString("dd/MM/yyyy HH:mm")</span></text>
+            },
+            {
+                nameof(MegaAccountDetailDto.ExpiredDate),
+                row => @<text><span>@row.ExpiredDate.ToString("dd/MM/yyyy HH:mm")</span></text>
+            },
+            {
+                nameof(MegaAccountDetailDto.CreatedDate),
+                row => @<text><span>@row.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span></text>
+            },
+            {
+                nameof(MegaAccountDetailDto.CreatedByProperty),
+                row => @<text><UserProfile UserInfo="row.CreatedByProperty" Size="30" /></text>
+            },
+            {
+                nameof(MegaAccountDetailDto.ModifiedDate),
+                row => @<text><span>@row.ModifiedDate.ToString("dd/MM/yyyy HH:mm")</span></text>
+            },
+            {
+                nameof(MegaAccountDetailDto.ModifiedByProperty),
+                row => @<text><UserProfile UserInfo="row.ModifiedByProperty" ShowFullName="true" Size="30" /></text>
+            }
+        };
+
+        return contents;
+    }
+}

@@ -18,7 +18,7 @@ namespace MMA.Domain
         public const string CET_Auth_Logout = "auth/logout";
 
         #region mega account
-        public const string CET_Mega_Account_Paging = "megaaccount/paging";
+        public const string Cloud_Mega_Account_Paging = "megaaccount/paging";
         #endregion mega account
 
         public const string CET_Role_Paging = "roles/paging";

@@ -2,8 +2,13 @@ namespace MMA.Domain
 {
     public class ImportResult<T> where T : new()
     {
-        public string SheetName { get; set; } = string.Empty;
-        public List<ImportRow<T>> Rows { get; set; } = new List<ImportRow<T>>();
+        /// <summary>
+        /// Key : this is sheet name
+        /// Value : List<DTOs> data model of sheet
+        /// </summary>
+        public Dictionary<string, List<ImportRow<T>>> ResultDics { get; set; } = new Dictionary<string, List<ImportRow<T>>>();
+        public byte[] FileResult { get; set; } = new byte[0];
+        public bool Result { get; set; } = true;
     }
 
     public class ImportRow<T> where T : new()

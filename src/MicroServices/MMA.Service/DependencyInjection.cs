@@ -50,7 +50,7 @@ namespace MMA.Service
             services.AddScoped<ITokenManager, TokenManager>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IMegaApiClient, MegaApiClient>();
-            services.AddScoped<IMegaService, MegaService>();
+            services.AddScoped<IMegaAccountService, MegaAccountService>();
             services.AddSingleton<ImagekitClient>(provider => 
             {
                 var logger = provider.GetRequiredService<ILogger<ImagekitClient>>();

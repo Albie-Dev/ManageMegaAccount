@@ -11,7 +11,7 @@ namespace MMA.Service
         public string RecoveryKeyHashed { get; set; } = string.Empty;
         public DateTimeOffset LastLogin { get; set; }
         public DateTimeOffset ExpiredDate { get; set; }
-        public double TotalFileSize { get; set; }
+        public decimal TotalFileSize { get; set; }
         public string Files { get; set; } = string.Empty;
         [NotMapped]
         public List<FileProperty> FileProperties
@@ -29,7 +29,7 @@ namespace MMA.Service
 
         public string Name { get; set; } = string.Empty;
 
-        public long Size { get; set; }
+        public decimal Size { get; set; }
 
         public DateTime? ModificationDate { get; set; }
 

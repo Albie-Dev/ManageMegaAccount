@@ -7,14 +7,14 @@ using System.Reflection;
 
 namespace MMA.Service
 {
-    public class MegaService : IMegaService
+    public class MegaAccountService : IMegaAccountService
     {
         private readonly IMegaApiClient _megaClient;
         private readonly IExcelCoreService _excelCoreService;
-        private readonly ILogger<MegaService> _logger;
+        private readonly ILogger<MegaAccountService> _logger;
         private readonly IDbRepository _repository;
-        public MegaService(
-            ILogger<MegaService> logger,
+        public MegaAccountService(
+            ILogger<MegaAccountService> logger,
             IDbRepository repository,
             IMegaApiClient megaClient,
             IExcelCoreService excelCoreService
@@ -25,7 +25,6 @@ namespace MMA.Service
             _megaClient = megaClient;
             _excelCoreService = excelCoreService;
         }
-
         public async Task<byte[]> DownloadMegaAccountImportTemplateAsync()
         {            
             var sheets = new List<SheetExportInfo>
@@ -59,6 +58,23 @@ namespace MMA.Service
 
         public async Task<BasePagedResult<MegaAccountDetailDto>> GetMegaAccountWithPagingAsync(TableParam<MegaAccountFilterProperty> tableParam)
         {
+            var result = await GetMegaAccountDetailBasePagingAsync(tableParam: tableParam);
+
+            var data = new BasePagedResult<MegaAccountDetailDto>()
+            {
+                CurrentPage = result.Paged.CurrentPage,
+                Items = result.MegaAccounts,
+                PageSize = result.Paged.PageSize,
+                TotalItems = result.Paged.TotalCount,
+                TotalPages = result.Paged.TotalPages,
+                Filter = tableParam.Filter,
+            };
+
+            return data;
+        }
+
+        private async Task<(List<MegaAccountDetailDto> MegaAccounts, PagedList<MegaAccountDetailDto> Paged)> GetMegaAccountDetailBasePagingAsync(TableParam<MegaAccountFilterProperty> tableParam)
+        {
             var modelState = tableParam.ModelStateValidate();
             if (!modelState.GetErrors().IsNullOrEmpty())
             {
@@ -67,6 +83,54 @@ namespace MMA.Service
             }
             IQueryable<MegaAccountEntity> collection = _repository.Queryable<MegaAccountEntity>()
                 .OrderBy(s => s.ExpiredDate);
+            IQueryable<UserEntity> createByCollection = _repository.Queryable<UserEntity>();
+            IQueryable<UserEntity> modifiedByCollection = _repository.Queryable<UserEntity>();
+
+            var query = collection
+            .GroupJoin(createByCollection, ma => ma.CreatedBy, user => user.Id,
+                (ma, createdByGroup) => new { ma, createdByGroup })
+            .SelectMany(temp => temp.createdByGroup.DefaultIfEmpty(),
+                (temp, createdBy) => new { temp.ma, createdBy })
+            .GroupJoin(modifiedByCollection, temp => temp.ma.ModifiedBy, user => user.Id,
+                (temp, modifiedByGroup) => new { temp.ma, temp.createdBy, modifiedByGroup })
+            .SelectMany(temp => temp.modifiedByGroup.DefaultIfEmpty(),
+                (temp, modifiedBy) => new MegaAccountDetailDto
+                {
+                    MegaAccountId = temp.ma.Id,
+                    AccountName = temp.ma.AccountName,
+                    Password = temp.ma.PasswordHashed,
+                    RecoveryKey = temp.ma.RecoveryKeyHashed,
+                    LastLogin = temp.ma.LastLogin,
+                    ExpiredDate = temp.ma.ExpiredDate,
+                    CreatedDate = temp.ma.CreatedDate,
+                    ModifiedDate = temp.ma.ModifiedDate,
+                    CreatedByProperty = temp.createdBy != null ? new UserBaseInfoDto
+                    {
+                        Avatar = temp.createdBy.Avatar,
+                        Email = temp.createdBy.Email,
+                        FullName = temp.createdBy.FullName,
+                        UserId = temp.createdBy.Id
+                    } : new UserBaseInfoDto
+                    {
+                        FullName = CoreConstant.SYSTEM_NAME,
+                        Email = CoreConstant.SYSTEM_EMAIL,
+                        Avatar = CoreConstant.SYSTEM_AVATAR,
+                        UserId = CoreConstant.SYSTEM_ACCOUNT_ID
+                    },
+                    ModifiedByProperty = modifiedBy != null ? new UserBaseInfoDto
+                    {
+                        Avatar = modifiedBy.Avatar,
+                        Email = modifiedBy.Email,
+                        FullName = modifiedBy.FullName,
+                        UserId = modifiedBy.Id
+                    } : new UserBaseInfoDto
+                    {
+                        FullName = CoreConstant.SYSTEM_NAME,
+                        Email = CoreConstant.SYSTEM_EMAIL,
+                        Avatar = CoreConstant.SYSTEM_AVATAR,
+                        UserId = CoreConstant.SYSTEM_ACCOUNT_ID
+                    }
+                });
             if (!string.IsNullOrEmpty(tableParam.SearchQuery))
             {
                 collection = collection.Where(s => (s.AccountName
@@ -74,37 +138,41 @@ namespace MMA.Service
             }
             if (tableParam.Filter != null)
             {
-                if (tableParam.Filter.FromCreatedDate.HasValue)
+                if (!tableParam.Filter.MegaAccountIds.IsNullOrEmpty())
                 {
-                    collection = collection.Where(s => s.CreatedDate >= tableParam.Filter.FromCreatedDate.Value);
+                    query = query.Where(s => tableParam.Filter.MegaAccountIds.Contains(s.MegaAccountId));
                 }
-                if (tableParam.Filter.ToCreatedDate.HasValue)
+                if (tableParam.Filter.CreatedDateRange.Start.HasValue)
                 {
-                    collection = collection.Where(s => s.CreatedDate <= tableParam.Filter.ToCreatedDate.Value);
+                    query = query.Where(ac => ac.CreatedDate >= tableParam.Filter.CreatedDateRange.Start.Value);
                 }
-                if (tableParam.Filter.FromModifiedDate.HasValue)
+                if (tableParam.Filter.CreatedDateRange.End.HasValue)
                 {
-                    collection = collection.Where(s => s.ModifiedDate >= tableParam.Filter.FromModifiedDate.Value);
+                    query = query.Where(ac => ac.CreatedDate <= tableParam.Filter.CreatedDateRange.End.Value);
                 }
-                if (tableParam.Filter.ToModifiedDate.HasValue)
+                if (tableParam.Filter.ModifiedDateRange.Start.HasValue)
                 {
-                    collection = collection.Where(s => s.ModifiedDate <= tableParam.Filter.ToModifiedDate.Value);
+                    query = query.Where(ac => ac.ModifiedDate >= tableParam.Filter.ModifiedDateRange.Start.Value);
                 }
-                if (tableParam.Filter.FromExpiredDate.HasValue)
+                if (tableParam.Filter.ModifiedDateRange.End.HasValue)
                 {
-                    collection = collection.Where(s => s.ExpiredDate >= tableParam.Filter.FromExpiredDate.Value);
+                    query = query.Where(ac => ac.ModifiedDate <= tableParam.Filter.ModifiedDateRange.End.Value);
                 }
-                if (tableParam.Filter.ToExpiredDate.HasValue)
+                if (tableParam.Filter.LastLoginRange.Start.HasValue)
                 {
-                    collection = collection.Where(s => s.ExpiredDate <= tableParam.Filter.ToExpiredDate.Value);
+                    query = query.Where(ac => ac.LastLogin >= tableParam.Filter.LastLoginRange.Start.Value);
                 }
-                if (tableParam.Filter.FromLastLogin.HasValue)
+                if (tableParam.Filter.LastLoginRange.End.HasValue)
                 {
-                    collection = collection.Where(s => s.LastLogin >= tableParam.Filter.FromLastLogin.Value);
+                    query = query.Where(ac => ac.LastLogin <= tableParam.Filter.LastLoginRange.End.Value);
                 }
-                if (tableParam.Filter.ToLastLogin.HasValue)
+                if (tableParam.Filter.ExpiredDateRange.Start.HasValue)
                 {
-                    collection = collection.Where(s => s.LastLogin <= tableParam.Filter.ToLastLogin.Value);
+                    query = query.Where(ac => ac.ExpiredDate >= tableParam.Filter.ExpiredDateRange.Start.Value);
+                }
+                if (tableParam.Filter.ExpiredDateRange.End.HasValue)
+                {
+                    query = query.Where(ac => ac.ExpiredDate <= tableParam.Filter.ExpiredDateRange.End.Value);
                 }
             }
             if (tableParam.Sorter != null)
@@ -139,86 +207,122 @@ namespace MMA.Service
                     }
                 }
             }
-            var pagedList = await PagedList<MegaAccountEntity>.ToPagedListAsync(
-                source: collection, pageNumber: tableParam.PageNumber,
+            var pagedList = await PagedList<MegaAccountDetailDto>.ToPagedListAsync(
+                source: query, pageNumber: tableParam.PageNumber,
                 pageSize: tableParam.PageSize);
-            var selectedTasks = pagedList.Select(async megaAccount =>
-            {
-                var createdByInfo = new UserBaseInfoDto();
-                var modifiedByInfo = new UserBaseInfoDto();
-                var createdBy = await _repository.FindAsync<UserEntity>(s => s.Id == megaAccount.CreatedBy);
 
-                if (megaAccount.CreatedBy != megaAccount.ModifiedBy)
-                {
-                    var modifiedBy = await _repository.FindAsync<UserEntity>(s => s.Id == megaAccount.ModifiedBy);
-                    modifiedByInfo.FullName = modifiedBy?.FullName ?? "System";
-                    modifiedByInfo.Avatar = modifiedBy?.Avatar ?? string.Empty;
-                }
-
-                createdByInfo.FullName = createdBy?.FullName ?? "System";
-                createdByInfo.Avatar = createdBy?.Avatar ?? string.Empty;
-
-                return new MegaAccountDetailDto()
-                {
-                    MegaAccountId = megaAccount.Id,
-                    AccountName = megaAccount.AccountName,
-                    PasswordHashed = megaAccount.PasswordHashed,
-                    RecoveryKey = megaAccount.RecoveryKeyHashed,
-                    LastLogin = megaAccount.LastLogin,
-                    ExpiredDate = megaAccount.ExpiredDate,
-                    CreatedDate = megaAccount.CreatedDate,
-                    ModifiedDate = megaAccount.ModifiedDate,
-                    CreatedUserInfo = createdByInfo,
-                    ModifiedUserInfo = modifiedByInfo
-                };
-            }).ToList();
-
-            var selected = await Task.WhenAll(selectedTasks);
-
-            var data = new BasePagedResult<MegaAccountDetailDto>()
-            {
-                CurrentPage = pagedList.CurrentPage,
-                Items = selected.ToList(),
-                PageSize = pagedList.PageSize,
-                TotalItems = pagedList.TotalCount,
-                TotalPages = pagedList.TotalPages,
-                Filter = tableParam.Filter,
-            };
-
-            return data;
+            return (MegaAccounts: pagedList, Paged: pagedList);
         }
 
-        public async Task<(Dictionary<string, ImportResult<object>>, byte[])> ImportMegaAccountsAsync(Stream fileStream)
+        public async Task<byte[]> ImportMegaAccountsAsync(Stream fileStream)
         {
+            string megaAccountSheetKey = I18NHelper.GetString(key: "MegaAccount_Import_SheetName_Entry");
+            string megaAccountFileSheetKey = I18NHelper.GetString(key: "MegaAccount_File_Import_SheetName_Entry");
             var sheetConfigs = new Dictionary<string, (Type DtoType, Dictionary<string, string> ColumnTitles)>
             {
                 {
-                    I18NHelper.GetString(key: "MegaAccount_Import_SheetName_Entry"),
+                    megaAccountSheetKey,
                     (
                         typeof(MegaAccountImportDto),
-                        GetColumnTitles(type: typeof(MegaAccountImportDto), i18nColumnFormat: "MegaAccount_Import_Column_Title_{PropertyName}_Entry")
+                        GetColumnTitles(type: typeof(MegaAccountImportDto),
+                            i18nColumnFormat: "MegaAccount_Import_Column_Title_{PropertyName}_Entry",
+                            isImport: true)
                     )
                 },
                 {
-                    I18NHelper.GetString(key: "MegaAccount_File_Import_SheetName_Entry"),
+                    megaAccountFileSheetKey,
                     (
                         typeof(MegaAccountFileImportDto),
-                        GetColumnTitles(type: typeof(MegaAccountFileImportDto), i18nColumnFormat: "MegaAccount_File_Import_Column_Title_{PropertyName}_Entry")
+                        GetColumnTitles(type: typeof(MegaAccountFileImportDto),
+                            i18nColumnFormat: "MegaAccount_File_Import_Column_Title_{PropertyName}_Entry",
+                            isImport: true)
                     )
                 }
             };
 
-            var enumMaps = EnumHelper.GetTranslations(values: new Dictionary<string, Type>()
+            var translations = EnumHelper.GetTranslations(values: new Dictionary<string, Type>()
             {
                 { nameof(MegaAccountFileImportDto.NodeType), typeof(CNodeType) },
                 { nameof(MegaAccountFileImportDto.Status), typeof(CFileStatus) },
             });
 
-            var result = await _excelCoreService.ImportExcelByTemplateAsync(fileStream, sheetConfigs, enumMaps);
-            return result;
+            List<MegaAccountImportDto> megaAccounts = new List<MegaAccountImportDto>();
+            List<MegaAccountFileImportDto> megaAccountFiles = new List<MegaAccountFileImportDto>();
+
+            ImportResult<object> importResult = await _excelCoreService.ImportExcelByTemplateWithMultipleSheetAsync(excelStream: fileStream,
+                sheetConfigs: sheetConfigs, translations: translations);
+            if (importResult.Result)
+            {
+                if (importResult.ResultDics.TryGetValue(key: megaAccountSheetKey, value: out List<ImportRow<object>>? megaRowDatas))
+                {
+                    if (!megaRowDatas.IsNullOrEmpty())
+                    {
+                        megaAccounts = megaRowDatas.Select(s => s.Data).OfType<MegaAccountImportDto>().ToList();
+                    }
+                }
+
+                if (importResult.ResultDics.TryGetValue(key: megaAccountFileSheetKey, value: out List<ImportRow<object>>? megaFileRowDatas))
+                {
+                    if (!megaFileRowDatas.IsNullOrEmpty())
+                    {
+                        megaAccountFiles = megaFileRowDatas.Select(s => s.Data).OfType<MegaAccountFileImportDto>().ToList();
+                    }
+                }
+
+                List<MegaAccountEntity> addNewMegaAccounts = new List<MegaAccountEntity>();
+                List<MegaAccountEntity> updateMegaAccounts = new List<MegaAccountEntity>();
+
+                foreach(var megaAccount in megaAccounts)
+                {
+                    var entity = await _repository.FindForUpdateAsync<MegaAccountEntity>(predicate: s => s.AccountName.ToLower() == megaAccount.AccountName.ToLower());
+                    bool isAddNew = false;
+                    if (entity == null)
+                    {
+                        isAddNew = true;
+                        entity = new MegaAccountEntity();
+                    }
+                    entity.AccountName = megaAccount.AccountName;
+                    entity.PasswordHashed = PasswordHasher.HashPassword(password: megaAccount.Password);
+                    entity.RecoveryKeyHashed = PasswordHasher.HashPassword(password: megaAccount.RecoveryKey);
+                    entity.ExpiredDate = megaAccount.ExpiredDate ?? entity.ExpiredDate;
+                    entity.LastLogin = megaAccount.ExpiredDate.HasValue && megaAccount.ExpiredDate.Value < DateTimeOffset.UtcNow
+                        ? megaAccount.ExpiredDate.Value.AddDays(5) : entity.LastLogin;
+                    var megaAccountFileProperties = megaAccountFiles.Where(s => s.OwnerAccount.ToLower() == entity.AccountName.ToLower())
+                        .Select(s => new FileProperty()
+                        {
+                            Id = s.Id,
+                            NodeType = s.NodeType,
+                            Name = s.Name,
+                            Size = s.Size,
+                            Status = s.Status,
+                            Owner = s.Owner,
+                            CreationDate = s.CreatedDate,
+                            ModificationDate = s.ModifiedDate
+                        }).ToList();
+                    if (!megaAccountFileProperties.IsNullOrEmpty())
+                    {
+                        entity.TotalFileSize = megaAccountFileProperties.Sum(s => s.Size);
+                        entity.Files = megaAccountFileProperties.ToJson();
+                    }
+                    if (isAddNew)
+                    {
+                        addNewMegaAccounts.Add(entity);
+                    }
+                    else
+                    {
+                        updateMegaAccounts.Add(entity);
+                    }
+                }
+
+                if (!addNewMegaAccounts.IsNullOrEmpty())
+                {
+                    await _repository.AddRangeAsync<MegaAccountEntity>(entities: addNewMegaAccounts, clearTracker: true);
+                }
+            }
+            return importResult.FileResult;
         }
 
-        private Dictionary<string, string> GetColumnTitles(Type type, string i18nColumnFormat)
+        private Dictionary<string, string> GetColumnTitles(Type type, string i18nColumnFormat, bool isImport = false)
         {
             var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             Dictionary<string, string> columnTitles = new Dictionary<string, string>();
@@ -227,7 +331,14 @@ namespace MMA.Service
                 var originalName = prop.Name;
                 string format = i18nColumnFormat.Replace(oldValue: "{PropertyName}", newValue: originalName);
                 string translateName = I18NHelper.GetString(format);
-                columnTitles[originalName] = translateName;
+                if (!isImport)
+                {
+                    columnTitles[originalName] = translateName;
+                }
+                else
+                {
+                    columnTitles[translateName] = originalName;
+                }
             }
             return columnTitles;
         }
@@ -349,5 +460,6 @@ namespace MMA.Service
                 }
             }
         }
+
     }
 }

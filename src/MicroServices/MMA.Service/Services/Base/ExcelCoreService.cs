@@ -274,16 +274,16 @@ namespace MMA.Service
         }
 
 
-        public async Task<(Dictionary<string, ImportResult<object>>, byte[])> ImportExcelByTemplateAsync(
+        public async Task<ImportResult<object>> ImportExcelByTemplateWithMultipleSheetAsync(
             Stream excelStream,
             Dictionary<string, (Type DtoType, Dictionary<string, string> ColumnTitles)> sheetConfigs,
-            Dictionary<Type, Dictionary<string, object>>? translatedEnumValueMaps = null,
+            Dictionary<Type, Dictionary<string, object>>? translations = null,
             bool validateData = true)
         {
-            var results = new Dictionary<string, ImportResult<object>>();
+            var result = new ImportResult<object>();
+            Dictionary<string, List<ImportRow<object>>> resultDics = new Dictionary<string, List<ImportRow<object>>>();
             using var workbook = new XLWorkbook(excelStream);
             using var outputWorkbook = new XLWorkbook();
-
             foreach (var sheetConfig in sheetConfigs)
             {
                 var sheetKey = sheetConfig.Key;
@@ -296,7 +296,6 @@ namespace MMA.Service
                     continue;
                 }
 
-                var importResult = new ImportResult<object> { SheetName = sheetKey };
                 var outputSheet = outputWorkbook.Worksheets.Add(sheetKey);
                 var headerRow = sheet.Row(1);
                 var props = dtoType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -322,6 +321,7 @@ namespace MMA.Service
 
                 int row = 2;
                 int outputRow = 2;
+                List<ImportRow<object>> rowDatas = new List<ImportRow<object>>();
                 while (!sheet.Row(row).Cell(1).IsEmpty())
                 {
                     var item = Activator.CreateInstance(dtoType);
@@ -351,13 +351,14 @@ namespace MMA.Service
                             var cellValue = cell.GetString();
                             if (!string.IsNullOrWhiteSpace(cellValue))
                             {
-                                var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+                                Type targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
                                 object? value;
 
-                                if (targetType.IsEnum && translatedEnumValueMaps != null &&
-                                    translatedEnumValueMaps.TryGetValue(targetType, out var enumMap))
+                                if (targetType.IsEnum && translations != null &&
+                                    translations.TryGetValue(targetType, out var enumMap))
                                 {
-                                    if (enumMap.TryGetValue(cellValue, out var enumValue))
+                                    if (enumMap.TryGetValue(cellValue, out var stringValue)
+                                        && Enum.TryParse(targetType, stringValue.ToString() ?? string.Empty , true, out var enumValue))
                                     {
                                         value = enumValue;
                                     }
@@ -410,9 +411,9 @@ namespace MMA.Service
                     {
                         importRow.Result = CImportResultType.Failed;
                         importRow.ErrorMessage = string.Join("; ", validationErrors);
+                        result.Result = false;
                     }
 
-                    // Write Result and ErrorMessage to output sheet with styling
                     var resultCell = outputSheet.Cell(outputRow, colIndex);
                     resultCell.Value = importRow.Result.ToDescription();
                     if (importRow.Result == CImportResultType.Success)
@@ -433,18 +434,20 @@ namespace MMA.Service
                         errorCell.Style.Font.FontColor = XLColor.FromHtml("#9C0006");
                     }
 
-                    importResult.Rows.Add(importRow);
+                    rowDatas.Add(importRow);
                     row++;
                     outputRow++;
                 }
 
                 outputSheet.Columns().AdjustToContents();
-                results.Add(sheetKey, importResult);
+                resultDics.Add(key: sheetKey, value: rowDatas);
             }
 
             using var memoryStream = new MemoryStream();
             outputWorkbook.SaveAs(memoryStream);
-            return await Task.FromResult((results, memoryStream.ToArray()));
+            result.ResultDics = resultDics;
+            result.FileResult = memoryStream.ToArray();
+            return await Task.FromResult<ImportResult<object>>(result);
         }
 
         private Stream GetTemplateStream(string fileName)

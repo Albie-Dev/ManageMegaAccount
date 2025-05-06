@@ -2,11 +2,11 @@ using MMA.Domain;
 
 namespace MMA.Service
 {
-    public interface IMegaService
+    public interface IMegaAccountService
     {
         Task<BasePagedResult<MegaAccountDetailDto>> GetMegaAccountWithPagingAsync(TableParam<MegaAccountFilterProperty> tableParam);
         Task<byte[]> DownloadMegaAccountImportTemplateAsync();
-        Task<(Dictionary<string, ImportResult<object>>, byte[])> ImportMegaAccountsAsync(Stream fileStream);
+        Task<byte[]> ImportMegaAccountsAsync(Stream fileStream);
         Task MegaLoginAsync(LoginRequestDto requestDto);
     }
 }

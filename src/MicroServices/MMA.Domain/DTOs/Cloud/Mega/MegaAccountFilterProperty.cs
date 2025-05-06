@@ -1,14 +1,9 @@
 namespace MMA.Domain
 {
-    public class MegaAccountFilterProperty
+    public class MegaAccountFilterProperty : BaseFilter
     {
-        public DateTimeOffset? FromCreatedDate { get; set; }
-        public DateTimeOffset? ToCreatedDate { get; set; }
-        public DateTimeOffset? ToLastLogin { get; set; }
-        public DateTimeOffset? FromLastLogin { get; set; }
-        public DateTimeOffset? ToExpiredDate { get; set; }
-        public DateTimeOffset? FromExpiredDate { get; set; }
-        public DateTimeOffset? ToModifiedDate { get; set; }
-        public DateTimeOffset? FromModifiedDate { get; set; }
+        public List<Guid> MegaAccountIds { get; set; } = new List<Guid>();
+        public DateTimeRageFilterProperty<DateTimeOffset> LastLoginRange { get; set; } = new DateTimeRageFilterProperty<DateTimeOffset>();
+        public DateTimeRageFilterProperty<DateTimeOffset> ExpiredDateRange { get; set; } = new DateTimeRageFilterProperty<DateTimeOffset>();
     }
 }

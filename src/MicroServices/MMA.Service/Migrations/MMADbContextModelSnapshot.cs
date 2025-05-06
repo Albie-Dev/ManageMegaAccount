@@ -189,8 +189,8 @@ namespace MMA.Service.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<double>("TotalFileSize")
-                        .HasColumnType("float");
+                    b.Property<decimal>("TotalFileSize")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

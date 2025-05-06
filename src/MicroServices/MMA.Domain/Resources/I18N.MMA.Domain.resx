@@ -482,8 +482,23 @@
   <data name="MegaAccount_Import_Column_Title_RecoveryKey_Entry" xml:space="preserve">
     <value>Khóa khôi phục</value>
   </data>
+  <data name="MegaAccount_Import_Column_Title_LastLogin_Entry" xml:space="preserve">
+    <value>Lần đăng nhập cuối</value>
+  </data>
   <data name="MegaAccount_Import_Column_Title_ExpiredDate_Entry" xml:space="preserve">
     <value>Ngày hết hạn</value>
+  </data>
+  <data name="MegaAccount_Import_Column_Title_CreatedDate_Entry" xml:space="preserve">
+    <value>Ngày tạo</value>
+  </data>
+  <data name="MegaAccount_Import_Column_Title_CreatedByProperty_Entry" xml:space="preserve">
+    <value>Người tạo</value>
+  </data>
+  <data name="MegaAccount_Import_Column_Title_ModifiedDate_Entry" xml:space="preserve">
+    <value>Ngày cập nhật</value>
+  </data>
+  <data name="MegaAccount_Import_Column_Title_ModifiedByProperty_Entry" xml:space="preserve">
+    <value>Người cập nhật</value>
   </data>
 
   <data name="MegaAccount_File_Import_SheetName_Entry" xml:space="preserve">
@@ -512,6 +527,9 @@
   </data>
   <data name="MegaAccount_File_Import_Column_Title_Status_Entry" xml:space="preserve">
     <value>Trạng thái tệp</value>
+  </data>
+  <data name="MegaAccount_File_Import_Column_Title_Owner_Entry" xml:space="preserve">
+    <value>Tên chủ sở hữu</value>
   </data>
   
 </root>

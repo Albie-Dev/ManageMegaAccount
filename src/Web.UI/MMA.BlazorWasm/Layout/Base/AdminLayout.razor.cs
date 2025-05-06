@@ -85,6 +85,21 @@ namespace MMA.BlazorWasm.Layout.Base
                     //     }
                     }
                 }
+            },
+
+            new MenuSideModel()
+            {
+                GroupName = "Mega Account Management",
+                Items = new List<SidebarItemModel>()
+                {
+                    new SidebarItemModel()
+                    {
+                        Icon = "bi bi-megaphone",
+                        Route = "/cloud/mega",
+                        Title = "Mega accounts",
+                        CollapseId = "megaCollapse",
+                    }
+                }
             }
         };
     }
