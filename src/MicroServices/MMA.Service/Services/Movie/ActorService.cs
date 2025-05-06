@@ -528,7 +528,7 @@ namespace MMA.Service
         {
             var result = await GetActorDetailBasePagingAsync(tableParam: tableParam);
             var importResult = await _excelCoreService.ExportExcelByTemplateAsync<ActorDetailDto>(exportDataModels: result.Actors,
-                fileName: "Excel.ActorExportTemplate.xlsx", assemblyName: "MMA.Service", sheetKey: "{{SheetKey}}", sheetName: "Actor details");
+                fileName: "Excel.ActorExportTemplate.xlsx", sheetKey: "{{SheetKey}}", sheetName: "Actor details");
             return importResult;
         }
 
@@ -536,8 +536,8 @@ namespace MMA.Service
         {
             var result = new List<ActorDetailDto>();
             var importResult = await _excelCoreService.ExportExcelByTemplateAsync<ActorDetailDto>(exportDataModels: result,
-                fileName: "Excel.ActorImportTemplate.xlsx", assemblyName: "MMA.Service", sheetKey: "{{SheetKey}}", sheetName: "Actors");
-            return importResult; ;
+                fileName: "Excel.ActorImportTemplate.xlsx", sheetKey: "{{SheetKey}}", sheetName: "Actors");
+            return importResult;
         }
         #endregion import and export
     }

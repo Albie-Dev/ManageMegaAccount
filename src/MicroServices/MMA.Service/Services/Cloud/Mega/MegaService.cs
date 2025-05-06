@@ -3,7 +3,6 @@ using MMA.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using static CG.Web.MegaApiClient.MegaApiClient;
-using System.Dynamic;
 using System.Reflection;
 
 namespace MMA.Service
@@ -25,6 +24,37 @@ namespace MMA.Service
             _repository = repository;
             _megaClient = megaClient;
             _excelCoreService = excelCoreService;
+        }
+
+        public async Task<byte[]> DownloadMegaAccountImportTemplateAsync()
+        {            
+            var sheets = new List<SheetExportInfo>
+            {
+                new SheetExportInfo
+                {
+                    Data = null,
+                    ModelType = typeof(MegaAccountImportDto),
+                    SheetKey = "{{MegaAccountSheetKey}}",
+                    SheetName = I18NHelper.GetString(key: "MegaAccount_Import_SheetName_Entry"),
+                    ColumnTitles = GetColumnTitles(type: typeof(MegaAccountImportDto), i18nColumnFormat: "MegaAccount_Import_Column_Title_{PropertyName}_Entry")
+                },
+                new SheetExportInfo
+                {
+                    Data = null,
+                    ModelType = typeof(MegaAccountFileImportDto),
+                    SheetKey = "{{MegaAccountFileSheetKey}}",
+                    SheetName = I18NHelper.GetString(key: "MegaAccount_File_Import_SheetName_Entry"),
+                    ColumnTitles = GetColumnTitles(type: typeof(MegaAccountFileImportDto), i18nColumnFormat: "MegaAccount_File_Import_Column_Title_{PropertyName}_Entry"),
+                    Translations = EnumHelper.GetTranslations(values: new Dictionary<string, Type>()
+                    {
+                        { nameof(MegaAccountFileImportDto.NodeType), typeof(CNodeType) },
+                        { nameof(MegaAccountFileImportDto.Status), typeof(CFileStatus) },
+                    })
+                }
+            };
+
+            var result = await _excelCoreService.ExportExcelMultipleSheetsAsync(sheetExports: sheets, templateFileName: "Excel.MegaAccountImportTemplate.xlsx");
+            return result;
         }
 
         public async Task<BasePagedResult<MegaAccountDetailDto>> GetMegaAccountWithPagingAsync(TableParam<MegaAccountFilterProperty> tableParam)
@@ -160,39 +190,20 @@ namespace MMA.Service
 
         public async Task<(Dictionary<string, ImportResult<object>>, byte[])> ImportMegaAccountsAsync(Stream fileStream)
         {
-            var megaAccountProps = typeof(MegaAccountImportDto).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            Dictionary<string, string> megaAccountColumnTitles = new Dictionary<string, string>();
-            var megaAccountFileProps = typeof(MegaAccountFileImportDto).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            Dictionary<string, string> megaAccountFileColumnTitles = new Dictionary<string, string>();
-
-            foreach (var prop in megaAccountProps)
-            {
-                var originalName = prop.Name;
-                string translateName = I18NHelper.GetString($"MegaAccount_Import_Column_Title_{originalName}_Entry");
-                megaAccountColumnTitles[translateName] = originalName;
-            }
-
-            foreach (var prop in megaAccountFileProps)
-            {
-                var originalName = prop.Name;
-                string translateName = I18NHelper.GetString($"MegaAccount_File_Import_Column_Title_{originalName}_Entry");
-                megaAccountFileColumnTitles[translateName] = originalName;
-            }
-            
             var sheetConfigs = new Dictionary<string, (Type DtoType, Dictionary<string, string> ColumnTitles)>
             {
                 {
                     I18NHelper.GetString(key: "MegaAccount_Import_SheetName_Entry"),
                     (
                         typeof(MegaAccountImportDto),
-                        megaAccountColumnTitles
+                        GetColumnTitles(type: typeof(MegaAccountImportDto), i18nColumnFormat: "MegaAccount_Import_Column_Title_{PropertyName}_Entry")
                     )
                 },
                 {
                     I18NHelper.GetString(key: "MegaAccount_File_Import_SheetName_Entry"),
                     (
                         typeof(MegaAccountFileImportDto),
-                        megaAccountFileColumnTitles
+                        GetColumnTitles(type: typeof(MegaAccountFileImportDto), i18nColumnFormat: "MegaAccount_File_Import_Column_Title_{PropertyName}_Entry")
                     )
                 }
             };
@@ -205,6 +216,20 @@ namespace MMA.Service
 
             var result = await _excelCoreService.ImportExcelByTemplateAsync(fileStream, sheetConfigs, enumMaps);
             return result;
+        }
+
+        private Dictionary<string, string> GetColumnTitles(Type type, string i18nColumnFormat)
+        {
+            var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            Dictionary<string, string> columnTitles = new Dictionary<string, string>();
+            foreach(var prop in props)
+            {
+                var originalName = prop.Name;
+                string format = i18nColumnFormat.Replace(oldValue: "{PropertyName}", newValue: originalName);
+                string translateName = I18NHelper.GetString(format);
+                columnTitles[originalName] = translateName;
+            }
+            return columnTitles;
         }
 
         public async Task MegaLoginAsync(LoginRequestDto requestDto)

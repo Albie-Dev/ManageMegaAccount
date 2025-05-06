@@ -16,6 +16,9 @@ namespace MMA.Service
             Dictionary<Type, Dictionary<string, object>>? translatedEnumValueMaps = null,
             bool validateData = true);
         Task<byte[]> ExportExcelByTemplateAsync<T>(IEnumerable<T> exportDataModels, string fileName,
-            string assemblyName, string sheetKey, string sheetName);
+            string sheetKey, string sheetName);
+        Task<byte[]> ExportExcelMultipleSheetsAsync(
+            List<SheetExportInfo> sheetExports,
+            string templateFileName);
     }
 }

@@ -19,7 +19,7 @@ namespace MMA.Service
         }
 
         public async Task<byte[]> ExportExcelByTemplateAsync<T>(IEnumerable<T> exportDataModels, string fileName,
-            string assemblyName, string sheetKey, string sheetName)
+            string sheetKey, string sheetName)
         {
             using var stream = GetTemplateStream($".Templates.{fileName}");
             using var workbook = new XLWorkbook(stream);
@@ -89,6 +89,105 @@ namespace MMA.Service
             workbook.SaveAs(ms);
             return await Task.FromResult<byte[]>(ms.ToArray());
         }
+
+        public async Task<byte[]> ExportExcelMultipleSheetsAsync(
+            List<SheetExportInfo> sheetExports,
+            string templateFileName)
+        {
+            using var templateStream = GetTemplateStream($".Templates.{templateFileName}");
+            using var workbook = new XLWorkbook(templateStream);
+
+            foreach (var sheetExport in sheetExports)
+            {
+                var sheet = workbook.Worksheet(sheetExport.SheetKey)
+                    ?? throw new Exception($"Sheet '{sheetExport.SheetKey}' not found in template.");
+
+                sheet.Name = sheetExport.SheetName;
+
+                var titleRow = sheet.RowsUsed().FirstOrDefault(r => r.FirstCell().GetString().StartsWith("{{Title."));
+                var contentRow = sheet.RowsUsed().FirstOrDefault(r => r.FirstCell().GetString().StartsWith("{{Content."));
+                if (titleRow == null || contentRow == null)
+                    throw new Exception($"Sheet '{sheetExport.SheetKey}' missing title or content row.");
+
+                int titleRowNumber = titleRow.RowNumber();
+                int contentRowNumber = contentRow.RowNumber();
+
+                // Replace column titles using cached ColumnTitles
+                foreach (var cell in titleRow.CellsUsed())
+                {
+                    var match = Regex.Match(cell.GetString(), @"\{\{Title\.([^\}]+)\}\}");
+                    if (match.Success)
+                    {
+                        var propName = match.Groups[1].Value;
+                        if (sheetExport.ColumnTitles.TryGetValue(propName, out var localizedTitle))
+                        {
+                            cell.Value = localizedTitle;
+                        }
+                    }
+                }
+
+                // Cache property info
+                var propertyMap = sheetExport.ModelType
+                    .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                    .ToDictionary(p => p.Name, StringComparer.OrdinalIgnoreCase);
+
+                // Cache column -> propertyName map
+                var columnMap = new Dictionary<int, string>();
+                foreach (var cell in contentRow.CellsUsed())
+                {
+                    var match = Regex.Match(cell.GetString(), @"\{\{Content\.([^\}]+)\}\}");
+                    if (match.Success)
+                    {
+                        int colIdx = cell.Address.ColumnNumber;
+                        string propName = match.Groups[1].Value;
+                        columnMap[colIdx] = propName;
+                    }
+                }
+
+                int currentRow = contentRowNumber + 1;
+                foreach (var item in sheetExport.Data ?? Enumerable.Empty<object>())
+                {
+                    var row = sheet.Row(currentRow);
+
+                    foreach (var (colIdx, propName) in columnMap)
+                    {
+                        var cell = sheet.Cell(currentRow, colIdx);
+
+                        if (!propertyMap.TryGetValue(propName, out var propInfo)) continue;
+                        var value = propInfo.GetValue(item);
+
+                        // 1. Custom Formatter
+                        if (sheetExport.CustomFormatters.TryGetValue(propName, out var formatter))
+                        {
+                            cell.SetValue(formatter(value));
+                        }
+                        // 2. Enum Translation
+                        else if (value != null && propInfo.PropertyType.IsEnum &&
+                            sheetExport.Translations.TryGetValue(propInfo.PropertyType, out var enumMap) &&
+                            enumMap.TryGetValue(value.ToString()!, out var translated))
+                        {
+                            cell.SetValue(translated?.ToString() ?? string.Empty);
+                        }
+                        // 3. Default ToString()
+                        else
+                        {
+                            cell.SetValue(value?.ToString() ?? string.Empty);
+                        }
+                    }
+
+                    currentRow++;
+                }
+
+                // Optionally clear template row instead of deleting for performance
+                contentRow.Clear();
+            }
+
+            using var outputStream = new MemoryStream();
+            workbook.SaveAs(outputStream);
+            return await Task.FromResult(outputStream.ToArray());
+        }
+
+
 
         public async Task<List<T>> ImportExcelByTemplateAsync<T>(
             Stream excelStream,

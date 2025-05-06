@@ -72,13 +72,13 @@
                 <legend class="fs-6 fw-semibold text-info">Thông tin bổ sung</legend>
                 <div class="row g-2">
                     <div class="col-md-6">
-                        <label class="label-small-light">@I18NHelper.GetString("Column_Title_Actor_CupSizeType_Entry")</label>
+                        <label class="label-small-light">@I18NHelper.GetString("Actor_Import_Column_Title_CupSizeType_Entry")</label>
                         <ComboboxList T="@(CCupSizeType)" Items="CCupSizeType.None.ToComboboxModels()" Mode="CComboboxModeType.Checkbox"
                             @bind-BindValues="_actorFilterProperty.CupSizeTypes"
                             PlaceHolderName="@I18NHelper.GetString("Dropdown_PlaceHolder_Actor_CupSizeType_Entry")" />
                     </div>
                     <div class="col-md-6">
-                        <label class="label-small-light">@I18NHelper.GetString("Column_Title_Actor_Status_Entry")</label>
+                        <label class="label-small-light">@I18NHelper.GetString("Actor_Import_Column_Title_Status_Entry")</label>
                         <ComboboxList T="@(CMasterStatus)" Items="CMasterStatus.None.ToComboboxModels()" Mode="CComboboxModeType.Checkbox"
                             @bind-BindValues="_actorFilterProperty.Statuses"
                             PlaceHolderName="@I18NHelper.GetString("Dropdown_PlaceHolder_MasterStatus_Entry")" />
@@ -161,28 +161,28 @@
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Name)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.Name)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.Name)
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.DateOfBirth)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.DateOfBirth)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.DateOfBirth)
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.DebutDate)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.DebutDate)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.DebutDate)
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Avatar)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.Avatar)}_Entry"),
                 IsSelected = true,
                 IsSort = false,
                 Value = nameof(ActorDetailDto.Avatar),
@@ -191,7 +191,7 @@
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Height)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.Height)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.Height),
@@ -199,7 +199,7 @@
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Waist)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.Waist)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.Waist),
@@ -207,7 +207,7 @@
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Bust)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.Bust)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.Bust),
@@ -215,7 +215,7 @@
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Hips)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.Hips)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.Hips),
@@ -223,7 +223,7 @@
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.CupSizeType)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.CupSizeType)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.CupSizeType),
@@ -231,7 +231,7 @@
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.RegionType)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.RegionType)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.RegionType),
@@ -239,14 +239,14 @@
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.Status)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.Status)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.Status)
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.ModifiedByProperty)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.ModifiedByProperty)}_Entry"),
                 IsSelected = true,
                 IsSort = false,
                 Value = nameof(ActorDetailDto.ModifiedByProperty),
@@ -254,14 +254,14 @@
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.CreatedDate)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.CreatedDate)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.CreatedDate),
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.CreatedByProperty)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.CreatedByProperty)}_Entry"),
                 IsSelected = true,
                 IsSort = false,
                 Value = nameof(ActorDetailDto.CreatedByProperty),
@@ -269,7 +269,7 @@
             },
             new DropdownItemModel()
             {
-                Name = I18NHelper.GetString(key: $"Column_Title_Actor_{nameof(ActorDetailDto.ModifiedDate)}_Entry"),
+                Name = I18NHelper.GetString(key: $"Actor_Import_Column_Title_{nameof(ActorDetailDto.ModifiedDate)}_Entry"),
                 IsSelected = true,
                 IsSort = true,
                 Value = nameof(ActorDetailDto.ModifiedDate)

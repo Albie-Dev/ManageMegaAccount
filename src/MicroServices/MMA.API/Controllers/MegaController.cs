@@ -33,6 +33,18 @@ namespace MMA.API
             });
         }
 
+        [HttpPost("megaaccount/template")]
+        public async Task<IActionResult> DownloadMegaAccountImportTemplate()
+        {
+            var currentUser = RuntimeContext.CurrentUser;
+            string ownerName = currentUser?.FullName ?? "System";
+            byte[] result = await _megaService.DownloadMegaAccountImportTemplateAsync();
+            return new FileContentResult(fileContents: result, contentType: "application/octet-stream")
+            {
+                FileDownloadName = $"Import_MegaAccount_Template_by_{ownerName}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx".Trim().Replace(" ", "_")
+            };
+        }
+
         [HttpPost("megaaccount/import")]
         public async Task<IActionResult> ImportMegaAccounts(IFormFile file)
         {
@@ -47,7 +59,7 @@ namespace MMA.API
             string ownerName = currentUser?.FullName ?? "System";
             return new FileContentResult(fileContents: result.Item2, contentType: "application/octet-stream")
             {
-                FileDownloadName = $"Import_Actor_Template_by_{ownerName}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx".Trim().Replace(" ", "_")
+                FileDownloadName = $"Import_MegaAccount_Result_by_{ownerName}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.xlsx".Trim().Replace(" ", "_")
             };
         }
     }

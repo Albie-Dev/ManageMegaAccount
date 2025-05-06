@@ -5,6 +5,7 @@ namespace MMA.Domain
         public string AccountName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string RecoveryKey { get; set; } = string.Empty;
+        public DateTimeOffset ExpiredDate { get; set; }
     }
 
     public class MegaAccountFileImportDto

@@ -129,49 +129,49 @@
     <value>Ngày tạo đến</value>
   </data>
 
-  <data name="Column_Title_Actor_Name_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_Name_Entry" xml:space="preserve">
     <value>Tên</value>
   </data>
-  <data name="Column_Title_Actor_DateOfBirth_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_DateOfBirth_Entry" xml:space="preserve">
     <value>Ngày sinh</value>
   </data>
-  <data name="Column_Title_Actor_DebutDate_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_DebutDate_Entry" xml:space="preserve">
     <value>Ngày ra mắt</value>
   </data>
-  <data name="Column_Title_Actor_Avatar_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_Avatar_Entry" xml:space="preserve">
     <value>Ảnh đại diện</value>
   </data>
-  <data name="Column_Title_Actor_Height_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_Height_Entry" xml:space="preserve">
     <value>Chiều cao</value>
   </data>
-  <data name="Column_Title_Actor_Waist_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_Waist_Entry" xml:space="preserve">
     <value>Vòng eo</value>
   </data>
-  <data name="Column_Title_Actor_Bust_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_Bust_Entry" xml:space="preserve">
     <value>Vòng ngực</value>
   </data>
-  <data name="Column_Title_Actor_Hips_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_Hips_Entry" xml:space="preserve">
     <value>Vòng mông</value>
   </data>
-  <data name="Column_Title_Actor_CupSizeType_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_CupSizeType_Entry" xml:space="preserve">
     <value>Kích cỡ cúp</value>
   </data>
-  <data name="Column_Title_Actor_RegionType_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_RegionType_Entry" xml:space="preserve">
     <value>Quốc tịch</value>
   </data>
-  <data name="Column_Title_Actor_CreatedDate_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_CreatedDate_Entry" xml:space="preserve">
     <value>Ngày tạo</value>
   </data>
-  <data name="Column_Title_Actor_ModifiedDate_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_ModifiedDate_Entry" xml:space="preserve">
     <value>Ngày sửa đổi</value>
   </data>
-  <data name="Column_Title_Actor_CreatedByProperty_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_CreatedByProperty_Entry" xml:space="preserve">
     <value>Người tạo</value>
   </data>
-  <data name="Column_Title_Actor_ModifiedByProperty_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_ModifiedByProperty_Entry" xml:space="preserve">
     <value>Người sửa đổi</value>
   </data>
-  <data name="Column_Title_Actor_Status_Entry" xml:space="preserve">
+  <data name="Actor_Import_Column_Title_Status_Entry" xml:space="preserve">
     <value>Trạng thái</value>
   </data>
   <data name="Search_Title_Actor_Entry" xml:space="preserve">
@@ -247,19 +247,19 @@
   <data name="Enum_CRoleType_Admin_Entry" xml:space="preserve">
     <value>Quản trị viên</value>
   </data>
-  <data name="Column_Title_Role_RoleId_Entry" xml:space="preserve">
+  <data name="Role_Import_Column_Title_RoleId_Entry" xml:space="preserve">
     <value>Role ID</value>
   </data>
-  <data name="Column_Title_Role_RoleName_Entry" xml:space="preserve">
+  <data name="Role_Import_Column_Title_RoleName_Entry" xml:space="preserve">
     <value>Tên quyền</value>
   </data>
-  <data name="Column_Title_Role_RoleType_Entry" xml:space="preserve">
+  <data name="Role_Import_Column_Title_RoleType_Entry" xml:space="preserve">
     <value>Loại quyền</value>
   </data>
-  <data name="Column_Title_Role_CreatedDate_Entry" xml:space="preserve">
+  <data name="Role_Import_Column_Title_CreatedDate_Entry" xml:space="preserve">
     <value>Ngày tạo</value>
   </data>
-  <data name="Column_Title_Role_ModifiedDate_Entry" xml:space="preserve">
+  <data name="Role_Import_Column_Title_ModifiedDate_Entry" xml:space="preserve">
     <value>Ngày cập nhật</value>
   </data>
   <!-- Role -->
@@ -481,6 +481,9 @@
   </data>
   <data name="MegaAccount_Import_Column_Title_RecoveryKey_Entry" xml:space="preserve">
     <value>Khóa khôi phục</value>
+  </data>
+  <data name="MegaAccount_Import_Column_Title_ExpiredDate_Entry" xml:space="preserve">
+    <value>Ngày hết hạn</value>
   </data>
 
   <data name="MegaAccount_File_Import_SheetName_Entry" xml:space="preserve">
