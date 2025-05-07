@@ -26,7 +26,7 @@ namespace MMA.Service
             _excelCoreService = excelCoreService;
         }
         public async Task<byte[]> DownloadMegaAccountImportTemplateAsync()
-        {            
+        {
             var sheets = new List<SheetExportInfo>
             {
                 new SheetExportInfo
@@ -272,7 +272,7 @@ namespace MMA.Service
                 List<MegaAccountEntity> addNewMegaAccounts = new List<MegaAccountEntity>();
                 List<MegaAccountEntity> updateMegaAccounts = new List<MegaAccountEntity>();
 
-                foreach(var megaAccount in megaAccounts)
+                foreach (var megaAccount in megaAccounts)
                 {
                     var entity = await _repository.FindForUpdateAsync<MegaAccountEntity>(predicate: s => s.AccountName.ToLower() == megaAccount.AccountName.ToLower());
                     bool isAddNew = false;
@@ -287,6 +287,8 @@ namespace MMA.Service
                     entity.ExpiredDate = megaAccount.ExpiredDate ?? entity.ExpiredDate;
                     entity.LastLogin = megaAccount.ExpiredDate.HasValue && megaAccount.ExpiredDate.Value < DateTimeOffset.UtcNow
                         ? megaAccount.ExpiredDate.Value.AddDays(5) : entity.LastLogin;
+                    entity.PrivatePassowrd = megaAccount.Password;
+                    entity.PrivateRecoveryKey = megaAccount.RecoveryKey;
                     var megaAccountFileProperties = megaAccountFiles.Where(s => s.OwnerAccount.ToLower() == entity.AccountName.ToLower())
                         .Select(s => new FileProperty()
                         {
@@ -326,7 +328,7 @@ namespace MMA.Service
         {
             var props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
             Dictionary<string, string> columnTitles = new Dictionary<string, string>();
-            foreach(var prop in props)
+            foreach (var prop in props)
             {
                 var originalName = prop.Name;
                 string format = i18nColumnFormat.Replace(oldValue: "{PropertyName}", newValue: originalName);
@@ -341,6 +343,49 @@ namespace MMA.Service
                 }
             }
             return columnTitles;
+        }
+
+        public async Task<NotificationResponse> LoginMegaAccountWithIdAsync(MegaAccountLoginRequestDto requestDto)
+        {
+            NotificationResponse notificationResponse = new NotificationResponse();
+            var modelState = requestDto.ModelStateValidate();
+            var megaAccount = await _repository.FindForUpdateAsync<MegaAccountEntity>(predicate: s => s.Id == requestDto.MegaAccountId);
+            if (megaAccount == null)
+            {
+                modelState.AddError(field: string.Empty, errorMessage: $"Không tìm thấy mega account with ID = {requestDto.MegaAccountId}");
+                throw new MMAException(statusCode: StatusCodes.Status404NotFound, errors: modelState.GetErrors());
+            }
+            var megaLoginResponse = await _megaClient.LoginAsync(email: megaAccount.AccountName, password: megaAccount.PrivatePassowrd,
+                mfaKey: megaAccount.PrivateRecoveryKey);
+            try
+            {
+                if (_megaClient.IsLoggedIn)
+                {
+                    _logger.LogInformation($"Mega login success with AccountName = {megaAccount.AccountName}, SessionId = {megaLoginResponse.SessionId}, MasterKey = {megaLoginResponse.MasterKey}, MegaAccountId = {megaAccount.Id}");
+                    megaAccount.LastLogin = DateTimeOffset.UtcNow;
+                    megaAccount.ExpiredDate = DateTimeOffset.UtcNow.AddDays(5);
+                    await _repository.UpdateAsync<MegaAccountEntity>(entity: megaAccount);
+                    await _megaClient.LogoutAsync();
+                    _logger.LogInformation($"Mega lout success: LoginStatus = {_megaClient.IsLoggedIn}, MegaAccountId = {megaAccount.Id}, AccountName = {megaAccount.AccountName}");
+                    notificationResponse.DisplayType = CNotificationDisplayType.Page;
+                    notificationResponse.Level = CNotificationLevel.Info;
+                    notificationResponse.Type = CNotificationType.Auth;
+                    notificationResponse.Message = $"Mega account {megaAccount.AccountName} login success.";
+                }
+                return notificationResponse;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in MegaLoginAsync: {ex.Message}");
+                throw new MMAException(statusCode: StatusCodes.Status400BadRequest, errors: new List<ErrorDetailDto>()
+                {
+                    new ErrorDetailDto()
+                    {
+                        Error = ex.Message,
+                        ErrorScope = CErrorScope.PageSumarry
+                    }
+                });
+            }
         }
 
         public async Task MegaLoginAsync(LoginRequestDto requestDto)

@@ -464,6 +464,9 @@
   </data>
 
 
+  <data name="Core_Action_Title_Entry" xml:space="preserve">
+    <value>Hành động</value>
+  </data>
   <data name="Core_Import_Column_Result_Entry" xml:space="preserve">
     <value>Kết quả</value>
   </data>

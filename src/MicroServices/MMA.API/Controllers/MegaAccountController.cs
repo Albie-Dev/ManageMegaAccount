@@ -16,10 +16,14 @@ namespace MMA.API
         }
 
         [HttpPost("megaaccount/login")]
-        public async Task<IActionResult> Login(LoginRequestDto loginDto)
+        public async Task<IActionResult> Login(MegaAccountLoginRequestDto requestDto)
         {
-            await _megaAccountService.MegaLoginAsync(requestDto: loginDto);
-            return Ok();
+            var result = await _megaAccountService.LoginMegaAccountWithIdAsync(requestDto: requestDto);
+            return Ok(new ResponseResult<NotificationResponse>()
+            {
+                Data = result,
+                Success = true
+            });
         }
 
         [HttpPost("megaaccount/paging")]

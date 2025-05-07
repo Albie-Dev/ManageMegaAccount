@@ -8,5 +8,6 @@ namespace MMA.Service
         Task<byte[]> DownloadMegaAccountImportTemplateAsync();
         Task<byte[]> ImportMegaAccountsAsync(Stream fileStream);
         Task MegaLoginAsync(LoginRequestDto requestDto);
+        Task<NotificationResponse> LoginMegaAccountWithIdAsync(MegaAccountLoginRequestDto requestDto);
     }
 }

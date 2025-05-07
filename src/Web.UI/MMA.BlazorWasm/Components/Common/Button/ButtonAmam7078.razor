@@ -7,7 +7,8 @@
     @ondblclick="OnDoubleClick" 
     @onkeypress="OnKeyPress"
     disabled="@IsDisabled"
-    type="@(string.IsNullOrEmpty(Type) ? "button" : Type)">
+    type="@(string.IsNullOrEmpty(Type) ? "button" : Type)"
+    title="@Tooltip">
     
     @if (IconPosition == CIconPositionType.Right)
     {
@@ -58,4 +59,7 @@
 
     [Parameter]
     public string Type { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Tooltip { get; set; } = string.Empty;
 }

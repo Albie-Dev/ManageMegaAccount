@@ -7,6 +7,8 @@ namespace MMA.Service
     public class MegaAccountEntity : BaseEntity
     {
         public string AccountName { get; set; } = string.Empty;
+        public string PrivatePassowrd { get; set; } = string.Empty;
+        public string PrivateRecoveryKey { get; set; } = string.Empty;
         public string PasswordHashed { get; set; } = string.Empty;
         public string RecoveryKeyHashed { get; set; } = string.Empty;
         public DateTimeOffset LastLogin { get; set; }

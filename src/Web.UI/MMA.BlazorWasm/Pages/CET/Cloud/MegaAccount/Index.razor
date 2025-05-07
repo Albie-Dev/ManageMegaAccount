@@ -168,7 +168,14 @@
                 IsSelected = true,
                 IsSort = false,
                 Value = nameof(MegaAccountDetailDto.ModifiedByProperty),
-            }
+            },
+            new DropdownItemModel()
+            {
+                Name = I18NHelper.GetString(key: $"Core_Action_Title_Entry"),
+                IsSelected = true,
+                IsSort = false,
+                Value = string.Empty,
+            },
         };
     }
 
@@ -202,7 +209,7 @@
             },
             {
                 nameof(MegaAccountDetailDto.CreatedByProperty),
-                row => @<text><UserProfile UserInfo="row.CreatedByProperty" Size="30" /></text>
+                row => @<text><UserProfile UserInfo="row.CreatedByProperty" ShowFullName="true" Size="30" /></text>
             },
             {
                 nameof(MegaAccountDetailDto.ModifiedDate),
@@ -211,6 +218,25 @@
             {
                 nameof(MegaAccountDetailDto.ModifiedByProperty),
                 row => @<text><UserProfile UserInfo="row.ModifiedByProperty" ShowFullName="true" Size="30" /></text>
+            },
+            {
+                string.Empty,
+                row => @<text>
+                    <ButtonAmam7078 Class="btn btn-sm btn-outline-info"
+                        Icon="bi bi-box-arrow-in-left"
+                        IconPosition="CIconPositionType.Center"
+                        Type="button"
+                        Tooltip="Đăng nhập vào mega"
+                        OnClick="() => MegaAccountLoginAsync(row.MegaAccountId)"
+                    />
+                    <ButtonAmam7078 Class="btn btn-sm btn-outline-warning"
+                        Icon="bi bi-arrow-repeat"
+                        IconPosition="CIconPositionType.Center"
+                        Type="button"
+                        Tooltip="Đồng bộ trạng thái data từ tài khoản mega"
+                        OnClick="() => MegaAccountSyncDataAsync(row.MegaAccountId)"
+                    />
+                </text>
             }
         };
 
