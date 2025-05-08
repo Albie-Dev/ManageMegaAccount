@@ -26,6 +26,17 @@ namespace MMA.API
             });
         }
 
+        [HttpPost("megaaccount/sync")]
+        public async Task<IActionResult> SyncMegaAccountData(MegaAccountLoginRequestDto requestDto)
+        {
+            var result = await _megaAccountService.SyncMegaAccountDataAsync(megaAccountId: requestDto.MegaAccountId);
+            return Ok(new ResponseResult<NotificationResponse>()
+            {
+                Data = result,
+                Success = true
+            });
+        }
+
         [HttpPost("megaaccount/paging")]
         public async Task<IActionResult> GetMegaAccountWithPaging(TableParam<MegaAccountFilterProperty> tableParam)
         {

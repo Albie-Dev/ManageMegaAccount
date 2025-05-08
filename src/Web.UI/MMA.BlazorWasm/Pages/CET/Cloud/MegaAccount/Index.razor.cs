@@ -171,7 +171,42 @@ namespace MMA.BlazorWasm.Pages.CET.Cloud.MegaAccount
 
         private async Task MegaAccountSyncDataAsync(Guid megaAccountId)
         {
-            await Task.CompletedTask;
+            try
+            {
+                _isLoading = true;
+                var apiResponse = await _httpClientHelper.PostAsync<MegaAccountLoginRequestDto, NotificationResponse>(
+                    endpoint: Path.Combine(EndpointConstant.Cloud_Base_Url, EndpointConstant.Cloud_Mega_Account_Sync),
+                    data: new MegaAccountLoginRequestDto() { MegaAccountId = megaAccountId },
+                    requestType: CHttpClientType.Private,
+                    portalType: CPortalType.CET);
+                if (apiResponse == null)
+                {
+                    _toastService.ShowError($"Cannot connect to server. Host = {CPortalType.CET.ToDescription()}");
+                }
+                else
+                {
+                    if (!apiResponse.Errors.IsNullOrEmpty())
+                    {
+                        _errors = apiResponse.Errors;
+                    }
+                    else if (apiResponse.Data == null)
+                    {
+                        _toastService.ShowError($"An error occured while fetch data. Server no response data.");
+                    }
+                    else
+                    {
+                        _notificationResponse = apiResponse.Data;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                _toastService.ShowError($"{ex.Message}. Host = {CPortalType.CET.ToDescription()}");
+            }
+            finally
+            {
+                _isLoading = false;
+            }
         }
 
     }

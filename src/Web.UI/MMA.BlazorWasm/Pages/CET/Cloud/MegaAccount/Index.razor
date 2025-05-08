@@ -10,6 +10,12 @@
     <DisplayMessageElement Notification="_notificationResponse" />
     _notificationResponse = null;
 }
+
+@if (!_errors.IsNullOrEmpty())
+{
+    <ErrorElement Errors="_errors" />
+}
+
 <Table TData="MegaAccountDetailDto" TFilter="MegaAccountFilterProperty" TSelection="Guid"
     ApiEndpoint="@(Path.Combine(EndpointConstant.Cloud_Base_Url, EndpointConstant.Cloud_Mega_Account_Paging))"
     HttpClientType="CHttpClientType.Private" PortalType="CPortalType.CET" Columns="InitColumns()"

@@ -21,6 +21,7 @@ namespace MMA.Domain
         public const string Cloud_Mega_Account_Paging = "megaaccount/paging";
         public const string Cloud_Mega_Account_Template = "megaaccount/import";
         public const string Cloud_Mega_Account_Login = "megaaccount/login";
+        public const string Cloud_Mega_Account_Sync = "megaaccount/sync";
         #endregion mega account
 
         public const string CET_Role_Paging = "roles/paging";

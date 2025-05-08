@@ -457,6 +457,72 @@ namespace MMA.Service
             }
         }
 
+        public async Task<NotificationResponse> SyncMegaAccountDataAsync(Guid megaAccountId)
+        {
+            NotificationResponse notificationResponse = new NotificationResponse() { DisplayType = CNotificationDisplayType.Page, Type = CNotificationType.Update };
+            try
+            {
+                var megaAccount = await _repository.FindForUpdateAsync<MegaAccountEntity>(predicate: s => s.Id == megaAccountId);
+                if (megaAccount == null)
+                {
+                    notificationResponse.Level = CNotificationLevel.Warning;
+                    notificationResponse.Message = $"Không tìm thấy tài khoản mega với Id = {megaAccountId}";
+                    return notificationResponse;
+                }
+                var megaLoginResponse = await _megaClient.LoginAsync(email: megaAccount.AccountName, password: megaAccount.PrivatePassowrd,
+                    mfaKey: megaAccount.PrivateRecoveryKey);
+                if (_megaClient.IsLoggedIn)
+                {
+                    var nodes = await _megaClient.GetNodesAsync();
+                    List<FileProperty> files = new List<FileProperty>();
+                    await ProcessNodesAsync(nodes: nodes, fileProperties: files, parentId: string.Empty);
+                    var fileProperties = megaAccount.FileProperties;
+                    megaAccount.LastLogin = DateTimeOffset.UtcNow;
+                    megaAccount.ExpiredDate = DateTimeOffset.UtcNow.AddDays(5);
+                    megaAccount.TotalFileSize = fileProperties.Sum(file => file.Size);
+                    foreach (var file in files)
+                    {
+                        if (!fileProperties.Select(s => s.Id).Contains(file.Id))
+                        {
+                            file.Status = CFileStatus.Deleted;
+                            fileProperties.Add(file);
+                        }
+                    }
+                    megaAccount.Files = fileProperties.ToJson();
+                    await _repository.UpdateAsync<MegaAccountEntity>(entity: megaAccount, clearTracker: true, needSaveChange: true);
+                    _logger.LogInformation($"UpdateMegaAccount successfully: Email = {megaAccount.AccountName}");
+                    notificationResponse.Level = CNotificationLevel.Success;
+                    notificationResponse.Message = $"Đồng bộ dữ liệu từ tài khoản Mega thành công. Ngày = {DateTimeOffset.UtcNow.ToLocalTime()}";
+                    await _megaClient.LogoutAsync();
+                    return notificationResponse;
+                }
+                else
+                {
+                    notificationResponse.Level = CNotificationLevel.Warning;
+                    notificationResponse.Message = $"Đăng nhập thất bại đến mega. Email = {megaAccount.AccountName}";
+                    return notificationResponse;
+                }
+            }
+            catch(Exception ex)
+            {
+                notificationResponse.Level = CNotificationLevel.Error;
+                notificationResponse.Message = $"Đã có lỗi xảy ra khi đồng bộ dữ liệu từ tài khoản mega với Id = {megaAccountId}. Lỗi : {ex.Message}";
+                return notificationResponse;
+            }
+        }
+
+        public async Task<List<FileProperty>> GetMegaAccountDataAsync(Guid megaAccountId)
+        {
+            List<ErrorDetailDto> errors = new List<ErrorDetailDto>();
+            var megaAccount = await _repository.FindAsync<MegaAccountEntity>(predicate: s => s.Id == megaAccountId);
+            if (megaAccount == null)
+            {
+                errors.Add(new ErrorDetailDto() { Error = $"Không tìm thấy tài khoản Mega có Id = {megaAccountId}", ErrorScope = CErrorScope.PageSumarry });
+                throw new MMAException(statusCode: StatusCodes.Status404NotFound, errors: errors);
+            }
+            return megaAccount.FileProperties;
+        }
+
         private async Task ProcessNodesAsync(IEnumerable<INode> nodes, List<FileProperty> fileProperties, string parentId)
         {
             foreach (var node in nodes)
