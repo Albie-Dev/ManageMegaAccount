@@ -77,15 +77,15 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="Hips">Quốc tịch :</label>
-                    <RadioComboboxList Items="_requestDto.RegionType.ToComboboxModels()"
-                        @bind-BindValue="_requestDto.RegionType"/>
+                    <ComboboxList @bind-BindValue="_requestDto.RegionType" Items="_requestDto.RegionType.ToComboboxModels()"
+                        Mode="CComboboxModeType.Select"/>
                     <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.RegionType)"/>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label for="Hips">Loại kích cỡ ngực :</label>
-                    <RadioComboboxList Items="_requestDto.CupSizeType.ToComboboxModels()"
-                        @bind-BindValue="_requestDto.CupSizeType"/>
+                    <ComboboxList @bind-BindValue="_requestDto.CupSizeType" Items="_requestDto.CupSizeType.ToComboboxModels()"
+                        Mode="CComboboxModeType.Select"/>
                     <ErrorElement Errors="Errors" FieldName="@nameof(_requestDto.CupSizeType)"/>
                 </div>
             </div>

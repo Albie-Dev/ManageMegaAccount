@@ -30,7 +30,7 @@ namespace MMA.Domain
                     }
                     else
                     {
-                        var errorMessage = attribute.ErrorMessage ?? "Unknown error";
+                        var errorMessage = attribute.FormatErrorMessage(property.Name);
                         if (!attribute.IsValid(value))
                         {
                             customModelState.AddError(property.Name, errorMessage);
