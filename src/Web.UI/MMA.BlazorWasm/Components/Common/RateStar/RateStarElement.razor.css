@@ -1,0 +1,29 @@
+.rate-star-container {
+    gap: 0.25rem;
+}
+
+.star {
+    cursor: pointer;
+    color: #ffc107;
+}
+
+.star.empty {
+    color: #ccc;
+}
+
+.star:hover {
+    color: #ffca2c;
+}
+
+.rate-star-text {
+    margin-top: 0.5rem;
+}
+
+@media (max-width: 576px) {
+    .rate-star-container {
+        transform: scale(0.9);
+    }
+    .rate-star-text {
+        transform: scale(0.9);
+    }
+}

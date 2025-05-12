@@ -1,4 +1,5 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+﻿@using MMA.BlazorWasm.Components.Common.RateStar
+@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using System.Text.Json
 
@@ -80,6 +81,8 @@
     <button class="btn btn-primary" @onclick="ShowModal">Import</button>
 </div>
 
+<RateStarElement @bind-RateStar="_rateStar" />
+
 <FileUploader Title="Import Test" @bind-IsOpen="IsOpen" MaxFileSize="@(50 * 1024 * 1024)" FileTypes="FileTypes"
     OnFileUploaded="HandleUploadFromModal" />
 
@@ -95,5 +98,5 @@
 }
 
 @code {
-
+    private double _rateStar { get; set; } = 3.2;
 }

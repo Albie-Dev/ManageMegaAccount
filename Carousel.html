@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carousel Sản Phẩm Động</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .card {
+            height: 100%;
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .carousel-item .row {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 3%;
+            height: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            background-size: 100% 100%;
+        }
+
+        .carousel {
+            user-select: none;
+            cursor: grab;
+            touch-action: pan-y;
+        }
+
+        .carousel-control-button {
+            background-color: rgba(64, 64, 65, 0.496);
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Thú Cưng Nổi Bật</h2>
+
+        <div id="productCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="8000">
+            <div class="carousel-indicators">
+                <div class="d-flex justify-content-center carousel-control-button rounded px-2">
+                    <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="0" class="active"
+                        aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="1"
+                        aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#productCarousel" data-bs-slide-to="2"
+                        aria-label="Slide 3"></button>
+                </div>
+            </div>
+
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://niengiamnongnghiep.vn/wp-content/uploads/2020/04/93797094_1101164613597631_5201329103399026688_n.jpg"
+                                    class="card-img-top" alt="Chó Poodle">
+                                <div class="card-body">
+                                    <h5 class="card-title">Chó Poodle</h5>
+                                    <p class="card-text">Chó Poodle thông minh, thân thiện.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 5.000.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://vnn-imgs-a1.vgcloud.vn/img2.infonet.vn/w660/Uploaded/2020/iftqd/2016_01_04/xem_tuong_cho.jpg"
+                                    class="card-img-top" alt="Mèo Ba Tư">
+                                <div class="card-body">
+                                    <h5 class="card-title">Mèo Ba Tư</h5>
+                                    <p class="card-text">Mèo Ba Tư lông dài, dịu dàng.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 7.000.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://i.ytimg.com/vi/olly6WbT2Ws/hq720.jpg" class="card-img-top"
+                                    alt="Chim Vẹt">
+                                <div class="card-body">
+                                    <h5 class="card-title">Chim Vẹt</h5>
+                                    <p class="card-text">Chim Vẹt nhiều màu, bắt chước tiếng.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 2.500.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://miluxinh.com/wp-content/uploads/2022/06/choco-8.jpg"
+                                    class="card-img-top" alt="Chó Husky">
+                                <div class="card-body">
+                                    <h5 class="card-title">Chó Husky</h5>
+                                    <p class="card-text">Chó Husky năng động, thân thiện.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 8.000.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-item">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://source.unsplash.com/300x200/?cat" class="card-img-top"
+                                    alt="Mèo Anh Lông Ngắn">
+                                <div class="card-body">
+                                    <h5 class="card-title">Mèo Anh Lông Ngắn</h5>
+                                    <p class="card-text">Mèo Anh lông ngắn đáng yêu.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 6.000.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://source.unsplash.com/300x200/?bird" class="card-img-top"
+                                    alt="Chim Yến">
+                                <div class="card-body">
+                                    <h5 class="card-title">Chim Yến</h5>
+                                    <p class="card-text">Chim Yến nhỏ, tiếng hót dễ chịu.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 1.500.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://source.unsplash.com/300x200/?dog" class="card-img-top"
+                                    alt="Chó Golden">
+                                <div class="card-body">
+                                    <h5 class="card-title">Chó Golden</h5>
+                                    <p class="card-text">Chó Golden trung thành, thông minh.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 6.500.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://source.unsplash.com/300x200/?cat" class="card-img-top"
+                                    alt="Mèo Ragdoll">
+                                <div class="card-body">
+                                    <h5 class="card-title">Mèo Ragdoll</h5>
+                                    <p class="card-text">Mèo Ragdoll hiền lành, thích nằm.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 9.000.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-item">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://source.unsplash.com/300x200/?bird" class="card-img-top"
+                                    alt="Chim Cockatiel">
+                                <div class="card-body">
+                                    <h5 class="card-title">Chim Cockatiel</h5>
+                                    <p class="card-text">Chim Cockatiel vui tính, dễ thuần.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 3.000.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://source.unsplash.com/300x200/?dog" class="card-img-top"
+                                    alt="Chó Shiba">
+                                <div class="card-body">
+                                    <h5 class="card-title">Chó Shiba</h5>
+                                    <p class="card-text">Chó Shiba nhanh nhẹn, đáng yêu.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 7.500.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://source.unsplash.com/300x200/?cat" class="card-img-top"
+                                    alt="Mèo Maine Coon">
+                                <div class="card-body">
+                                    <h5 class="card-title">Mèo Maine Coon</h5>
+                                    <p class="card-text">Mèo Maine Coon lớn, thân thiện.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 10.000.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <img src="https://source.unsplash.com/300x200/?bird" class="card-img-top"
+                                    alt="Chim Lovebird">
+                                <div class="card-body">
+                                    <h5 class="card-title">Chim Lovebird</h5>
+                                    <p class="card-text">Chim Lovebird nhỏ, màu sắc rực rỡ.</p>
+                                    <p class="card-text"><strong>Giá:</strong> 2.000.000 VNĐ</p>
+                                    <a href="#" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Thêm</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Khởi tạo carousel và xử lý cuộn ngang bằng touchpad
+        document.addEventListener('DOMContentLoaded', () => {
+            const carousel = document.querySelector('#productCarousel');
+            let isScrolling = false;
+            const debounceTime = 500; // Thời gian chờ giữa các lần chuyển slide (ms)
+            const minDelta = 10; // Ngưỡng deltaX tối thiểu để kích hoạt chuyển slide
+
+            // Xử lý sự kiện cuộn ngang bằng touchpad
+            carousel.addEventListener('wheel', (event) => {
+                event.preventDefault(); // Ngăn hành vi cuộn mặc định
+
+                // Chỉ xử lý nếu không có chuyển slide đang diễn ra
+                if (!isScrolling) {
+                    const deltaX = event.deltaX;
+
+                    // Kiểm tra ngưỡng deltaX để đảm bảo chỉ xử lý vuốt rõ ràng
+                    if (Math.abs(deltaX) > minDelta) {
+                        isScrolling = true;
+
+                        // Cuộn sang trái (deltaX > 0) -> Chuyển slide tiếp theo
+                        if (deltaX > 0) {
+                            bootstrap.Carousel.getInstance(carousel).next();
+                        }
+                        // Cuộn sang phải (deltaX < 0) -> Quay lại slide trước
+                        else {
+                            bootstrap.Carousel.getInstance(carousel).prev();
+                        }
+
+                        // Đặt timeout để ngăn chuyển slide liên tục
+                        setTimeout(() => {
+                            isScrolling = false;
+                        }, debounceTime);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -13,6 +13,9 @@ namespace MMA.Service
         public int Bust { get; set; }
         public int Waist { get; set; }
         public int Hips { get; set; }
+        public int TotalView { get; set; }
+        public int TotalMovie { get; set; }
+        public double RateStar { get; set; }
         public CCupSizeType CupSizeType { get; set; }
         public int Height { get; set; }
         public CRegionType RegionType { get; set; }
